@@ -1,0 +1,11 @@
+
+Pages and State Handling in Kewebsi
+
+Some Basic Facts
+
+- The diff mechanism for Ajax requests requires a server-side page per session.
+
+- Pages whose topography depend on the state must have a state at creation time. Hence such pages can be only be created at getHtml() time. But the once created pages continue to exist between requests. That means the diff mechansim still works on those pages.
+
+- Note: The state change detection mechanism for topology changes (existance of elements, parent-child-relations) works be comparing the old child list with the new child list. When the child list is supposed to change according to the PageState, then it must be updated before or during change detection.   
+

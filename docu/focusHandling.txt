@@ -1,0 +1,14 @@
+Focus Event Order
+
+copied from https://stackoverflow.com/questions/20340091/is-it-guaranteed-that-blur-event-happens-before-the-focus-when-giving-focus
+
+The focus events defined in this specification occur in a set order relative to one another. The following is the typical sequence of events when a focus is shifted between elements (this order assumes that no element is initially focused):
+
+> User shifts focus
+> 1.    focusin Sent before first target element receives focus
+> 2.    focus   Sent after first target element receives focus 
+> User shifts focus
+> 3.    focusout    Sent before first target element loses focus
+> 4.    focusin Sent before second target element receives focus
+> 5.    blur    Sent after first target element loses focus
+> 6.    focus   Sent after second target element receives focus

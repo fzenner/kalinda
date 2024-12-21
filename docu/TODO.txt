@@ -1,0 +1,187 @@
+TODO NEXT: Errorhandling and disabling see INtegerFieldTestPageDisable.
+
+
+Analyse: Disabling von Feldern, die fehler enthalten können.
+============================================================
+Die Fehler von disableten Feldern, sollten gelöscht werden. Sie zu bewahren, bis ein Feld ggf. wieder enabled wird,
+ist unpraktikabel.
+Das Problem ist, dass Felder disabled werden, aber nicht die dahinter liegende Variable.
+Ein Feld kann im Prinzip disabled werden, wobei gleichzeitig erwünscht ist, dass Werte und Fehler angezeigt werden.
+D.h., das Nicht-Anzeigen von Werten und Fehlern, muss in der Business-Logic implementiert werden. Fehler sollten
+beim disablen nicht generisch durch das Framework weggeworfen werden.
+Beachte: Wir haben schon PageVarBase.checkRelevance()
+Frage: Überprüfen, ob wir die Sichtbarkeit von der Relevanz ableiten können. Vermutlich overkill.
+
+Note: It is conceptually important, that while multiple Fields can be connected to one variable, only one field at a
+time can be intensely coupled to the variable. For example, the fact that a field has a parsing error and hence is not
+in sync with the variable make only sense with one field. Consider a variabe V connected to two fields F1 and F2. Both
+F1 and F2 have been edited by the user and have parsing errors. No F1 is edited again and a valid value has been entered.
+Then we need to decide, what happens to the bad value of F2. The expectation would probably be, that the error on F2
+is removed and the correct value is being displayed. Hence F2 would be de-facto in a display only mode.
+Consider the error display of F1 and F2. Consider a user starts to edit V by editing F1. A parsing error occurs. It should
+only be displayed in F1, since the unparsed value is not transferred to F2, an error display there for a parsing error
+makes no sense. But when a logical error occurs, the error should be displayed on F1 and F2. F2 might be a larger
+field which allows for a more comfortable editing of the value.
+
+A clean solution could be: A page variable has a double-linked connection to each field. If there is a parsing error,
+it is attached to the field. However, the page variable can query for the existance of a parsing error through the links.
+
+Other solution: When there is only one field in active editing mode, the parsing error disappears as soon as the
+editing field goes into non-editing mode.
+
+Wir haben aktuell zwei Formen von disablen: Constraint deaktiviern. Max feld hiden. Beide male sollten Fehlermeldungen
+versschwinden. Beim Deaktivieren sollten fehlerfreie Werte erhalten bleiben. Beim Felder hiden kann man sie erhalten,
+muss aber nicht.
+
+
+
+ Otherwise the parsing error of field 2 would need to be cleared
+when
+
+
+TODO Next: Disablen und re-enablen von feldern mit fehlern.
+Ein weggeklickter client-side error ist nach dem enablen nciht mehr erkennbar
+
+Die strategie ist, dass nach dem Wegklicken eines Fehlers der Focus in das Fehlerfeld gesetzt wird. Dadurch
+wird durch FocusLosss eine neue Überprüfung erzwungen. Dadurch kann es nicht vorkommen, dass ein de-facto client-side
+error nicht erkannt wird.
+
+Wenn wir disablen, verschwinden die Fehlermeldungen bzw. können gelöscht werden und der Focus geht aus den disableten
+Feldern heraus.
+
+Um beim re-enablen ein ähnliches Verhalten zu erzielen, müssten wir alle fehler re-etablieren
+a) die Client-Side errors wieder angezeigt werden (es kann mehrere geben)
+b) server-side error anzeigen
+
+Proposal: Wir refreshen beim re-enablen mit server-side daten und löschen alle client-side errors. Server-side Errors
+tauchen bei der Transaktions-Validierung wieder zwangsläufig auf. Durch disabled verdeckte server-side errors ebenso,
+wenn wir das server-seitig richtig implementieren. (Effective error mechanismus.)
+
+D.h.: Beim Setzen eines Server-Side values muss der client-side-error gelöscht werden.
+
+Frage: Was ist bei komplexen client-side Errors, die nicht an ein einzelnes Feld gebunden sind (haben wir aktuell nicht)?
+Antwort: Client-side errors dürfen nur Fehler sein, die das Übertragen der Werte an den Server verhindern.
+         Andere Client-Side Errors sind aber insbesondere bei Custom-Components denkbar. Dann muss der Client halt
+         den Status beim Re-Enablen selbst sauber setzen.
+
+
+Disable/Enable Gedanklicher Durchlauf
+=====================================
+Disable:
+========
+- User clicks a checkbox. The checkox action does the standard action (sets its own variable) plus a custom action.
+- The custom action sets the variable to irrelevant.
+- Irrelevant variables have per definition no errors - all errors disappear.
+
+Enable:
+=======
+- User clicks a checkbox. The checkox action does the standard action (sets its own variable) plus a custom action.
+- The custom action sets the variable to relevant.
+- Choice point:
+  Option 1: The old errors will appear again. They might be outdated, if the error is context-sensitive.
+            Client-Side error: We should not store client side errors during the disabled status.
+            That means if there was a client side error, the client has to re-validate the value
+            (If there was a server-side error, the server could re-establish the old errors or re-validate on the
+            server-side.)
+
+
+  Option 2: The old errors will be deleted. The field is set to blank values. The user has to re-enter the values.
+  Option 3: The old errors will be deleted. The old values will be restored. The user can continue editing.
+  Option 4: The old errors will be deleted. The old values will be restored. The variable will be error-checked again.
+            In this case, error-checking on the server-side suffices, since the values are set by the server.
+
+
+            Consider the case when there is only a client-side error in option 1 and 4: In this case, the server knew that
+            there was a client-side error.
+
+
+DECISION:
+We select option 2. If - and only if - the current data has errors, the values will be deleted and the user has to
+re-enter the values.
+TODO:
+- When a field is disabled, the variable should set to be irrelevant. DONE.
+- When we clear the errors, we should also clear the values.
+  CLeaing is done for client side errors. For server side errors not yet.
+  Check how to re-initialize a field generically (set value to null???).
+  See HtmlPageVarField.getGuiDefUpdate
+TODO:
+- Cleanup HtmlPageVarField getError() vs getEffectiveError()
+
+
+  Some errors might be displayed again. This is the case for client-side errors. Server-side errors will
+
+
+
+
+            Alle Felder, die mit der Variable verbunden sind, werden disabled.
+            Die Werte bleiben erhalten.
+            Die Fehlermeldungen verschwinden.
+            Der Focus wird aus den disableten Feldern herausgenommen.
+            Der Focus wird auf das nächste Feld gesetzt, das editierbar ist.
+            Der Server wird nicht kontaktiert
+
+
+
+
+- Disable: Alle Felder, die mit der Variable verbunden sind, werden disabled. Die Werte bleiben erhalten.
+
+
+
+Beachte auch hide/unhide
+=========================
+Suggestion: When we hide, we clean the value per default.
+If the intention is to keep anything, for example that old values should appear, then this needs to be done by business
+logic. For the use case of old values to remain, one should use preferable the disable/enable mechanism.
+
+
+Gedanken: Großes Problem
+==============
+Ist der ClientSyncState an der Variable oder am Feld?
+Siehe HtmlPageVarField.clientSyncState (or better: AbstractPageVarField.clientSyncState), PageStateVarBase.isInSyncWithGui
+Wenn am Anfang einer Business-Transaktion die Variablen überprüft werden, wollen wir nur die Variablen betrachten,
+nicht die Felder.
+==> Daraus folgt, der SyncState muss an der Variable gehalten werden.
+==> Der Syncstate gilt für alle Felder.
+==> Wenn ein Feld in sync ist, müssen alle Felder in sync sein.
+==> Die Felder müssen entsprechend aktualisiert werden.
+ACHTUNG: Das stimmt nicht. Als start eine Transaktion kann geprüft werden, ob alle Felder in sync sind. Ansonsten
+wird die Transaktion nicht durchgeführt. Oder ??? :-) D.h., PageStateVarBase.isInSyncWithGui sollte weg.
+
+
+
+
+
+
+Handling von leeren Feldern.
+=============================
+a) direkt nach dem editieren (focus lost)
+b) vor der transaktion
+Siehe PageStateVarBase.validateObjectAndSetValueOrError
+      PageStateVarBase.validateUnparsedStringValueAndSetValueOrError
+
+
+
+
+Context specific validations vs fieldAssistants
+================================================
+
+The field assistants are intended to check the values within the context of the business object itself.
+We need to verify of how much value they are during checks within an overall context.
+
+
+
+Serialisierung
+==============
+focusLost und buttonClick können so schnell aufeinander folgen, dass das BUttonClick handling während des focusLost
+handlings passiert. Dass muss vermieden werden.
+
+Siehe Promised-based lock
+
+
+
+Good Breakpoints:
+StandardController.SMH_fieldDataEntered
+
+Thought
+=======
+Maybe we should make a principal distinction between fields holding business data (DTO-fields) and functional fields.

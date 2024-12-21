@@ -1,0 +1,70 @@
+<mxfile host="Electron" modified="2024-04-05T20:37:29.252Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.1.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="feZBHDsCtoOWjD_R3MoZ" version="24.1.0" type="device">
+  <diagram name="Page-1" id="a3R0bDNkaP9m69sfv3XA">
+    <mxGraphModel dx="1341" dy="988" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t2xG3UqDEb84y6zb--pm-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-1" target="t2xG3UqDEb84y6zb--pm-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-1" target="t2xG3UqDEb84y6zb--pm-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-1" value="KewebsiDateTimeEditor" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="320" y="480" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-2" value="WebCompSupportingUpdates" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="230" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-4" value="CalendarPopupPartner" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="475" y="230" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-6" target="t2xG3UqDEb84y6zb--pm-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=ERone;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-6" target="t2xG3UqDEb84y6zb--pm-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-6" value="DateTimeEditorCompanion" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="480" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-7" target="t2xG3UqDEb84y6zb--pm-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.4;exitY=-0.017;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-7" target="t2xG3UqDEb84y6zb--pm-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-7" value="TableEditorCompanion" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="360" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.714;entryY=0.983;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-7" target="t2xG3UqDEb84y6zb--pm-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-10" value="Companion" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="160" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;dashed=1;" edge="1" parent="1" source="t2xG3UqDEb84y6zb--pm-13" target="t2xG3UqDEb84y6zb--pm-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-13" value="Allows for inheritable logic without inheriting from HTMLElement" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 4;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-15" value="HTMLElement" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="660" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-17" value="WebComponent" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="640" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-18" value="Interface" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="740" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-19" value="Standard DOM Element" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="355" y="640" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t2xG3UqDEb84y6zb--pm-20" value="&amp;lt;div&amp;gt; (DateTimeEditor)" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

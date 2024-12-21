@@ -1,0 +1,608 @@
+
+:root {
+  --editable-font-size: 12px;
+  --calendar-launch-button-font-size: 12px
+}
+
+body {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    font-family: TeleNeo,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+
+
+th {
+    /* padding: 3px 0 0 12px;*/
+    border: 1px solid black;
+    font-family: Arial;
+    font-size: 12px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: bold;
+    line-height: normal;
+    margin: 0;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+
+}
+
+table {
+    border: none;
+}
+
+.entity-table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    table-layout:fixed;
+}
+
+
+
+td {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border: 1px solid black;
+    
+    font-family: Arial;
+    font-size: 12px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    line-height: normal;
+    margin: 0;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    overflow: hidden;
+}
+
+.calendar.td {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+.resizer {
+    /* Placed at the right side of column header.
+    Note that the parent must have "position: relative" in order for the
+    absolute postitioning here to work */
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    user-select: none;
+}
+
+.resizer:hover {
+    border-right: 2px solid blue;
+}
+
+
+.tdInput {
+    font-family: Arial;
+    font-size: 12px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    line-height: normal;
+    outline:none;
+    background-color: darksalmon;
+    width: 100%; 
+    border:0px; 
+    padding:0px;
+}
+
+.forcedFocusOutline {
+    outline-width: 2px;
+    outline-style:  dashed;
+    outline-color: rgb(145, 70, 180);
+}
+
+td:focus {
+    outline-width: 2px;
+    outline-style:  dashed;
+    outline-color: steelblue;
+  }
+
+div.scrollOverflow {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+}
+
+a {
+    color: #E20074;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+.tableCellContenSpan {
+  color: blue;   /* this is just a dummy value, we need this class for ID purposes*/
+}
+
+.tableCellErrorSpan {
+  color: green;   /* this is just a dummy value, we need this class for ID purposes*/
+}
+
+.inputFieldError {
+  color: chocolate;   /* this is just a dummy value, we need this class for ID purposes*/
+}
+
+
+.errorsAndWarnings {
+    color:red;
+    background-color:yellow;
+    border-width: 1px;
+    border-color: red;
+}
+
+
+.labelGapOnTop {
+	padding-top: 1 en
+}
+
+.labelGapOnBottom {
+	padding-bottom: 1 en
+}
+
+
+.divVertikalInputFieldGrid2Cols {
+    display: grid;
+    column-gap: 0.5em;
+    row-gap: 0.7em;
+    margin-left: 0.3em;
+    margin-top: 0.3em;
+    grid-template-columns:  min-content min-content
+  }
+
+
+  .divRadioButtons {
+    display: grid;
+    column-gap: 0.5em;
+    row-gap: 0.1em;
+    grid-template-columns:  min-content min-content
+  }  
+
+  .vertikalDivFlow {
+    display: inline-flex;
+    flex-flow: column;
+  }
+
+
+  .vertikalDivTableCell {
+    display: grid;
+    width: 100%;
+  }
+
+  .horizontalDivFlow {
+    display: flex;
+    flex-flow: row;
+  }
+
+  .rightColDiv {
+    display: block;
+    margin-left: 5em;
+  }
+
+  .modalErrorContentDiv {
+    display: inline-flex;
+    flex-flow: column;
+    align-items: center;
+  }
+
+  
+.nowrapLabel {
+  white-space: nowrap;
+}
+
+
+.searchFieldDiv {
+  display: grid;
+  column-gap: 0.5em;
+  row-gap: 0.7em;
+  margin-left: 0.3em;
+  margin-top: 0.3em;
+  grid-template-columns: min-content min-content min-content min-content min-content;
+  justify-content: start;
+  justify-items: start;
+  align-items: center;
+}
+
+.smartInputDiv {
+  /* position: relative; */ /*  Required because of the absolute positioning of the error message inside */
+  display: inline-flex;
+  flex-flow: column;
+}
+
+
+.inputFieldLabelLeft {
+  padding-right: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.textInput {
+  /* outline-offset: 2px */
+  white-space: nowrap;
+  font-size: var(--editable-font-size);
+}
+
+
+
+input[type=text]:focus {
+  white-space: nowrap;
+  font-size: var(--editable-font-size);
+  border-width: 1px
+/* outline-offset: 2px */
+}
+
+
+
+.textInputWithError {
+  border-color: red ;
+  font-size: var(--editable-font-size);
+}
+
+
+.textInputWithError:focus {
+  outline-offset: 2px;
+  outline-color: red;
+  font-size: var(--editable-font-size);
+}
+
+
+.textSubInput { 
+  border: none;
+  white-space: nowrap;
+  font-size: var(--editable-font-size);
+}
+
+
+.textSubInputWithError {
+  border: none;
+  font-size: var(--editable-font-size);
+}
+
+
+
+
+.textSubInputWithError:focus {
+  outline-offset: 2px;
+  outline-color: red;
+  font-size: var(--editable-font-size);
+}
+
+
+
+
+.inputFieldErrorMsg {
+  padding-left: 1em;
+  /* position: absolute; */
+  left: 0px; 
+  top: 100%;
+  margin: 0.03em;
+  font-size: var(--editable-font-size);
+  color: red;
+  position: absolute ; 
+  z-index: 1; 
+}
+
+.horizontalDivFlowCentered {
+    display: inline-flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 0.5em;
+  }
+  
+.errorsAndWarningsDiv {
+    display: grid;
+    color:red;
+    background-color:yellow;
+    border-width: 1px;
+    border-color: red;
+  }
+    
+
+.dateTimeInput {
+    display:grid;   
+    grid-auto-flow:column;  
+    grid-gap:10px; 
+    overflow:auto;
+    width: 250px;
+}
+
+
+
+.tableNavigationBar {
+    display:grid;   
+    grid-auto-flow:column;  
+    grid-gap:10px; 
+    grid-template-columns: min-content min-content min-content min-content min-content min-content;
+}
+
+/********************* Modal Dialog Start **************************************/
+/*******************************************************************************/
+/* The Modal (background) */
+.modal {
+  /* display: none; */ /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4  ); /* Black w/ opacity */
+}
+
+
+.modal-error {
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4  ); /* Black w/ opacity */
+}
+
+
+/* Modal Content/Box */
+.modal-content {
+  display: inline-block;
+  margin: 40%;
+  background-color: #fefefe;
+  /* margin: 15% auto; */ /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  /* width: 80%; */ /* Could be more or less, depending on screen size */
+}
+
+.center-children-parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 50%; 
+  overflow: auto; /* Enable scroll if needed */
+}
+
+
+/* Modal Content/Box */
+.center-children-child {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+}
+
+
+  .calendar-content {
+    background-color: #fefefe;
+    margin: 0px ;
+    padding: 2px;
+    border: 1px solid #888;
+    grid-template-columns:  min-content; 
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 20px;
+    line-height: 0.8;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .close:active {
+    background-color: grey;
+    outline-width: 3px;
+    outline-style:  solid;
+    outline-color: rgba(80, 80, 80, 0.548);
+  }
+
+
+   /* The Close Button */
+   .close-button {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .div-for-close-x {
+      justify-content: right;
+      display: flex;
+      padding: 0.2em;
+  }
+
+  /********************* Modal Dialog End **************************************/
+
+/** Horizontal calendar navigation flow */
+.div_calendarnav {
+    display: flex;
+    justify-content: space-between;
+}
+
+.calendar-button {
+  width:100%;
+}
+
+
+.calendar-launch-button {
+  border: none;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-size: var(--calendar-launch-button-font-size);
+}
+
+.calendar-launch-button-with-error {
+  border: none;
+  outline-offset: 2px;
+  outline-color: red;
+}
+
+.calendar-revert-button {
+  border: none;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-size: var(--calendar-launch-button-font-size);
+}
+
+.calendar-input {
+  border: none;
+}
+
+
+.calendar-table {
+  border: none;
+  table-layout:fixed;
+}
+
+
+.calendar-td {
+  border: none;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+
+.composite-date-editor {
+  display: flex;
+  flex-direction: row;
+  border:solid #888;
+  border-width: 1px;
+  font-size: var(--editable-font-size);
+
+}
+
+.composite-date-editor-border-right {
+  display: flex;
+  flex-direction: row;
+  border-top: none;
+  border-right: solid #888 1px;
+  border-bottom: none;
+  border-left: none;
+  font-size: var(--editable-font-size);
+}
+
+.composite-date-editor-border-right-with-error {
+  display: flex;
+  flex-direction: row;
+  border: solid #888;
+  border-top: none;
+  border-right: 1px;
+  border-bottom: none;
+  border-left: none;
+  font-size: var(--editable-font-size);
+}
+
+.composite-date-time-editor {
+  display: flex;
+  flex-direction: row;
+  border: none;
+  font-size: var(--editable-font-size);
+}
+
+.composite-date-editor-with-error {
+  display: flex;
+  flex-direction: row;
+  border:solid red;
+  border-width: 2px;
+  border-style: inset;
+  font-size: var(--editable-font-size);
+}
+
+.composite-date-time-editor-with-error {
+  display: flex;
+  flex-direction: row;
+  border: none;
+  font-size: var(--editable-font-size);
+}
+
+.standard-button {
+  margin: 0.2em;
+}
+
+
+.sidenavParent {
+  display: flex;
+  flex-flow: row;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+.vertStretchDiv {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.vertStretchDiv100vh {
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+
+.sidenav {
+  height: 100%;
+  width: 30px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+
+.sidenav2 {
+  height: 100%;
+  width: 20em;
+  background-color: green;
+  transition: 0.5s;
+  flex-shrink: 0;
+}
+
+.heightToMinContent {
+  height: min-content;
+}

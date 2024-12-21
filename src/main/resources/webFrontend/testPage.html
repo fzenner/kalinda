@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta charset="utf-8" />
+	<title>${TITLE}</title>
+
+	<link rel="stylesheet" type="text/css" href="msaSim.css">
+
+
+	<style>
+		.tdInput {
+			font-family: Arial;
+			font-size: 12px;
+			font-size-adjust: none;
+			font-stretch: normal;
+			font-style: normal;
+			font-variant: normal;
+			line-height: normal;
+			outline:none;
+			background-color: darksalmon;
+			width: 100%; 
+			border:0px; 
+			padding:0p
+			x;
+		}
+
+
+
+		.resizer {
+			/* Placed at the right side of column header.
+			Note that the parent must have "position: relative" in order for the
+			absolute postitioning here to work */
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 6px;
+			height: 100%;
+			cursor: col-resize;
+			user-select: none;
+		}
+
+		.resizer:hover {
+    		border-right: 2px solid blue;
+		}
+
+
+		.searchFieldDiv {
+			display: grid;
+			column-gap: 0.5em;
+			grid-template-columns: min-content min-content min-content min-content min-content;
+			justify-content: start;
+			justify-items: start;
+			align-items: center;
+		}
+
+
+
+	</style>
+
+
+
+	<script>
+		function tdHandleOnFocus(event) {
+			var x = event.keyCode;
+			if (x == 27) {  // 27 is the ESC key
+				alert("You pressed the Escape key!");
+			}
+			console.log("JAJAJA");
+			console.log(event);
+			// event.cancelBubble();
+			event.stopPropagation();
+		}
+
+		/**
+		 * Focus lost on the input field
+		 * */
+		function inputFieldFocusLostHandler(event) {
+			console.log("inputFieldFocusLostHandler");
+			console.log(event);
+
+			var newVal = event.srcElement.value;
+
+			var elementIdToReplace = 'tabEditField';
+
+			var newElementDef = "<span id='qqq'>" + newVal + "</span>";
+
+			var newElement = replaceElementById(elementIdToReplace, newElementDef);
+			var parentTdElement = newElement.parentElement;
+			parentTdElement.style.backgroundColor = "white";
+			// parentTdElement.style.outlineStyle = "none";
+			// parentTdElement.classList.toggle()
+
+			parentTdElement.classList.remove("forcedFocusOutline");
+
+
+			// elementToUpdate.focus();
+		}
+
+
+		function fuckMe(event) {
+
+		}
+
+
+
+
+
+		function tdHandleKeyPressTest(event, s) {
+			var x = event.keyCode;
+			if (x == 27) {  // 27 is the ESC key
+				alert("You pressed the Escape key!");
+			}
+			console.log("keypress");
+			console.log(event);
+			console.log(s)
+			// event.stopPropagation();
+			// event.preventDefault();
+
+			var idToReplace = "qqq";
+
+			var elementeToReplace = document.getElementById(idToReplace);
+
+
+			if (event.key === 's') {
+				var newTd = "<td id='13'>huch!</td>";
+				//var newInput = "<td style='margin:0px'><input style='width: 122px; border:0px;  padding:0px; id='777' value='hallo!!!'></td>"
+				var newInput = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='tabEditField' value='Input Test Text B'  onblur='inputFieldFocusLostHandler(event)'   >"
+				replaceElementById(idToReplace, newInput);
+			}
+
+		}
+
+
+		
+
+		function tdHandleKeyPress(event, s) {
+
+			if (event.key==="F2") {
+				console.log("F2 pressed.")
+				var tdElement = event.srcElement;
+				var tdContent = tdElement.children[0];
+				var spanFieldInTdText = tdContent.textContent;
+				var newInput = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='tabEditField' value='" + spanFieldInTdText + "'  onblur='inputFieldFocusLostHandler(event)'   >"
+				var newTdContent = replaceElement(tdContent, newInput);
+				newTdContent.focus();
+				var inputFieldContent = newTdContent.value;
+				var strLen = inputFieldContent.length;
+				newTdContent.setSelectionRange(0, strLen);
+
+				tdElement.style.backgroundColor = "darksalmon";
+
+				
+				/**
+				 *  Keep the focus outline appearance although the input field within this td element has the focus 
+				 */
+				// tdElement.style.outlineWidth = "2px";
+				// tdElement.style.outlineStyle = "dashed";
+				// tdElement.style.outlineColor = "steelblue";
+
+				tdElement.classList.add("forcedFocusOutline");
+
+			}
+
+
+
+		}
+
+
+		function replaceElementById(elementId, childDefinition) {
+			let elementToReplace = document.getElementById(elementId);
+			if (elementToReplace == null) {
+				console.log("Element to replace not found: " + elementId);
+				return;
+			}
+			let helpDiv = document.createElement("div");
+			helpDiv.innerHTML = childDefinition;
+			var newElement = helpDiv.childNodes[0];
+			elementToReplace.replaceWith(newElement);
+			return newElement;
+		}
+
+
+		function replaceElement(elementToReplace, childDefinition) {
+			if (elementToReplace == null) {
+				console.log("Element to replace not found: " + elementId);
+				return;
+			}
+			let helpDiv = document.createElement("div");
+			helpDiv.innerHTML = childDefinition;
+			var newElement = helpDiv.childNodes[0];
+			elementToReplace.replaceWith(newElement);
+			return newElement;
+		}
+
+
+		// function getDtoForRow(tableElement: HTMLTableElement, rowIdx: number, firstCol: number, lastCol: number, propertyNames: string[]) {
+		function getDtoForRow() {
+
+
+			let elm = document.getElementById('11');
+			console.log(elm.textContent);
+
+			// let out = new Object();
+
+			// out['prop1'] = 'val1';
+			// out['prop2'] = 'val2';
+			// console.log(out);
+
+		}
+
+
+	/*
+	const createResizableColumn = function (thElement, resizer) {
+		// Track the current position of mouse
+		let resizerDragStartX = 0;
+		let colWidth = 0;
+
+		const mouseDownHandler = function (e) {
+			// Get the current mouse position
+			resizerDragStartX = e.clientX;
+
+			// Calculate the current width of column
+			const styles = window.getComputedStyle(thElement);
+			colWidth = parseInt(styles.width, 10);
+
+			// Attach listeners for document's events
+			document.addEventListener('mousemove', mouseMoveHandler);
+			document.addEventListener('mouseup', mouseUpHandler);
+		};
+
+		const mouseMoveHandler = function (e) {
+			// Determine how far the mouse has been moved
+			const dx = e.clientX - resizerDragStartX;
+
+			// Update the width of column
+			thElement.style.width = `${colWidth + dx}px`;
+		};
+
+		// When user releases the mouse, remove the existing event listeners
+		const mouseUpHandler = function () {
+			document.removeEventListener('mousemove', mouseMoveHandler);
+			document.removeEventListener('mouseup', mouseUpHandler);
+		};
+
+		resizer.addEventListener('mousedown', mouseDownHandler);
+	};
+	*/
+
+
+	/** 
+	 * *****************************************
+	 * Table column resize handling 
+	 *******************************************
+	 **/
+
+
+
+
+	let resizerDragStartX = 0;
+	let resizerColWidth= 0;
+	let resizerThElement = null;
+
+
+	function resizerMouseDownHandler(eve) {
+		
+		// Get the current mouse position
+		resizerDragStartX = eve.clientX;
+		let resizerElement = eve.target;
+		resizerThElement = resizerElement.parentElement;
+
+		// Calculate the current width of column
+		const styles = window.getComputedStyle(resizerThElement);
+		resizerColWidth = parseInt(styles.width, 10);
+
+		// Attach listeners for document's events
+		document.addEventListener('mousemove', resizerMouseMoveHandler);
+		document.addEventListener('mouseup', resizerMouseUpHandler);
+	
+	}
+
+
+
+
+	function resizerMouseMoveHandler(e) {
+		// Determine how far the mouse has been moved
+		const dx = e.clientX - resizerDragStartX;
+
+		// Update the width of column
+		resizerThElement.style.width = `${resizerColWidth + dx}px`;
+
+		console.log("New width: " + resizerThElement.style.width);
+	}
+
+	// When user releases the mouse, remove the existing event listeners
+	function resizerMouseUpHandler() {
+		document.removeEventListener('mousemove', resizerMouseMoveHandler);
+		document.removeEventListener('mouseup', resizerMouseUpHandler);
+	}
+
+
+	</script>
+
+</head>
+
+<body>	
+	<div style='margin: 8px;'>
+	<input id="id1" onfocus="tdHandleOnFocus(event)" onkeydown="tdHandleKeyPressTest(event, 'lololo')"
+		onkeypress="tdHandleKeyPress(event)">
+	<label class="errorLabel">hello world</label>
+	<button onClick="getDtoForRow()"> TestMe</button>
+	<div tabindex="0" onfocus="tdHandleOnFocus(event)" onkeydown="tdHandleKeyPressTest(event)">Test Me</div>
+
+
+
+
+	<!-- <table style="border:1px; width:20px" >  /* "width:100%" is required for the "td overflow: hidden" to work. Without it the column width is as large as the longest unbreakable text element in a cell. -->
+	<!-- <div width=500px> -->
+		<table style="border:1px;width:70px;" >  
+			<!-- 
+			<col width="100px" />
+			<col width="130px" />
+			<col width="140px" />
+				-->
+
+			<thead>
+				<tr>
+					<th style="width: 50px; position: relative"   > 
+						<!-- <div class="resizer"></div> -->
+						<div hidden class="resizer" onmousedown="resizerMouseDownHandler(event)"></div>
+						ResizeMeXXXx
+					
+					</th>
+					<th style="width: 130px; position: relative"> 
+						<div class="resizer" onmousedown="resizerMouseDownHandler(event)"></div>
+						Okinaga</th>
+					<th style="width: 440px; position: relative"> 
+						<div class="resizer" onmousedown="resizerMouseDownHandler(event)"></div>
+						lalal</th>
+				</tr>
+			</thead>
+			<tr>>
+				<td>
+					<div class="x large"><b></b><b></b><b></b><b></b></div>
+				</td>
+				<td style="width: 50px" id=11 tabindex='0'  onkeydown="tdHandleKeyPress(event)"  >
+					<span id='qqq'>Input Test Text AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+				</td>
+				<td id=12 tabindex='0'>td12</td>
+				<td id=13 tabindex='0'>td13</td>
+			</tr>
+			<tr>><td tabindex='0'>td21dddd</td>
+				<td tabindex='0'>td22</td>
+				<td tabindex='0'>td23</td>
+			</tr>
+			<tr>><td>td31>dddd</td>
+				<td>td32</td>
+				<td>td33</td>
+			</tr>
+			<tr>><td  >td21<dddd</td>
+				<td><input class='tdInput' id='1000' value='hallo!!!'></td>
+				<td><input class='tdInput' id='1001' value='hallo!!!'></td>
+			</tr>
+
+
+
+
+		</table>
+	<div class="searchFieldDiv">
+		<span>aaaaa</span> <span>aaaaa</span> <span style="visibility:hidden">aaaaaaaa</span> <span>aaaaa</span> <span>aaaaa</span>
+		<span>bbbbb</span> <span>bbbbb</span> <span>bb</span> <span>bbbbb</span> <span>bbbbb</span> 
+		
+	
+	</div>
+
+
+
+</div>
+</body>
+
+</html>
+

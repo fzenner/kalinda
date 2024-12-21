@@ -1,0 +1,16 @@
+AbstractPageVarField.calculateModificationOfErrorInfoToSendToClient
+
+AbstractPageVarField.protected boolean valueModified() {
+
+    // Only when the client is supposed to by in sync, we update the data.
+    if (! getClientIsSynced()) {
+        return false;
+    }
+
+    T currentValue = getValue();
+    if (! java.util.Objects.equals(currentValue, getValueOld())) {
+        return true;
+    }
+
+    return false;
+}

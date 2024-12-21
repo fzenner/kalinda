@@ -1,0 +1,33 @@
+Page State Handling
+ 
+- A page is stateless, until an Ajax call has been made.
+- An Ajax call can lead to a stateful or a stateless page.
+ 
+- When a stateless page has been created, nothing is stored on the server side. (This could be changed for performance reasons, that is a page could be sticky as a cash.)
+ 
+Scenario 1: Open many stateless pages
+- Stateless pages are always created via GET. 
+  -- Initial parameters are sent with GET in the URL. Inital parameters play a central role. See below. 
+  -- The initial parameters could be incorporated in the page as hidden variables. (But that would be a new concept.)
+
+ 
+Scenario 2: Start editing a stateless page. More stateful pages are allowed.
+- Create an internal page (if no cache page exists, when cache pages are used). The initial parameters must be sent. (This could be done via URL).
+- Perform the Ajax operation.
+- BRANCH: Does the Ajax operation lead to a statful page?
+- YES:  - Create an internal page.
+        - Perform the Ajax operation on the page creating a ajax-reply.
+        - Set the pageId in the reply. Model the page ID as a hidden input variable.
+- NO:   - Create an internal page.
+        - Perform the Ajax operation on the page creating a ajax-reply.
+		- Drop the newly created page.
+- Note: We could cache pages by not dropping them. But we do not investigate here further for the moment.
+
+Scenario 3: Start editing a stateless page. No more stateful pages are allowed.
+- Same as scenario 2 except for when a stateful page is created. Then the steps are as follows:
+- Drop oldest stateful page. 
+- The dropped page can be re-initialized via GET and initial parameter (refresh). Only not-persisted edits would be lost. 
+
+Scenario 4: We start editing a dropped page.
+- Show warning: "Page state has been dropped due to edits in other windows. Please refresh the page and try again."
+- Perform Refresh and trigger GET with initial parameters.
