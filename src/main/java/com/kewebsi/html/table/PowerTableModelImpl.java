@@ -7,7 +7,7 @@ import java.util.HashMap;
 import com.kewebsi.controller.BaseVal;
 import com.kewebsi.controller.ManagedEntity;
 import com.kewebsi.controller.TableCellError;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.ClientDataOrError;
 import org.springframework.core.codec.CodecException;
 
@@ -81,7 +81,7 @@ public abstract class PowerTableModelImpl<T> implements PowerTableModel<T> {
 
 		TableCellError error = row.getError(colIn);
 		if (row.getError(colIn)!= null) {
-			return new ClientDataOrError(new ErrorInfo(error.getMessage()));
+			return new ClientDataOrError(new ErrorUpdate(error.getMessage()));
 		}
 
 		T entity = row.getEntity();

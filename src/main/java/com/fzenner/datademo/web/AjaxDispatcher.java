@@ -146,7 +146,7 @@ public class AjaxDispatcher {
 	
 	/**
 	 * Extracts the service tag out of a given JSON.
-	 * @return The value of the attribute <code>msgName</code>
+	 * @return The newValue of the attribute <code>msgName</code>
 	 */
 	public static String extractMsgHandlerName(JsonNode jsonNode) {
 		String serviceName = jsonNode.get(ServerMessageHandler.ATTR_MESSAGE_HANDLER).asText();

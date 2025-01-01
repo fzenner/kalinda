@@ -14,10 +14,10 @@ public class StringHolder {
 		this.value = null;
 	}
 	
-//	public StringHolder(String id, String value) {
+//	public StringHolder(String id, String newValue) {
 //		support = new PropertyChangeSupport(this);
 //		this.id = id; 
-//		this.value = value;
+//		this.newValue = newValue;
 //	}
 
 	public String getValue() {
@@ -25,7 +25,7 @@ public class StringHolder {
 	}
 
 	public void setValue(String value) {
-		support.firePropertyChange("value", this.value, value);
+		support.firePropertyChange("newValue", this.value, value);
 		this.value = value;
 	}
 	

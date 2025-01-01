@@ -49,7 +49,7 @@ public class DataDemoPage extends HtmlPage {
 		
 		
 		//
-		// Taco value display fields
+		// Taco newValue display fields
 		//
 
 		var htmlFieldTacoId = new HtmlInput(DataDemoPageState::getTacoId, TacoAssistant.TacoFields.tacoId).setReadOnly(true);

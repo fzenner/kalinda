@@ -254,6 +254,14 @@ public class CommonUtils {
 		}
 	}
 
+	public static boolean isBetweenIncluding(int val, int min, int max) {
+		if (val >= min && val <= max) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public static final String[] arr(String... in) {
 		return in;
 	}
@@ -263,7 +271,7 @@ public class CommonUtils {
 	public static void addAttributes(HashMap<String, String> attrs, String... keyValue) {
 		if (keyValue != null) {
 			if (keyValue.length % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<keyValue.length) {

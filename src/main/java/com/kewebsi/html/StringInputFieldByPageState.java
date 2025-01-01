@@ -33,7 +33,7 @@ public abstract class StringInputFieldByPageState extends StringDisplay {
 
 	@Override
 	public String toString() {
-		return "id:" + id + " name:" + name + " value:" + getValue() + " oldValue:" + oldValue;
+		return "id:" + id + " name:" + name + " newValue:" + getValue() + " oldValue:" + oldValue;
 	}
 	
 	

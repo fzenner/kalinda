@@ -204,7 +204,7 @@ export class StandardCalendarPopup extends CalendarPopup {
 
     
 //     const yearSelect: HTMLSelectElement = findChildChildByIdClass(dateTimeEditorCompanion.calendarPopup,"yearSelect") as HTMLSelectElement;    
-//     yearSelect.value = guiDef.year.toString();
+//     yearSelect.newValue = guiDef.year.toString();
 
 //     const monthSpan = findChildChildByIdClass(dateTimeEditorCompanion.calendarPopup,"monthSpan") as HTMLSpanElement;
 //     monthSpan.textContent = getMonthNameEN(guiDef.month);
@@ -287,7 +287,7 @@ export class StandardCalendarPopup extends CalendarPopup {
 
 //     const timeEditor = dateTimeEditor.timeEditor;
 //     timeEditor.focus();
-//     // timeEditor.setSelectionRange(0, timeEditor.value.length);
+//     // timeEditor.setSelectionRange(0, timeEditor.newValue.length);
 //     selectAll(timeEditor);
 
 //     dateTimeEditor.calendarPopup = null;
@@ -302,13 +302,13 @@ export class StandardCalendarPopup extends CalendarPopup {
 
 //     const selectBox = document.createElement("select");
 
-//     selectBox.addEventListener("change", () => {selectYear(dateTimeEditorCompanion, selectBox.value) });
+//     selectBox.addEventListener("change", () => {selectYear(dateTimeEditorCompanion, selectBox.newValue) });
 
 //     for (let i = yearRangeStart; i <= yearRangeEnd; i++) {
 
 //         let optionElm = document.createElement("option");
-// 		optionElm.value = i.toString();
-// 		optionElm.text = optionElm.value;
+// 		optionElm.newValue = i.toString();
+// 		optionElm.text = optionElm.newValue;
 //         if (i === displayYear) {
 //             optionElm.setAttribute("selected", "");
 //         }

@@ -1,6 +1,6 @@
 package com.kewebsi.service;
 
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.PageStateVarIntf;
 
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * A page var error is an error that can potentially be fixed by modifying a single page variable.
  * A typical example would be a number field that contains a character.
- * However, the validity of a page variable might be context sensitive. For example, the value of a day of month field
+ * However, the validity of a page variable might be context sensitive. For example, the newValue of a day of month field
  * depends on the month being edited. Or the field is allowed to be empty depending on a checkbox somewhere else on
  * the page.
  */
@@ -144,8 +144,8 @@ public class PageVarError extends Exception {
         return errorMsg;
     }
 
-    public ErrorInfo getErrorInfo() {
-        return new ErrorInfo(errorMsg);
+    public ErrorUpdate getErrorInfo() {
+        return new ErrorUpdate(errorMsg);
     }
 
     public ErrorType getErrorType() {

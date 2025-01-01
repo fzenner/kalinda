@@ -293,7 +293,7 @@ function setTableCellData(td: HTMLTableCellElement, tableCellData: TableCellData
 
 /**
  * Create the property "serverData" to the TD element if it does not exist.
- * Set the value of that property to that string.
+ * Set the newValue of that property to that string.
  * @param td 
  * @param text 
  * @returns 

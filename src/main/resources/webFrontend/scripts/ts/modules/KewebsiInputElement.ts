@@ -1,6 +1,6 @@
 import { ErrorDisplayCompanion } from "./ErrorDisplayCompanion";
 import { getPageName, propertyExists, stringIsInt } from "./kewebsiUtils";
-import { GuiDef, InputFieldGuiDef, InputFieldModifications } from "./messageTypes";
+import { CanBeDisabled, GuiDef, InputFieldGuiDef, InputFieldModifications } from "./messageTypes";
 import { hasInfo, isWellDefined, isNullOrUndefined as stringIsNullOrUndefined, stringToEnum } from "./stringUtils";
 import { StyleManager } from "./StyleManager";
 import * as jointTypes from "./jointTypes.js";
@@ -9,12 +9,8 @@ import { WebCompSupportingUpdates} from "./webcomps.js";
 import { InputElementError, InputElementStateInBrowser, InputElementStateInfoFromClientToServer } from "./InputFieldStates";
 import { applyVisiblity, getColorForInputElementState } from "./kewebsiPageComposer";
 import { FieldType, mapClientInputStateInBrowserToStateInfoForServer } from "./InputFieldStates";
+import { updateErrorGivenServerUpdate } from "./editor";
 
-
-type ElemenStateAndValueStr = {
-    state: InputElementStateInBrowser;
-    value: string
-}
 
 
 export class KewebsiInputElement extends HTMLElement implements WebCompSupportingUpdates {
@@ -90,13 +86,13 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
      * - Property is null.
      * - Property does not exist.
      * Since we minimize the data send from the server to the client, null properties are not send. 
-     * The property with null value on the Java side will not exist in JavaScript object. 
+     * The property with null newValue on the Java side will not exist in JavaScript object.
      * (One advantage of this approach is that it is easier to analyze the exchanged data, since all 
      * irrelevant data is filtered out by default)
-     * When a null value needs to be sent, the DTO needs to have a property "wireNull".
+     * When a null newValue needs to be sent, the DTO needs to have a property "wireNull".
      * (Because all other properties of that object will be null on the server side, only the wireNull property,
      * will be transmitted.)
-     * When a property is null, that means, it exists but its value is null (it should not happen here, but might), 
+     * When a property is null, that means, it exists but its newValue is null (it should not happen here, but might),
      * it is dealt in the same was as a non-existant property: No change, especially no un-setting is applied.
      * The ratio behind it is: null means no information (as prescribed by the minimizing Java-JavaScript interface
      * strategy.)
@@ -107,7 +103,7 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
 
 
     /**
-     * In creation mode, non-existant parameter are set to a default value.
+     * In creation mode, non-existant parameter are set to a default newValue.
      * In update mode, non-existing parameter are not applied at all.
      * @param guiDef 
      * @param createMode true, when creating, false, when updateing
@@ -115,20 +111,21 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
      */
     applyGuiDef(guiDef: GuiDef, createMode: boolean) {
 
-
-        this.updateErrorGivenServerUpdate(this, guiDef);
         let inputFieldGuiDef: InputFieldGuiDef = guiDef.tagSpecificData;
+        
+        updateErrorGivenServerUpdate(this, guiDef.errorUpdate, inputFieldGuiDef.disabled, inputFieldGuiDef.value);
+        
         applyVisiblity(this, guiDef);
 
         this.typeOfValue = stringToEnum(FieldType, inputFieldGuiDef.typeOfValue.toString())
 
         //
-        // We do not allow undefined or null as value for an input element.
+        // We do not allow undefined or null as newValue for an input element.
         // Hence When we create it, we set the empty string in such cases.
         // Updates with null or undefined have no effect in accordance with the general strategy.
         // This way, we ensure that at creation time a string (possibly empty) is set and
         // a status is set in the following code.
-        // In createMode, we set a an empty string as value, even if nothing specified. This forces
+        // In createMode, we set a an empty string as newValue, even if nothing specified. This forces
         // a clean intialization. In update mode, we do not set anyhthing if nothing is provided.
         //
         if (createMode) {
@@ -175,58 +172,6 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
 
         this.setStyleForFieldState();
 
-    }
-
-    private updateErrorGivenServerUpdate(elm: WebCompSupportingUpdates, guiDef: GuiDef) {
-	
-        const inputFieldGuiDef: InputFieldGuiDef = guiDef.tagSpecificData;
-        if (isWellDefined(inputFieldGuiDef.disabled)) {
-            if (inputFieldGuiDef.disabled) {
-                if (this.hasError()) {
-                    this.setValue("")  // We do not show values with errors  when disabled.
-                }
-                this.clearError()  // We also do not show and forget the errors when disabled.
-            }
-        }
-
-        //
-        // Errors are similar to data. When there is no change, nothing is being communicated.
-        // "undefined" hence means "no change" - but not "no error"!
-        //
-        if (isWellDefined(guiDef.errorInfo)) {
-            const errorInfo = guiDef.errorInfo;
-            if (errorInfo) {
-                if (errorInfo.wireNull) {
-                    elm.clearError();
-                } else {
-                    if (!errorInfo.errorText) {  // if on string: false if empty, null or undefined
-                        errorInfo.errorText = "Unspecified Error from Server"
-                    }
-                    elm.setErrorMessageForOverallComponent(errorInfo.errorText); 
-                }
-            } else {
-                console.warn("Error info null received. Null properties are not expected to be received from the server");
-            }
-        } else {
-            // If there is no error info from the server. If there are multiple fields connected to a single (server-side) page variable,
-            // there might be the following situation:
-            // here was a syntax error on field one.
-            // The input was corrected in field two.
-            // The server sends no error information, since the error was client-side.
-            // The error on field one needs to be cleared, but is not, since no client side activity (change and focus loss) is done on field one.
-            // The clearing of the error is done by recognizing that we recognize the following state:
-            // - There is no server side error in the update
-            // - There is a new value in the update (the framework must make sure, that the server does not send an updated value when 
-            //   the request for the update at hand was the notification of a client side error)
-            // - We have a client side error on the input field
-            if (this.error) {
-                if (this.error.isClientSideError) {
-                    if (isWellDefined(inputFieldGuiDef.value)) {
-                        this.clearError()
-                    }
-                }
-            }
-        }
     }
 
     public isDisabled() : boolean {
@@ -331,6 +276,10 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
         this.inputEl.focus();
     }
 
+    clearData() {
+        this.setValue("")
+    }
+
     clearError() {
         this.inputEl.classList.add("textInput");
         if (this.errorDisplayCompanion) {
@@ -340,8 +289,12 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
         this.error = null;
     }
 
-    private hasError() {
+    public hasError() {
         return isWellDefined(this.error);
+    }
+
+    public getError() : InputElementError {
+        return this.error
     }
 
     setOldData() {

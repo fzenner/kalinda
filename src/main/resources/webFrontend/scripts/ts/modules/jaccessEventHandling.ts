@@ -350,8 +350,7 @@ export class SessionHandling {
 		let reply = JSON.parse(data);
 		if (reply.msgName === "BUSINESS_ERROR") {
 			dispatchAjaxResponse(reply);              // MAIN CALL
-			// alert("Error processing Ajax request: " + reply.errorInfo.errorText);
-			displayErrorAsModalWindow("Error processing Ajax request:", reply.errorInfo.errorText);
+			displayErrorAsModalWindow("Error processing Ajax request:", reply.errorUpdate.errorText);
 			return;
 		}
 		if  (reply.msgName === "ERROR_INFO") {

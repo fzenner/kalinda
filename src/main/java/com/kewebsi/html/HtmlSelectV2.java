@@ -66,7 +66,7 @@ public abstract class HtmlSelectV2 extends StringDisplay implements SelectionMad
             if (currentValue != null) {
                 selectedStr = currentValue.equals(runValue) ? " selected" : "";
             }
-            result += "<option value='" + runValue + "'" + selectedStr + ">" + run.getText() + "</option>\n";
+            result += "<option newValue='" + runValue + "'" + selectedStr + ">" + run.getText() + "</option>\n";
         }
         return result;
     }
@@ -81,7 +81,7 @@ public abstract class HtmlSelectV2 extends StringDisplay implements SelectionMad
                 selectedStr = currentValue.equals(runValue) ? " selected" : "";
             }
 
-            var optionNode = JsonUtils.createJsonNode("option", "value", runValue);
+            var optionNode = JsonUtils.createJsonNode("option", "newValue", runValue);
             if (currentValue != null) {
                 if (currentValue.equals(runValue)) {
                     addAttributeToAttributeSubnote(optionNode,"selected", null);

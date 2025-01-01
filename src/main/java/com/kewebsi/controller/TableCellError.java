@@ -1,7 +1,6 @@
 package com.kewebsi.controller;
 
-import com.fzenner.datademo.web.outmsg.ErrorInfoExtern;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 
 public class TableCellError<T> {
 
@@ -43,7 +42,7 @@ public class TableCellError<T> {
         return message;
     }
 
-    public ErrorInfo getErrorInfo() {
-        return new ErrorInfo(message);
+    public ErrorUpdate getErrorInfo() {
+        return new ErrorUpdate(message);
     }
 }

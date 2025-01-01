@@ -26,7 +26,7 @@ public abstract class StringDisplay extends HtmlTag {
 
 	@Override
 	public String toString() {
-		return "id:" + id + " value:" + getValue() + " oldValue:" + oldValue;
+		return "id:" + id + " newValue:" + getValue() + " oldValue:" + oldValue;
 	}
 	
 	

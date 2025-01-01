@@ -45,8 +45,8 @@ public class PageVarEnumColdLink extends PageStateVarColdLink<Enum<?>> {
 //        PageVarError localError;  // Use local variable in order to compiler-check for not-null;
 //        if (!CommonUtils.hasInfo(strVal)) {
 //            if (!fieldAssistant.canBeEmpty()) {
-//                val = null;  // We set the null value, although it is not a valid value. Otherwise the old (valid but by the user unintended) value stays in the field.
-//                localError = new PageVarError(this, "Enumeration value must be set.");
+//                val = null;  // We set the null newValue, although it is not a valid newValue. Otherwise the old (valid but by the user unintended) newValue stays in the field.
+//                localError = new PageVarError(this, "Enumeration newValue must be set.");
 //            } else {
 //                val = null;
 //                localError = null;
@@ -55,9 +55,9 @@ public class PageVarEnumColdLink extends PageStateVarColdLink<Enum<?>> {
 //        } else {
 //            Enum<?> checkedVal = EnumUtils.getEnumFromString(enumClass, strVal);
 //            if (checkedVal == null) {
-//                localError = new PageVarError(this, "Not a valid enumeration value.");
+//                localError = new PageVarError(this, "Not a valid enumeration newValue.");
 //            } else {
-//                // When here, the string value is good.
+//                // When here, the string newValue is good.
 //                val = checkedVal;
 //                localError = null;
 //                unparsedStringValue = null;

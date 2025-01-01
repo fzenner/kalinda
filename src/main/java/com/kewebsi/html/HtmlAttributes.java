@@ -122,12 +122,12 @@ public class HtmlAttributes {
 
 	/**
 	 * Creates a string of the format required for HTML tag attributes.
-	 * That is a space separated list off attribute value pairs with the value
+	 * That is a space separated list off attribute newValue pairs with the newValue
 	 * put in single quotes. Example (without outer quotes):
 	 * "attrName1='value1' attr2='value2'"
-	 * If the key is null, empty or consists of only blanks, the attribute-value pair is not generated.
-	 * If the value is null, the attribute-value pair is also not generated.
-	 * However, if the value is an empty or only-blanks string, the attribute-value pair is generated (if the also the key is valid of course).
+	 * If the key is null, empty or consists of only blanks, the attribute-newValue pair is not generated.
+	 * If the newValue is null, the attribute-newValue pair is also not generated.
+	 * However, if the newValue is an empty or only-blanks string, the attribute-newValue pair is generated (if the also the key is valid of course).
 	 * This way, unnecessary pairs are for non-info values are not generated, unless you provide intentionally the combination of a real key and an empty string.
 	 * @param keyValue List of alternating attribute names and values
 	 * @return As described above.
@@ -138,7 +138,7 @@ public class HtmlAttributes {
 		if (keyValue != null) {
 			int size = keyValue.size();
 			if (size % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<size) {

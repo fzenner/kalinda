@@ -4,16 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fzenner.datademo.web.UserSession;
 import com.fzenner.datademo.web.inmsg.MsgDateTimeEntered;
 import com.fzenner.datademo.web.inmsg.MsgFieldDataEntered;
-import com.fzenner.datademo.web.outmsg.DateTimeWireOrNull;
-import com.fzenner.datademo.web.outmsg.GuiDef;
-import com.fzenner.datademo.web.outmsg.InputFieldGuiDef;
-import com.fzenner.datademo.web.outmsg.MsgAjaxResponse;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.fzenner.datademo.web.outmsg.*;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.errorhandling.MalformedClientDataException;
 import com.kewebsi.service.PageVarError;
 import com.kewebsi.util.CommonUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class HtmlPageVarField extends AbstractPageVarField<String> implements InputChangeHandler {
@@ -33,10 +29,10 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
 
 
     /**
-     * It is possible, that the value on the client has changed, (for example a blank or a trailing zero was added),
-     * but both the effective old value and the effective  new value are the same (when they are formatted)
-     * In this case,  we want to update the client with the nice formatted value.
-     * Hence we need to be able to indicate, that the value, in this case just the exact representation
+     * It is possible, that the newValue on the client has changed, (for example a blank or a trailing zero was added),
+     * but both the effective old newValue and the effective  new newValue are the same (when they are formatted)
+     * In this case,  we want to update the client with the nice formatted newValue.
+     * Hence we need to be able to indicate, that the newValue, in this case just the exact representation
      * has changed.
      */
     protected String lastReceivedVerbatimValue;
@@ -82,28 +78,36 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
 
         GuiDef guiDef = new GuiDef(getTagName(), getId(), calculateModificationOfVisibility(), calculateModificationOfErrorInfoToSendToClient());
         guiDef.setUpdateMode(GuiDef.UpdateMode.MODIFICATIONS_ONLY);
-
-
-
-        // setVisibilityIfVisibilityModified(guiDef);
-        // setErrorInfoIfErrorInfoModified(guiDef);
-
-
         Boolean modificationOfRequired = calculateModificationOfRequired();
         Boolean modificationOfDisabled = calculateModificationOfDisabled();
 
-        // !!!!!!!!!!!!! Clear the values when disabled and errors exist!!!
-        if (modificationOfDisabled != null) {
-            if (modificationOfDisabled == true) {
-                // When here, we freshly disabled the field.
-                if (getRawError() != null) {         // XXXXX HOTSPOT
-                    getPageStateVar().clear();
-                    getPageStateVar().clearError();
-                }
+//        //
+//        // Clear the values when disabled and errors exist!!!
+//        //
+//        if (modificationOfDisabled != null) {
+//            if (modificationOfDisabled == true) {
+//                // When here, we freshly disabled the field.
+//                if (getRawError() != null) {
+//                    getPageStateVar().clear();
+//                    getPageStateVar().clearError();
+//                }
+//            }
+//        }
+
+
+        ValueChange<String> valueChange = calculateModificationOfValue();
+
+
+        String modificationOfValue = null;
+        if (valueChange == null) {
+            modificationOfValue = null;
+        } else {
+            if (valueChange.newValue() == null) {  // We map the null value to the empty string.
+                modificationOfValue = "";
+            } else {
+                modificationOfValue = valueChange.newValue();
             }
         }
-        String modificationOfValue = calculateModificationOfValue();
-
 
 
         /**
@@ -124,10 +128,10 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
     }
 
 
-    /*  It is possible, that the value on the client has changed, (for example a blank or a trailing zero was added),
-        but both the old value and the new semantic value are the same
-        Than we want to update the client with the nice formatted value.
-        Hence we indicate here, that the value, in this case just the exact representation, has changed.
+    /*  It is possible, that the newValue on the client has changed, (for example a blank or a trailing zero was added),
+        but both the old newValue and the new semantic newValue are the same
+        Than we want to update the client with the nice formatted newValue.
+        Hence we indicate here, that the newValue, in this case just the exact representation, has changed.
      */
     // has changed.
     @Override
@@ -219,7 +223,7 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
 
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         if (isDisabled()) {
             return null;
         }

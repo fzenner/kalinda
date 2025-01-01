@@ -1,6 +1,6 @@
 package com.kewebsi.html;
 
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 
 public class HtmlRadioButton extends StringDisplay implements PageVarEditor<String> {
@@ -29,7 +29,7 @@ public class HtmlRadioButton extends StringDisplay implements PageVarEditor<Stri
 
     @Override
     /**
-     * Returns the value of the linked PageStateVar is this variable exists.
+     * Returns the newValue of the linked PageStateVar is this variable exists.
      * If the variable does not yet exist yet, it is created if a PageState exists.
      * Returns the empty string if no PageState exists.
      */
@@ -101,7 +101,7 @@ public class HtmlRadioButton extends StringDisplay implements PageVarEditor<Stri
     }
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         var pageStateVar = getPageStateVar();
         if (pageStateVar != null) {
             if (pageStateVar.hasEffectiveError()) {

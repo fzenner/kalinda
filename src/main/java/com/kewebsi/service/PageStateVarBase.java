@@ -42,16 +42,18 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
     // We need to store the fact that a parsing error has occured, because we might have cleared the error.
     // That might be the case when the user has clicked away all error indiciations or if data is meant to be entered
     // from scratch without distracting error displays of an earlier validation sweep.
-    // We still might want to display the last entered verbatim string instead of the core value (being null).
-    // So we need to be able to detect the situation: No error present (had been clicked away), no value present (parsing had failed) but last
+    // We still might want to display the last entered verbatim string instead of the core newValue (being null).
+    // So we need to be able to detect the situation: No error present (had been clicked away), no newValue present (parsing had failed) but last
     // entered string is not null and should be displayed.
     // protected boolean hasParsingError = false;
     // Why do we need a parsing error in addition to a normal error? If we have a parsing error, we return the unparsed
-    // string value. If we have a normal error, we return the validated and formatted string representation of the
-    // real value.
+    // string newValue. If we have a normal error, we return the validated and formatted string representation of the
+    // real newValue.
     // protected PageVarError parsingError;
 
-    protected Function<PageStateVarIntf, Boolean> checkRelevance;
+    // protected Function<PageStateVarIntf, Boolean> checkRelevance;
+
+    protected boolean isRelevant = true;
 
     public PageStateVarBase() {
 
@@ -76,7 +78,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
 
     /**
-     * Returns the current value as last edited by the client.
+     * Returns the current newValue as last edited by the client.
      * If the client has not edited the field variable yet, it returns null.
      * @return
      */
@@ -95,20 +97,20 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
     /**
      *
-     * @return The value of the variable as string, not yet HTML-escaped.
-     * If the value is null, then return the empty String.
+     * @return The newValue of the variable as string, not yet HTML-escaped.
+     * If the newValue is null, then return the empty String.
      */
     // public abstract String getStringValue();
 
     /**
-     * Sets the string value of this page variable and applies validating and formatting for optimal user experience.
-     * Validates the string value.
-     * If it is a valid value, the the following will be done:
-     *   - The typed "real" value will be set.
-     * 	 - The string value will be set to a nicely formatted (for strings: truncated) version. This will trigger an
+     * Sets the string newValue of this page variable and applies validating and formatting for optimal user experience.
+     * Validates the string newValue.
+     * If it is a valid newValue, the the following will be done:
+     *   - The typed "real" newValue will be set.
+     * 	 - The string newValue will be set to a nicely formatted (for strings: truncated) version. This will trigger an
      * 	   update to the client.
-     * 	If the value is invalid, the faulty string value remains unchanged (so that the user can correct it) and the
-     * 	typed "real" value will remain unchanged.
+     * 	If the newValue is invalid, the faulty string newValue remains unchanged (so that the user can correct it) and the
+     * 	typed "real" newValue will remain unchanged.
      */
     @Override
     public void setStringValueFromClient(String userInputString)  /* throws StringParsingError  */{
@@ -157,7 +159,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 //    }
 
     /**
-     * Removes value. (Set to null / empty string / intial string=
+     * Removes newValue. (Set to null / empty string / intial string=
      * Removes errors.
      * Set state to ClientState.INITIAL
      */
@@ -222,21 +224,21 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
 
     /**
-     * Checks whether the sting input can be mapped to typed value.
-     * If yes, the typed "real" value will will be set.
+     * Checks whether the sting input can be mapped to typed newValue.
+     * If yes, the typed "real" newValue will will be set.
      * If no, three things happen
      * a) The error is set (and returned).
-     * b) The typed value remains as before (last valid input)
+     * b) The typed newValue remains as before (last valid input)
      * c) The string input stays the same invalid string.
      *
      * Handling of empty strings / null values:
      * An empty string is NOT a parsing error, because it differs in the user experience:
-     * When the user enters a not-parseable value, he appreciates immediate feedback in form of an error.
+     * When the user enters a not-parseable newValue, he appreciates immediate feedback in form of an error.
      * When the user enters an empty field, he knows that the field is empty. An error message would irritate, since
      * he can come back later and fill the field.
      *
      * THERE IS A CONCEPTIUAL PROBLEM:
-     * A parsing error hangs on the input field. The value is not stored in the page variable.
+     * A parsing error hangs on the input field. The newValue is not stored in the page variable.
      * A validation error hangs on the page variable
      * We have two steps: parsing and validation.
      * This function here only parses. No validation is done
@@ -269,7 +271,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
                 setUnparsedStringValue(null);
                 pagerVarError = null;
             } else {
-                setValueCore(null);  // We set the null value, although it is not a valid value. Otherwise the old (valid but by the user unintended) value stays in the field.
+                setValueCore(null);  // We set the null newValue, although it is not a valid newValue. Otherwise the old (valid but by the user unintended) newValue stays in the field.
                 setIsInSyncWithGuiToFalse();
                 pagerVarError = new PageVarError(this, parseResult.fieldError.getMessage(), false);
                 // pagerVarError.setIsParsingError(true);
@@ -285,12 +287,12 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
     /**
      * Wir erlauben leere Felder, also das leeren von Feldern, aber keine falsch formatierten Felder.
-     * The value will always be written into the variable. If an error is found, th respective error is attached.
+     * The newValue will always be written into the variable. If an error is found, th respective error is attached.
      * Bei falsch formatierten feldern zeigen wir den Fehler direkt.
      * Dadurch,dass wir leer felder erlauben, müssen wir vor dem ausführen der Aktion, für die das
      * Eingabefeld relevant ist, nochmals prüfen, ob ein Feld leer ist.
      * Das müssen wir sowieso machen, da wir ja ggf. auch noch gar nichts eingegeben haben.
-     * D.h., unberührt felder müssen geprüft werden, ob sie leer (oder mit default-value) verbleiben dürfen.
+     * D.h., unberührt felder müssen geprüft werden, ob sie leer (oder mit default-newValue) verbleiben dürfen.
      * D.h., wir brauchen zwei Phasen:
      * 1. Die Dateneingabe: Hier sind leere Felder nicht zwingend ein Fehler.
      * 2. Die Kontrolle vor dem Funktionsaufruf: Hier werden die Felder auf Null geprüfet.
@@ -306,7 +308,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
             setValueCoreAndSync(value);
             return pve;
         } else {
-            clearError();   // TODO: Check if we can establish a clear(er) state transition model for error, parsingError, unparsedStringValue, value
+            clearError();   // TODO: Check if we can establish a clear(er) state transition model for error, parsingError, unparsedStringValue, newValue
             unparsedStringValue = null;
             setValueCoreAndSync(value);
             return null;
@@ -315,9 +317,9 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
 
     /**
-     * The method accepts null values even if the final value of the field does not allow null values.
+     * The method accepts null values even if the final newValue of the field does not allow null values.
      * That is because a field can be edited as empty or skipped until the final validation of all relevant fields.
-     * The value will always be set, even if it has an error. (Tte value was parseable.)
+     * The newValue will always be set, even if it has an error. (Tte newValue was parseable.)
      * @param value
      * @return
      */
@@ -486,7 +488,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
         return this;
     }
 
-    public static PageStateVarColdLink createPageStateVar(PageState pageState, SimpleFieldAssistant fieldAssistant) {
+    public static <G> PageStateVarColdLink<G> createPageStateVar(PageState pageState, SimpleFieldAssistant<G> fieldAssistant) {
         return createPageStateVar(pageState, fieldAssistant, null);
     }
 
@@ -539,16 +541,20 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
     @Override
     public boolean isRelevant() {
-        if (checkRelevance == null) {
-            return true;
-        } else {
-            return checkRelevance.apply(this);
+        return isRelevant;
+    }
+
+
+    public void setIsRelevant(boolean isRelevant) {
+        this.isRelevant = isRelevant;
+        if (!isRelevant) {
+            if (hasError()) {
+                clear();
+                clearError();
+            }
         }
     }
 
-    public void setCheckRelevance(Function<PageStateVarIntf, Boolean> checkRelevance) {
-        this.checkRelevance = checkRelevance;
-    }
 
 
 

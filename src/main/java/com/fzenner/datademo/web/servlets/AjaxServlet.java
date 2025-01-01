@@ -218,6 +218,7 @@ public class AjaxServlet extends HttpServlet {
 			ArrayList<Pair<HtmlTag, MsgClientUpdate>> htmlUpdates = page.collectPageUpdates();
 			msgAjaxResponse.addHtmlUpdates(htmlUpdates);
 
+			// TODO: Performance: Only reset the modification markers of the changed elements.
 			page.getBody().resetModificationMarkersRecursively();
 
 			/*
@@ -252,9 +253,9 @@ public class AjaxServlet extends HttpServlet {
 
 
 //	/**
-//	 * Returns the value of the child of the given node with the name AjaxDispatcher.ATTR_EDIT_PAGE_ID
+//	 * Returns the newValue of the child of the given node with the name AjaxDispatcher.ATTR_EDIT_PAGE_ID
 //	 * @param jsonNode Node whose children are searched
-//	 * @return NO_EDIT_PAGE_ID_FOUND if no node found, value of this node otherwise.
+//	 * @return NO_EDIT_PAGE_ID_FOUND if no node found, newValue of this node otherwise.
 //	 */
 //	public static int extractEditPageId(JsonNode jsonNode) {
 //		JsonNode node = jsonNode.get(AjaxDispatcher.ATTR_EDIT_PAGE_ID);

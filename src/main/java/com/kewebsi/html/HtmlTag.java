@@ -9,7 +9,6 @@ import com.fzenner.datademo.web.outmsg.GuiDef;
 import com.fzenner.datademo.web.outmsg.MsgClientUpdate;
 import com.kewebsi.errorhandling.CodingErrorException;
 import com.kewebsi.errorhandling.ErrorHelper;
-import com.kewebsi.errorhandling.ErrorInfo;
 import com.kewebsi.util.JsonUtils;
 import com.kewebsi.util.ListUtils;
 import com.kewebsi.util.Out;

@@ -21,7 +21,7 @@ public class PowerTableModelRow<T> implements ManagedEntity {
 
 
 	/**
-	 * Modified in the sense of a diffence between the value in the browser (last emitted HTML value)
+	 * Modified in the sense of a diffence between the newValue in the browser (last emitted HTML newValue)
 	 * and the cell values in the model. Not to confuse with RowState.
 	 */
 	private boolean modified;
@@ -248,7 +248,7 @@ public class PowerTableModelRow<T> implements ManagedEntity {
 					Enum col = cellErrorCurrentlyDisplayed.getErrornousField();
 					BaseVal currentEntityVal = entityAssistant.getValueAsBaseType(payload, col);
 					BaseVal whenErrorWasSetVal = (BaseVal) cellErrorCurrentlyDisplayed.getValWhenErrorWasSet();
-					// Check if it is the same value of the entity. That is, the value of the entity
+					// Check if it is the same newValue of the entity. That is, the newValue of the entity
 					// has not been changed via a process that circumvented this PageVarEntityBacked.
 					// Not that the comparison is at runtime on BaseVal.
 					if (whenErrorWasSetVal.equals(currentEntityVal)) {
@@ -272,13 +272,13 @@ public class PowerTableModelRow<T> implements ManagedEntity {
 			return null;
 		}
 
-		// When here, we are currently displaying an error. But this error is only of interest, if the underlying value
+		// When here, we are currently displaying an error. But this error is only of interest, if the underlying newValue
 		// from the entity has not
-		// changed, for example because the value was updated in another input field on the page or via business logic.
+		// changed, for example because the newValue was updated in another input field on the page or via business logic.
 		// We clear then the error so that a) the error info is not displayed anymore and b) the last (errornous)
-		// user input is replaced by the new value.
+		// user input is replaced by the new newValue.
 		// Note that the error is attached to the PageVar, not the attribute of the entity. In other words, with regards
-		// to this error handling mechanics, the value in the entity are always error-free.
+		// to this error handling mechanics, the newValue in the entity are always error-free.
 
 		boolean errorStillValid = false;
 
@@ -295,7 +295,7 @@ public class PowerTableModelRow<T> implements ManagedEntity {
 				if (entityWhenErrorWasSet == payload) {  // Same entity
 					BaseVal currentEntityVal = entityAssistant.getValueAsBaseType(payload, col);
 					BaseVal whenErrorWasSetVal = (BaseVal) cellErrorCurrentlyDisplayed.getValWhenErrorWasSet();
-					// Check if it is the same value of the entity. That is, the value of the entity
+					// Check if it is the same newValue of the entity. That is, the newValue of the entity
 					// has not been changed via a process that circumvented this PageVarEntityBacked.
 					// Not that the comparison is at runtime on BaseVal.
 					if (whenErrorWasSetVal.equals(currentEntityVal)) {

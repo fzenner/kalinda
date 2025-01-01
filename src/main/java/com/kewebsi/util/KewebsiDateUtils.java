@@ -44,11 +44,11 @@ public class KewebsiDateUtils {
         }
 
         if (! yearProvided && yearDigits== CalendarController.YEAR_DIGITS.Required) {
-            throw new StringParsingError("Invalid data format. Year value must be provided", dateStr);
+            throw new StringParsingError("Invalid data format. Year newValue must be provided", dateStr);
         }
 
         if (yearProvided && yearDigits== CalendarController.YEAR_DIGITS.Forbidden) {
-            throw new StringParsingError("Invalid data format. Unexpected year value provided", dateStr);
+            throw new StringParsingError("Invalid data format. Unexpected year newValue provided", dateStr);
         }
 
         int year;

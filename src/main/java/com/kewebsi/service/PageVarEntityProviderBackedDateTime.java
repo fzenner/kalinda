@@ -23,10 +23,10 @@ public class PageVarEntityProviderBackedDateTime<T>
         implements PageStateVarDateTimeIntf {
 
     /*
-     * When a value can successfully set, that is {@link PageStateVarIntf#getValCore()} reflects correctly the
+     * When a newValue can successfully set, that is {@link PageStateVarIntf#getValCore()} reflects correctly the
      * last edit, then the unparsedStringValues as well as dateBuffer are null.
-     * If a value could not successfully be set by setting the date or time, we distinguish two cases:
-     * a) The date or time by itself was valid. Then the respective buffer is set to the parsed value
+     * If a newValue could not successfully be set by setting the date or time, we distinguish two cases:
+     * a) The date or time by itself was valid. Then the respective buffer is set to the parsed newValue
      * but the unparsedStringValue is set to null (since the user input string was successfully parsed to a date or time).
      * b) The date or time could not be parsed. Then the respective buffer is set to null and the unparsedStringValue
      * will be set to the errorneous input vale.
@@ -64,12 +64,12 @@ public class PageVarEntityProviderBackedDateTime<T>
                 currentTime = timeBuffer;
             }
 
-            if (currentTime != null) {  // We transfer the value to the entity only if date and time are OK.
+            if (currentTime != null) {  // We transfer the newValue to the entity only if date and time are OK.
                 LocalDateTime newVal = LocalDateTime.of(dateBuffer, currentTime);
                 FieldAssistant fa = (FieldAssistant) fieldAssistant;
                 ManagedEntity<T> managedEntity = getManagedEntity();
                 // The case that we have no managed entity should be avoided. Here wie opt to ignore the edit.
-                // The value will be lost and nothing will be displayed.
+                // The newValue will be lost and nothing will be displayed.
                 if (managedEntity != null) {
                     dtoAssistant.setValueByFieldAssistant(fa, newVal, managedEntity);
                     unparsedStringValueDate = null;
@@ -104,7 +104,7 @@ public class PageVarEntityProviderBackedDateTime<T>
 
             LocalDateTime currentValue = getValCore();
             LocalDate currentDate;
-            if (currentValue != null) { // We transfer the value to the entity only if date and time are OK.
+            if (currentValue != null) { // We transfer the newValue to the entity only if date and time are OK.
                 currentDate = currentValue.toLocalDate();
             } else {
                 currentDate = getDateBuffer();

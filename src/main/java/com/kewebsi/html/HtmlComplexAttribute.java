@@ -19,14 +19,14 @@ public class HtmlComplexAttribute {
 
     public HtmlComplexAttribute(String... keyValue) {
         if (keyValue.length % 2 != 0) {
-            throw new CodingErrorException("Uneven key value pairs. Nbr of elements: " + keyValue.length);
+            throw new CodingErrorException("Uneven key newValue pairs. Nbr of elements: " + keyValue.length);
         }
         keyValues = CommonUtils.arrayToArrayList(keyValue);
     }
 
     public void addAll(String[] keyValue) {
         if (keyValue.length % 2 != 0) {
-            throw new CodingErrorException("Uneven key value pairs. Nbr of elements: " + keyValue.length);
+            throw new CodingErrorException("Uneven key newValue pairs. Nbr of elements: " + keyValue.length);
         }
         if (keyValues == null) {
             keyValues = CommonUtils.arrayToArrayList(keyValue);

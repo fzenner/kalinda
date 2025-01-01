@@ -46,7 +46,7 @@ export enum FieldType {
 
 
    /**
-     * This function should only be invoked after a recalculation of the state after a value change
+     * This function should only be invoked after a recalculation of the state after a newValue change
      * of the input element itself. Hence states set by the server
      * ( e.g. InputElementStateInBrowser.EMPTY_AS_SERVER_SIDE_ERROR) are not expected here and considered
      * an error.

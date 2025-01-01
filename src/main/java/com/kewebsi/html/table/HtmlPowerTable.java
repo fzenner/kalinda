@@ -248,7 +248,7 @@ public class HtmlPowerTable<T> extends HtmlTag {
 	protected static String checkBoxTdHtml(String tableId, int row) {
 		String tdId = tableId + "-tdcb-" + row;
 		String checkBoxid =  tableId + "-cb-" + row;
-		return "<td id='" + tdId + "'>" + "<input type='checkbox' id='" + checkBoxid + "' name='" + checkBoxid + "' value='X'>" + "<span></td>";
+		return "<td id='" + tdId + "'>" + "<input type='checkbox' id='" + checkBoxid + "' name='" + checkBoxid + "' newValue='X'>" + "<span></td>";
 	}
 	
 	

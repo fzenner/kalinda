@@ -34,7 +34,7 @@ export function getBody() : HTMLBodyElement {
 
 
 
-		console.log('${key}: ${value}');
+		console.log('${key}: ${newValue}');
 	}
 	return dto;
 }
@@ -83,7 +83,7 @@ export function stringToBool(val: string) : boolean {
 		if (val === "n") {
 			return false; 
 		} else {
-			throw "Illegal value: " + val + ". Expected either 'y' or 'n'."
+			throw "Illegal newValue: " + val + ". Expected either 'y' or 'n'."
 		}
 	}
 }

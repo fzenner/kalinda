@@ -12,7 +12,7 @@ import java.util.GregorianCalendar;
  * We use BaseVal in order to constrain parameter to allowed and expected types. Without the help of such a class,
  * we would have to accept type Object in places where we would accept in essence Long, Float and DateTime for example.
  * The internal values of BaseVal should never be null. That is because we allow scalars like int to be BaseVal.
- * If there is a null value to deal with, a BaseVal itself should be null.
+ * If there is a null newValue to deal with, a BaseVal itself should be null.
  */
 public abstract class BaseVal<T> {
 

@@ -1,6 +1,6 @@
 package com.fzenner.datademo.web.outmsg;
 
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.HtmlTag;
 import com.kewebsi.util.CommonUtils;
 
@@ -28,7 +28,7 @@ public class GuiDef {
     public ArrayList<String> cssClasses;
     public LinkedHashMap<String, String> attrs;  // Attributes
     public Object state;
-    public ErrorInfo errorInfo;
+    public ErrorUpdate errorUpdate;
     public Object tagSpecificData;             // Special static data defining the given tag. E.g. placing info for child tags if this component contains nested html tags that are not provideds as child-GuiDefs.
     public ArrayList<GuiDef> children;
     public String clientEventHandler;
@@ -54,11 +54,11 @@ public class GuiDef {
         this.id = id;
     }
 
-    public GuiDef(String tag, String id, HtmlTag.Visibility visibility, ErrorInfo errorInfo) {
+    public GuiDef(String tag, String id, HtmlTag.Visibility visibility, ErrorUpdate errorUpdate) {
         this.tag = tag;
         this.id = id;
         this.visibility = visibility;
-        this.errorInfo = errorInfo;
+        this.errorUpdate = errorUpdate;
     }
 
     public void appendChild(GuiDef newChild) {

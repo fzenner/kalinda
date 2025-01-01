@@ -114,16 +114,16 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
             return;
         }
 
-        // When here, we are currently displaying an error. But this error is only of interest, if the underlying value has not
-        // changed, for example because the value was updated in another input field on the page or via business logic.
+        // When here, we are currently displaying an error. But this error is only of interest, if the underlying newValue has not
+        // changed, for example because the newValue was updated in another input field on the page or via business logic.
         // We clear then the error so that a) the error info is not displayed anymore and b) the last (errornous)
-        // user input is replaced by the new value.
+        // user input is replaced by the new newValue.
         // Note that the error is attached to the PageVar, not the attribute of the entity. In other words, with regards
         // to this error handling mechanics, the values in the entity are always error-free.
 
         boolean errorStillValid = false;
         if (entityWhenErrorWasSet == getManagedEntity()) {  // Same entity
-            if (valWhenErrorWasSet.equals(getValCore())) {  // Same value of entity. That is, the value of the entity has not been changed circumventing this PageVarEntityBacked.
+            if (valWhenErrorWasSet.equals(getValCore())) {  // Same newValue of entity. That is, the newValue of the entity has not been changed circumventing this PageVarEntityBacked.
                 errorStillValid = true;
             }
         }
@@ -210,7 +210,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
     @Override
     public F getVal() {
         if (hasError()) {
-            throw new CodingErrorException("Attempt to read a value of an PageVar with an error:" + this);
+            throw new CodingErrorException("Attempt to read a newValue of an PageVar with an error:" + this);
         }
         return getValCore();
     }
@@ -248,7 +248,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
     public void checkAccidentalOverwriting() {
         if (DebugUtils.DEBUG_CHECKS_ON) {
             if (lastDisplayedEntity != getManagedEntity()) {
-                throw new CodingErrorException("Attempt to overwrite an unseen value by the client.");
+                throw new CodingErrorException("Attempt to overwrite an unseen newValue by the client.");
             }
         }
     }

@@ -6,7 +6,7 @@ import com.fzenner.datademo.web.UserSession;
 import com.fzenner.datademo.web.outmsg.GuiDef;
 import com.fzenner.datademo.web.outmsg.MsgAjaxResponse;
 import com.kewebsi.controller.FieldAssistantEnumIntf;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 import com.kewebsi.util.CommonUtils;
 import com.kewebsi.util.JsonUtils;
@@ -76,7 +76,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
         var guiDef = new GuiDef("select", id);
         // guiDef.setServerCallback(StandardController.SMH_selectionMade);
         String valueStr = CommonUtils.nullToEmpty(this.getValue());
-        guiDef.addAttribute("value", valueStr);
+        guiDef.addAttribute("newValue", valueStr);
 
         ArrayList<String> optionsOut = new ArrayList<>(options.size());
         guiDef.state = optionsOut;
@@ -97,7 +97,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
             if (currentValue != null) {
                 selectedStr = currentValue.equals(optionRunValue) ? " selected" : "";
             }
-            result += "<option value='" + optionRunValue + "'" + selectedStr + ">" + optionRun.getText() + "</option>\n";
+            result += "<option newValue='" + optionRunValue + "'" + selectedStr + ">" + optionRun.getText() + "</option>\n";
         }
         return result;
     }
@@ -112,7 +112,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
                 selectedStr = currentValue.equals(runValue) ? " selected" : "";
             }
 
-            var optionNode = JsonUtils.createJsonNode("option", "value", runValue);
+            var optionNode = JsonUtils.createJsonNode("option", "newValue", runValue);
             if (currentValue != null) {
                 if (currentValue.equals(runValue)) {
                     addAttributeToAttributeSubnote(optionNode,"selected", null);
@@ -176,7 +176,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
         final String checked = "checked";
         if (valueModified()) {
             HashMap<String, AttributeModification> result = new HashMap<>(1);
-            AttributeModification mod = new AttributeModification("value", AttributeModification.Modification.MODIFIED, getValue());
+            AttributeModification mod = new AttributeModification("newValue", AttributeModification.Modification.MODIFIED, getValue());
             result.put(checked, mod);
             return result;
         }
@@ -184,7 +184,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
     }
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         if (pageStateVar.hasEffectiveError()) {
             PageVarError error = pageStateVar.getEffectiveError();
             return error.getErrorInfo();

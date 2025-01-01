@@ -4,7 +4,7 @@ package com.kewebsi.errorhandling;
 
 public class ValueAndError<T> {
 	public T value;
-	public ErrorInfo errorInfo;
+	public ErrorUpdate errorUpdate;
 	
 	
 	public boolean isNull() {
@@ -15,28 +15,28 @@ public class ValueAndError<T> {
 		this.value = value;
 	}
 
-	public ValueAndError(T value, ErrorInfo errorInfo) {
+	public ValueAndError(T value, ErrorUpdate errorUpdate) {
 		this.value = value;
-		this.errorInfo = errorInfo;
+		this.errorUpdate = errorUpdate;
 	}
 	
 	public ValueAndError(Enum<?> errorCode) {
-		errorInfo = new ErrorInfo(errorCode, "");
+		errorUpdate = new ErrorUpdate(errorCode, "");
 	}	
 	
 	public ValueAndError(Enum<?> errorCode, String errorText) {
-		this.errorInfo = new ErrorInfo(errorCode, errorText);
+		this.errorUpdate = new ErrorUpdate(errorCode, errorText);
 	}
 	
 	
 	public ValueAndError(ValueAndError<?> otherNullInfoObj) {
-		this.errorInfo = otherNullInfoObj.getErrorInfo();
+		this.errorUpdate = otherNullInfoObj.getErrorInfo();
 	}
 	
 
 	public T getValue() {
-		if (errorInfo != null) {
-			throw new CodingErrorException("Attempt to get value from error");
+		if (errorUpdate != null) {
+			throw new CodingErrorException("Attempt to get newValue from error");
 		}
 		return value;
 	}
@@ -54,7 +54,7 @@ public class ValueAndError<T> {
 	
 	
 	public boolean hasError() {
-		if (errorInfo != null) {
+		if (errorUpdate != null) {
 			return true;
 		} 
 		return false;
@@ -62,19 +62,19 @@ public class ValueAndError<T> {
 
 
 	public Enum<?> getErrorCode() {
-		return errorInfo!=null ? errorInfo.errorCode : null;
+		return errorUpdate !=null ? errorUpdate.errorCode : null;
 	}
 
 
-	public ErrorInfo getErrorInfo() {
-		return errorInfo;
+	public ErrorUpdate getErrorInfo() {
+		return errorUpdate;
 	}
 	
 	public String getErrorText() {
 		String result = "NO ERROR TEXT AVAILABLE";
-		if (errorInfo != null) {
-			if (errorInfo.errorText != null) {
-				result = errorInfo.errorText;
+		if (errorUpdate != null) {
+			if (errorUpdate.errorText != null) {
+				result = errorUpdate.errorText;
 			}
 		}
 		return result;

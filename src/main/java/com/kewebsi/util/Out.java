@@ -3,7 +3,7 @@ package com.kewebsi.util;
 import com.kewebsi.errorhandling.CodingErrorException;
 
 /**
- * Out-Value / Return value
+ * Out-Value / Return newValue
  */
 public class Out<T> {
     T ref;
@@ -21,7 +21,7 @@ public class Out<T> {
 
     public void set(T ref) {
         if (this.ref != null) {
-            throw new CodingErrorException("Duplicate setting of return value.");
+            throw new CodingErrorException("Duplicate setting of return newValue.");
         }
         this.ref = ref;
     }

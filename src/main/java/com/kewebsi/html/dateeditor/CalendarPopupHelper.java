@@ -70,7 +70,7 @@ public class CalendarPopupHelper {
 
     /**
      * The calendar is thought to display more than one month at a time. That has not been tested yet,
-     * Hence call it allways with start and end value being the same.
+     * Hence call it allways with start and end newValue being the same.
      * @param displayYearStart
      * @param displayMonthStart
      * @param displayYearEnd

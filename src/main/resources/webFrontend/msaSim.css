@@ -139,15 +139,15 @@ a:hover {
 
 
 .tableCellContenSpan {
-  color: blue;   /* this is just a dummy value, we need this class for ID purposes*/
+  color: blue;   /* this is just a dummy newValue, we need this class for ID purposes*/
 }
 
 .tableCellErrorSpan {
-  color: green;   /* this is just a dummy value, we need this class for ID purposes*/
+  color: green;   /* this is just a dummy newValue, we need this class for ID purposes*/
 }
 
 .inputFieldError {
-  color: chocolate;   /* this is just a dummy value, we need this class for ID purposes*/
+  color: chocolate;   /* this is just a dummy newValue, we need this class for ID purposes*/
 }
 
 

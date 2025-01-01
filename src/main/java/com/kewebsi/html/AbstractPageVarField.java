@@ -1,7 +1,8 @@
 package com.kewebsi.html;
 
 import com.fzenner.datademo.web.outmsg.GuiDef;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.fzenner.datademo.web.outmsg.ValueChange;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 
 import java.util.Objects;
@@ -13,8 +14,8 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     protected PageStateVarIntf<T> pageStateVar;
 
     /**
-     * A field is not synced, when the gui has delivered a value that could not be stored in the PageStateVar.
-     * The initial value is true, since we create a field with the value from the
+     * A field is not synced, when the gui has delivered a newValue that could not be stored in the PageStateVar.
+     * The initial newValue is true, since we create a field with the newValue from the
      * Example case: Error when the 31.2.2022 is entered as date.
      */
     protected boolean clientIsSynced = true;
@@ -75,13 +76,13 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         setRequiredOld(isRequired());
     }
 
-    // When a formerly disabled element is enabled again, we push the current server-side value to the client,
+    // When a formerly disabled element is enabled again, we push the current server-side newValue to the client,
     // since the client might have some junk text in the field when he disabled it. We do not re-evaluate this
-    // old junk, set error state etc. The clean solution here is to set the server side value.
+    // old junk, set error state etc. The clean solution here is to set the server side newValue.
     // WHen
-    // Even if the server side value had an error that wie did ignore when the field was disabled, we
-    // set the value here.
-    // Even if we deleted the error when we disabled a field and re-set now a bad value, ee rely on the
+    // Even if the server side newValue had an error that wie did ignore when the field was disabled, we
+    // set the newValue here.
+    // Even if we deleted the error when we disabled a field and re-set now a bad newValue, ee rely on the
     // re-evaluation of all relevant fields on the server side at the
     // beginning of a transaction. (Other options are thinkable, e.g. to re-establish the error from before
     // the field was disabled, but that could be considered unexpected behaviour by the user.)
@@ -97,13 +98,13 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 //        }
 //    }
 
-    public ErrorInfo calculateModificationOfErrorInfoToSendToClient() {
+    public ErrorUpdate calculateModificationOfErrorInfoToSendToClient() {
         var errorOld = getErrorOld();
         var errorNew = getEffectiveError();
         return calculateModificationOfErrorInfoToSendToClient(errorOld, errorNew);
     };
 
-    public static ErrorInfo calculateModificationOfErrorInfoToSendToClient(PageVarError oldError, PageVarError newError) {
+    public static ErrorUpdate calculateModificationOfErrorInfoToSendToClient(PageVarError oldError, PageVarError newError) {
 
         if (Objects.equals(oldError, newError)) {
             return null;
@@ -122,7 +123,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
                 // If there is only one field monitoring the page var connected to this field, then we would actually
                 // not need to return any error info here and hence return null.
                 // But a second connected field might still be showing a server side error, which it should remove now.
-                return ErrorInfo.wireNull();
+                return ErrorUpdate.wireNull();
             }
             if (newError.isClientSideError()) {
                 return null;
@@ -134,7 +135,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         // When here, oldError is a server side error.
 
         if (newError == null) {
-            return ErrorInfo.wireNull();  // Server error display on the client side should be removed.
+            return ErrorUpdate.wireNull();  // Server error display on the client side should be removed.
         }
 
         if (newError.isClientSideError()) {
@@ -146,14 +147,15 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     }
 
 
-
-    public T calculateModificationOfValue() {
-        T valueModification = null;
-        if (valueModified()) {
-            valueModification = getValue();
+    public ValueChange<T> calculateModificationOfValue() {
+        if (! valueModified()) return null;
+        T newValue = getValue();
+        if (newValue == null) {
+            return new ValueChange<>(null);
         }
-        return valueModification;
-    };
+        return new ValueChange<>(newValue);
+    }
+
 
     public Boolean calculateModificationOfRequired() {
         Boolean requiredModification = null;
@@ -166,7 +168,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     /**
      *
      * @return null, when there was no mudification
-     *         Thee disabled value when there was a modification.
+     *         Thee disabled newValue when there was a modification.
      *
      */
     public Boolean calculateModificationOfDisabled() {
@@ -183,7 +185,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         }
 
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorInfo = new ErrorInfo(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
         }
     }
 
@@ -193,9 +195,9 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         return result;
     }
 
-    public ErrorInfo calcErrorInfo() {
+    public ErrorUpdate calcErrorInfo() {
         if (pageStateVar.hasEffectiveServerSideError()) {
-            return new ErrorInfo(pageStateVar.getEffectiveError().getErrorMsg());
+            return new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
         }
         return null;
     }
@@ -354,7 +356,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 
     @Override
     public String toString() {
-        return "id: " + id + " value:" + getValue() + " valueOld:" + valueOld
+        return "id: " + id + " newValue:" + getValue() + " valueOld:" + valueOld
                 + " error: " + hasError() + " hasErrorOld " + errorOld;
     }
 

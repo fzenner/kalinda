@@ -6,16 +6,16 @@ import com.kewebsi.service.PageVarError;
 /**
  *
  * A PageVariable has the following responsibilities:
- * - Value store: It holds a scalar value (e.g. String, Integer, DateTime) that is displayed by zero, one,
+ * - Value store: It holds a scalar newValue (e.g. String, Integer, DateTime) that is displayed by zero, one,
  *   or multiple fields on a page.
  *   (Typically, it is displayed by one, in some cases by two fields.)
  * - Input conversion: It converts the string representation as entered by a human user to the internal
  *   scalar representation.
  * - Output Conversion: It computes and provides the canonical, well formatted string representation to be displayed by the client,
- *    if a valid scalar value exists.
+ *    if a valid scalar newValue exists.
  * - Intermediat state handling: It holds and manages the intermediate string representation of the client entries if the client entries
- *   have not been successfully converted to the respective scalar value. Thus, unfinished entries are part
- *   of the server state and allow for comprehensive server-side handling. (No value loss at page refresh.) TODO: To be reconsidered because it is very complicate. / Not true for newer versions of this code.
+ *   have not been successfully converted to the respective scalar newValue. Thus, unfinished entries are part
+ *   of the server state and allow for comprehensive server-side handling. (No newValue loss at page refresh.) TODO: To be reconsidered because it is very complicate. / Not true for newer versions of this code.
  * Page variables can be standalone (having their own scalar variable) or use the variables of a server-side
  * entity (entity-backed PageVariables)  When using an entity-backed entity, the input conversion already uses the
  * validation of the respective FieldAssistant and more comprehensive validations involving the entity and its assistants
@@ -55,8 +55,8 @@ public interface PageStateVarIntf<F>  {
 
     /**
      *
-     * @return The value of the variable as string, not yet HTML-escaped.
-     * If the value is null, then return the empty String.
+     * @return The newValue of the variable as string, not yet HTML-escaped.
+     * If the newValue is null, then return the empty String.
      * If the page has an error, the unparsedStringValue is returned.
      */
     abstract public String getDisplayString();
@@ -86,13 +86,13 @@ public interface PageStateVarIntf<F>  {
     }
 
     /**
-     * Validates its own value (again) and checks if it is null, if null is allowed.
+     * Validates its own newValue (again) and checks if it is null, if null is allowed.
      *
      * If an error occurs, the error is attached to the page variable.
      *
-     * This revalidation is necessary before finally using the value of a field for a transaction.
+     * This revalidation is necessary before finally using the newValue of a field for a transaction.
      * The validation step before executing a transaction is necessary, because the page variable might still be
-     * in its initial null state (main case) of because the context has changed and with it the current value
+     * in its initial null state (main case) of because the context has changed and with it the current newValue
      * is not valid anymore (edge case). An implementation could shortcut any potentially expensice validation
      * based on whether the input has changed since last validate. But this performance optimizatino should rarely be
      * necessary.

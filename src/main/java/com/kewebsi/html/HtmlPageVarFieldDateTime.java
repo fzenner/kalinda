@@ -5,10 +5,9 @@ import com.fzenner.datademo.web.UserSession;
 import com.fzenner.datademo.web.inmsg.MsgCalendarEditorPopupCreate;
 import com.fzenner.datademo.web.inmsg.MsgDateTimeEntered;
 import com.fzenner.datademo.web.outmsg.*;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.errorhandling.MalformedClientDataException;
 import com.kewebsi.html.dateeditor.CalendarPopupHelper;
-import com.kewebsi.service.PageVarError;
 import com.kewebsi.util.JsonUtils;
 
 import java.time.LocalDate;
@@ -19,8 +18,8 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
 
     // protected PageStateVarIntf<LocalDateTime> pageStateVar;
 
-    protected LocalDateTime valueOld;
-    protected PageVarError errorOld = null;
+    // protected LocalDateTime valueOld;
+    // protected PageVarError errorOld = null;
 
     protected LocalTime defaultTimeWhenDateIsSet;
 
@@ -41,7 +40,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
         DateTimeFieldGuiDef inputFieldGuiDef = new DateTimeFieldGuiDef(dtw, isRequired(), isDisabled(), new TimeWireOrNull(TimeWire.from(defaultTimeWhenDateIsSet)));
         guiDef.setTagSpecificData(inputFieldGuiDef);
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorInfo = new ErrorInfo(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
         }
         return guiDef;
     }
@@ -52,18 +51,34 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
         GuiDef guiDef = new GuiDef(getTagName(), getId(), calculateModificationOfVisibility(), calculateModificationOfErrorInfoToSendToClient());
         guiDef.setUpdateMode(GuiDef.UpdateMode.MODIFICATIONS_ONLY);
 
-        var modificationOfValue = calculateModificationOfValue();
-        DateTimeWireOrNull dtw = modificationOfValue != null ? localDateTimeToDateTimeWire(modificationOfValue) : null;
-
         Boolean modificationOfRequired = calculateModificationOfRequired();
         Boolean modificationOfDisabled = calculateModificationOfDisabled();
+
+//        //
+//        // Clear the values when disabled and errors exist!!!
+//        //
+//        if (modificationOfDisabled != null) {
+//            if (modificationOfDisabled == true) {
+//                // When here, we freshly disabled the field.
+//                if (getRawError() != null) {
+//                    getPageStateVar().clear();
+//                    getPageStateVar().clearError();
+//                }
+//            }
+//        }
+
+        // XXXXX TODO: We must distinguish between no modification and modification to null. WIRENULL!!
+
+
+        ValueChange<LocalDateTime> modificationOfValue = calculateModificationOfValue();
+        DateTimeWireOrNull dtw = modificationOfValue != null ? localDateTimeToDateTimeWire(modificationOfValue.newValue()) : null;
 
         DateTimeFieldGuiDef inputFieldGuiDef = new DateTimeFieldGuiDef(dtw, modificationOfRequired, modificationOfDisabled, new TimeWireOrNull(defaultTimeWhenDateIsSet));
 
         guiDef.setTagSpecificData(inputFieldGuiDef);
 
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorInfo = new ErrorInfo(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
         }
 
         return guiDef;
@@ -126,7 +141,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
     }
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         return calculateModificationOfErrorInfoToSendToClient(null, getEffectiveError());
     }
 

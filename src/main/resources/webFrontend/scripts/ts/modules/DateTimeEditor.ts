@@ -12,20 +12,11 @@ import { StandardCalendarPopup } from "./StandardCalendarPopup"
 import { CalendarPopupPartner } from "./CalendarPopupPartner";
 import { StyleManager } from "./StyleManager";
 import { ErrorDisplayCompanion } from "./ErrorDisplayCompanion";
-import { applyServerError, applyVisiblity, getColorForInputElementState } from "./kewebsiPageComposer";
-import { InputElementStateInBrowser, InputElementStateInfoFromClientToServer, mapClientInputStateInBrowserToStateInfoForServer } from "./InputFieldStates";
+import { applyVisiblity, getColorForInputElementState } from "./kewebsiPageComposer";
+import { InputElementError, InputElementStateInBrowser, InputElementStateInfoFromClientToServer, mapClientInputStateInBrowserToStateInfoForServer } from "./InputFieldStates";
+import { updateErrorGivenServerUpdate } from "./editor";
 
-// const DATE_TIME_EDITOR_CLASS = "textEditor";
 
-// const CLIENT_INPUT_STATE_EMPTY = "EMPTY";
-// const CLIENT_INPUT_STATE_INCOMPLETE = "INCOMPLETE";
-// const CLIENT_INPUT_STATE_UNPARSEABLE = "UNPARSEABLE";
-// const CLIENT_INPUT_STATE_OK = "OK";
-
-type ElemenStateAndValue = {
-    state: InputElementStateInBrowser;
-    value: LocalDateTime;
-}
 
 
 // TODO: Unify with DateTimeEditorCompanion by moving stuff into a class (!) CalendarPopupPartner
@@ -47,18 +38,16 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     timeErrorDisplayCompanion: ErrorDisplayCompanion;
     overallComponentErrorDisplayCompanion: ErrorDisplayCompanion;
     errorDisplayElementServer?: HTMLSpanElement
-    // popupDisplayedYear?: number;
-    // popupDisplayedMonth?: number;
-
-    // oldValueDate: LocalDate;
-    // oldValueTime: LocalTime;
     restoreOldDataOnFocusLoss: boolean;
 
     disabled: boolean;
 
     required: boolean;
 
-    inputElementState: InputElementStateInBrowser;
+    private _inputElementState: InputElementStateInBrowser;
+
+    error: InputElementError
+
 
     public isDisabled() : boolean {
         return this.disabled;
@@ -222,11 +211,13 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     applyGuiDef(guiDef: GuiDef, createMode: boolean) {
 
 
+        const dateTimeFieldGuiDef : DateTimeFieldGuiDef = guiDef.tagSpecificData as DateTimeFieldGuiDef;
 
-        applyServerError(this, guiDef);
+        updateErrorGivenServerUpdate(this, guiDef.errorUpdate, dateTimeFieldGuiDef.disabled, dateTimeFieldGuiDef.dateTimeWireOrNull)
+
         applyVisiblity(this, guiDef);
 
-        const dateTimeFieldGuiDef : DateTimeFieldGuiDef = guiDef.tagSpecificData as DateTimeFieldGuiDef;
+        
         this.applyValue(dateTimeFieldGuiDef.dateTimeWireOrNull)
         
         if (isWellDefined(dateTimeFieldGuiDef.required)) {
@@ -238,6 +229,11 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
             this.disabled = valueToSet;
             this.dateEditor.disabled = valueToSet;
             this.timeEditor.disabled = valueToSet;
+            if (this.disabled) {
+                this.calendarButton.setAttribute("disabled", "true")
+            } else {
+                this.calendarButton.removeAttribute("disabled")
+            }
         }
 
         if (isWellDefined(dateTimeFieldGuiDef.defaultTimeWireOrNull)) {  // Data was received.
@@ -259,9 +255,9 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     }
 
     /**
-     * When newValue is null or undefined, the nothing is updated.
-     * When vewValue.vlue is null, we set the value to null and the fields to empty strings.
-     * Otherwise set the value to the year, month,... of the newValue.
+     * When newValue is null or undefined, then nothing is updated.
+     * When vewValue.vlue is null, we set the newValue to null and the fields to empty strings.
+     * Otherwise set the newValue to the year, month,... of the newValue.
      * @param newValue
      */
     applyValue(newValue: jointTypes.DateTimeWireOrNull) {
@@ -295,20 +291,7 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         this.dateEditor = this.createSubEditor("", 8);
         this.timeEditor = this.createSubEditor("", 4);
 
-        // const defaultTimeWireOrNull = dateTimeFieldGuiDef.defaultTimeOrNull;
-        // if (defaultTimeWireOrNull) {
-        //     if (isWellDefined(defaultTimeWireOrNull.value)) {
-        //         const defaultTimeWire = defaultTimeWireOrNull.value;
-        //         this.defaultTimeWireOrNull =  {
-        //             hour: defaultTimeWire.h,
-        //             minute: defaultTimeWire.mi,
-        //             second: defaultTimeWire.s,
-        //             nanosecond : defaultTimeWire.n
-        //         }
-        //     }
-        // }
-
-    
+  
         this.calendarButton = createCalendarButton();
     
         // A div that will contain the date field, the button, and the time field.
@@ -335,10 +318,6 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         shadow.appendChild(this.topDiv); 
     
         this.setCompoundEventHandlers();
-
-        // if (guiDef.errorInfo) {
-        //     this.setErrorMessageFromServer(guiDef.errorInfo.errorText);
-        // }
 
         this.applyGuiDef(guiDef, true);
     
@@ -377,23 +356,20 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     }
 
     sendCalendarPopupRequestToServer() {
+            let date: LocalDate = this.parseInputOrSetDefaults();
 
-        let date: LocalDate = this.parseInputOrSetDefaults();
-    
-    
-        let msg: jointTypes.MsgCalendarEditorPopupCreate = {
-            tagId: this.id,
-            msgName: jointTypes.CS_MESSAGE,
-            serverMsgHandler: "SMH_handleGuiEvent",
-            command: "CALENDAR_POPUP_CREATE",
-            year: date.year,
-            month: date.month,
-            day: date.day,
-        };
+            let msg: jointTypes.MsgCalendarEditorPopupCreate = {
+                tagId: this.id,
+                msgName: jointTypes.CS_MESSAGE,
+                serverMsgHandler: "SMH_handleGuiEvent",
+                command: "CALENDAR_POPUP_CREATE",
+                year: date.year,
+                month: date.month,
+                day: date.day,
+            };
 
-        let createPopupCalendarForCallback = (calendarGuiDef: CalendarGuiDef) => this.createCalendarPopup(calendarGuiDef);
-        SessionHandling.ajaxCallWithCallback(msg, createPopupCalendarForCallback);
-
+            let createPopupCalendarForCallback = (calendarGuiDef: CalendarGuiDef) => this.createCalendarPopup(calendarGuiDef);
+            SessionHandling.ajaxCallWithCallback(msg, createPopupCalendarForCallback);
     }
 
     createPopupOnSpaceDown(ev: KeyboardEvent) {
@@ -414,7 +390,7 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         let date: LocalDate;
         if (isParsingError(parsedDateOrError)) {
             const today = new Date();
-            date = { year: today.getFullYear(), month: today.getMonth(), day: today.getDay() };
+            date = { year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate() };
         } else {
             date = { year: parsedDateOrError.year, month: parsedDateOrError.month, day: parsedDateOrError.day };
         }
@@ -429,7 +405,7 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
             return;
         }
 
-        // TODO: XXXXXXXXXXXXXXXXXXX Handle the case when the value was not effectively modified.
+        // TODO: XXXXXXXXXXXXXXXXXXX Handle the case when the newValue was not effectively modified.
 
         let leafElementThatWillReceiveFocus : HTMLElement = event.relatedTarget as HTMLElement;
 
@@ -453,11 +429,11 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
 
         // !!!!!!!!!!!!!!!!!!! CONTINTUE HERE !!!!!!!!!!!!!!!!!!!!!!
 
-        const stateAndVal : ElemenStateAndValue = this.calculateClientInputStateAndValue_setColorAndError_afterFocusLoss(dateInputString, timeInputString);
+        const newVal : LocalDateTime = this.updateStateAndGetTypedValueAfterClientSideChange(dateInputString, timeInputString);
 
-        const dateTimeWireOrNull = localDateTimeToDateTimeWireOrNull(stateAndVal.value)
+        const dateTimeWireOrNull = localDateTimeToDateTimeWireOrNull(newVal)
 
-        const inputElementStateInfoFromClientToServer = mapClientInputStateInBrowserToStateInfoForServer(stateAndVal.state);
+        const inputElementStateInfoFromClientToServer = mapClientInputStateInBrowserToStateInfoForServer(this.inputElementState);
 
         let pageName = getPageName(this);
         let msg: jointTypes.MsgDateTimeEntered = {
@@ -477,15 +453,12 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     /**
      * The server needs to know if we cannot send him the data (incomplete or unparseable).
      * Incomplete or unparseable is different from no data (empty, empty not required).
-     * Empty will be transmitted as null value, the required option will be calculated by the server.
+     * Empty will be transmitted as null newValue, the required option will be calculated by the server.
      * 
      * So we need to distinguish in general between client side error (incomplete, unparseable) or no 
      * client side error.
      * 
-     * If the server responds on the transmission of the client side error, the client does not update an 
-     * error markings (colors or error messages) since the client sets those before it sends the udpate.
-     * 
-     * THe server of course must not change requiredness or so when processing an client side error notification,
+     * The server of course must not change requiredness or so when processing an client side error notification,
      * since, that would conflict with the errors on the client. 
      * 
      * So the server has two choices when getting a client side error notification:
@@ -497,7 +470,7 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
      * @param timeInputString 
      * @returns 
      */
-    private calculateClientInputStateAndValue_setColorAndError_afterFocusLoss(dateInputString: string, timeInputString: string) : ElemenStateAndValue {
+    private updateStateAndGetTypedValueAfterClientSideChange(dateInputString: string, timeInputString: string) : LocalDateTime {
         this.removeErrorMessageDateIfExists();
         this.removeErrorMessageTimeIfExists();
         this.removeErrorMessageOverallComponentIfExists();
@@ -509,25 +482,30 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         //
 
         if (this.isDisabled()) {
-            return { state: InputElementStateInBrowser.DISABLED, value: null}
+            this.inputElementState = InputElementStateInBrowser.DISABLED
+            return null;
         }
 
         if (this.isEmpty()) {
             if (this.isRequired()) {
-                return { state: InputElementStateInBrowser.EMPTY_REQUIRED, value: null};
+                this.inputElementState = InputElementStateInBrowser.EMPTY_REQUIRED
+                return null;
             } else {
-                return { state: InputElementStateInBrowser.EMPTY_OPTIONAL, value: null};
+                this.inputElementState = InputElementStateInBrowser.EMPTY_OPTIONAL
+                return null;
             }
         }
 
         if (hasNoInfo(dateInputString)) {
-            this.setErrorMessageDate("Missing input");
-            return { state: InputElementStateInBrowser.INCOMPLETE, value: null};
+            this.setClientSideErrorMessageDate("Missing input");
+            this.inputElementState = InputElementStateInBrowser.INCOMPLETE
+            return null;
         }
 
         if (hasNoInfo(timeInputString)) {
-            this.setErrorMessageTime("Missing input");
-            return { state: InputElementStateInBrowser.INCOMPLETE, value: null};
+            this.setClientSideErrorMessageTime("Missing input");
+            this.inputElementState = InputElementStateInBrowser.INCOMPLETE
+            return null;
         }
 
         var date: LocalDate = null;
@@ -536,7 +514,7 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         let parsedDateOrError = parseGermanDate(this.dateEditor.value);
         if (isParsingError(parsedDateOrError)) {
             parsingErrorOccurred = true;
-            this.setErrorMessageDate(parsedDateOrError.errorMessage);
+            this.setClientSideErrorMessageDate(parsedDateOrError.errorMessage);
         } else {
             date = parsedDateOrError as LocalDate;
         }
@@ -545,20 +523,21 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
             let parsedTimeOrError = parseTime(this.timeEditor.value);
             if (isParsingError(parsedTimeOrError)) {
                 parsingErrorOccurred = true;
-                this.setErrorMessageTime(parsedTimeOrError.errorMessage);
+                this.setClientSideErrorMessageTime(parsedTimeOrError.errorMessage);
             } else {
                 time = parsedTimeOrError as LocalTime;
             }
         }
 
         if (parsingErrorOccurred) {
-            return {state: InputElementStateInBrowser.UNPARSEABLE, value: null};
+            this.inputElementState = InputElementStateInBrowser.UNPARSEABLE
+            return null;
         } 
 
         // When here, everything is OK.
-
         newValObj = { date: date as LocalDate, time: time };
-        return {state: InputElementStateInBrowser.FILLED_OK, value: newValObj }
+        this.inputElementState = InputElementStateInBrowser.FILLED_OK
+        return newValObj;
     }
 
 
@@ -586,7 +565,10 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         return false;
     }
 
-    setErrorMessageDate(errorMsg: string) {
+    setClientSideErrorMessageDate(errorMsg: string) {
+        
+        this.error = {errorText: errorMsg, isClientSideError: true}
+
         if (! this.dateErrorDisplayCompanion ) {
             this.dateErrorDisplayCompanion = new ErrorDisplayCompanion(
                 errorMsg,
@@ -599,7 +581,10 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         }
     }
 
-    setErrorMessageTime(errorMsg: string) {
+    setClientSideErrorMessageTime(errorMsg: string) {
+
+        this.error = {errorText: errorMsg, isClientSideError: true}
+
         if (!this.timeErrorDisplayCompanion) {
             this.timeErrorDisplayCompanion = new ErrorDisplayCompanion(
                 errorMsg,
@@ -642,7 +627,13 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         }
     }
 
+    clearData() {
+        const clearingNull : jointTypes.DateTimeWireOrNull = {value: null}
+        this.applyValue(clearingNull)
+    }
+
     public clearError() {
+        this.error = null;
         this.removeErrorMessageDateIfExists();
         this.removeErrorMessageTimeIfExists();
         this.removeErrorMessageOverallComponentIfExists();
@@ -653,6 +644,10 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         if (this.timeErrorDisplayCompanion) return true;
         if (this.overallComponentErrorDisplayCompanion) return true;
         return false;
+    }
+
+    public getError() : InputElementError {
+        return this.error;
     }
 
     public isClientSideError() : boolean {
@@ -747,27 +742,20 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     }
 
 
+    public get inputElementState() :InputElementStateInBrowser {
+        return this._inputElementState;
+    }
 
+    public set inputElementState(newState: InputElementStateInBrowser) {
+        this._inputElementState = newState;
 
+        // We copy the state as an HTML attribute. This is done to support automatic testing.
+        let stateStr : string = this.inputElementState;
+        this.setAttribute("logicalstate", stateStr)
 
-    // changeEventHandler(event: Event) {
-    //     let target = event.target as HTMLInputElement;
-
-    //     // let serverSideId = target.getAttribute(jointTypes.SERVER_SIDE_ID_ATTR_NAME);
-
-    //     let pageName = getPageName(target);
-
-    //     let msg: jointTypes.MsgFieldDataEntered = {
-    //         msgName: jointTypes.CS_MESSAGE,
-    //         serverMsgHandler: "SMH_fieldDataEntered",
-    //         pageName: pageName,
-    //         tagId: this.id,
-    //         // serverSideId: "-111",
-    //         value: target.value
-    //     };
-
-    //     SessionHandling.ajaxCallStandard(msg);
-    // }
+        const check = this.getAttribute("logicalstate");
+        console.log("XXXcheck: " + check);
+    }    
 
 
 }

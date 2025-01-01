@@ -42,9 +42,9 @@ public class EntityDetailEditorState<T> extends PageState implements EntityProvi
     protected DtoAssistant<T> dtoAssistant;
 
     /** This is in a way a redundant field. Its purpose is to allow for greater robustness.
-     * The value of this field should be always the same as the PageStateVar holding the entity id.
-     * So if the user presses on "New", this value should be null. If the user saves client data,
-     * then the entity id coming from the client should match this value here. If not, it is an illegal attempt to
+     * The newValue of this field should be always the same as the PageStateVar holding the entity id.
+     * So if the user presses on "New", this newValue should be null. If the user saves client data,
+     * then the entity id coming from the client should match this newValue here. If not, it is an illegal attempt to
      * save date from an invalid or illegal key.
      */
     protected Long entityId;

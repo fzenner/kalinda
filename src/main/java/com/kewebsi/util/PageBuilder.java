@@ -119,8 +119,8 @@ public class PageBuilder {
 	/**
 	 * Generates a string for defining an attribute in an HTML tag.
 	 * @param name The name of the attribute.
-	 * @param value The value of the attribue.
-	 * @return A string of the following form " name='value'" if the value
+	 * @param value The newValue of the attribue.
+	 * @return A string of the following form " name='newValue'" if the newValue
 	 * is not null and not empty. (Not the leading blank). 
 	 * Returns the empty string otherwise.
 	 */

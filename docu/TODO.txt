@@ -15,13 +15,13 @@ Frage: Überprüfen, ob wir die Sichtbarkeit von der Relevanz ableiten können. 
 Note: It is conceptually important, that while multiple Fields can be connected to one variable, only one field at a
 time can be intensely coupled to the variable. For example, the fact that a field has a parsing error and hence is not
 in sync with the variable make only sense with one field. Consider a variabe V connected to two fields F1 and F2. Both
-F1 and F2 have been edited by the user and have parsing errors. No F1 is edited again and a valid value has been entered.
-Then we need to decide, what happens to the bad value of F2. The expectation would probably be, that the error on F2
-is removed and the correct value is being displayed. Hence F2 would be de-facto in a display only mode.
+F1 and F2 have been edited by the user and have parsing errors. No F1 is edited again and a valid newValue has been entered.
+Then we need to decide, what happens to the bad newValue of F2. The expectation would probably be, that the error on F2
+is removed and the correct newValue is being displayed. Hence F2 would be de-facto in a display only mode.
 Consider the error display of F1 and F2. Consider a user starts to edit V by editing F1. A parsing error occurs. It should
-only be displayed in F1, since the unparsed value is not transferred to F2, an error display there for a parsing error
+only be displayed in F1, since the unparsed newValue is not transferred to F2, an error display there for a parsing error
 makes no sense. But when a logical error occurs, the error should be displayed on F1 and F2. F2 might be a larger
-field which allows for a more comfortable editing of the value.
+field which allows for a more comfortable editing of the newValue.
 
 A clean solution could be: A page variable has a double-linked connection to each field. If there is a parsing error,
 it is attached to the field. However, the page variable can query for the existance of a parsing error through the links.
@@ -80,7 +80,7 @@ Enable:
 - Choice point:
   Option 1: The old errors will appear again. They might be outdated, if the error is context-sensitive.
             Client-Side error: We should not store client side errors during the disabled status.
-            That means if there was a client side error, the client has to re-validate the value
+            That means if there was a client side error, the client has to re-validate the newValue
             (If there was a server-side error, the server could re-establish the old errors or re-validate on the
             server-side.)
 
@@ -102,7 +102,7 @@ TODO:
 - When a field is disabled, the variable should set to be irrelevant. DONE.
 - When we clear the errors, we should also clear the values.
   CLeaing is done for client side errors. For server side errors not yet.
-  Check how to re-initialize a field generically (set value to null???).
+  Check how to re-initialize a field generically (set newValue to null???).
   See HtmlPageVarField.getGuiDefUpdate
 TODO:
 - Cleanup HtmlPageVarField getError() vs getEffectiveError()
@@ -129,7 +129,7 @@ TODO:
 
 Beachte auch hide/unhide
 =========================
-Suggestion: When we hide, we clean the value per default.
+Suggestion: When we hide, we clean the newValue per default.
 If the intention is to keep anything, for example that old values should appear, then this needs to be done by business
 logic. For the use case of old values to remain, one should use preferable the disable/enable mechanism.
 
@@ -166,7 +166,7 @@ Context specific validations vs fieldAssistants
 ================================================
 
 The field assistants are intended to check the values within the context of the business object itself.
-We need to verify of how much value they are during checks within an overall context.
+We need to verify of how much newValue they are during checks within an overall context.
 
 
 

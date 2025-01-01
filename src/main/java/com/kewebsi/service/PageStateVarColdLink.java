@@ -13,14 +13,14 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 
 	public T getVal() {
 		if (hasError()) {
-			throw new CodingErrorException("Illegal attempt to read the value of a PageVar with an error. Field: " + fieldAssistant.getFieldLabel() + " Error: " + getError().getErrorMsg());
+			throw new CodingErrorException("Illegal attempt to read the newValue of a PageVar with an error. Field: " + fieldAssistant.getFieldLabel() + " Error: " + getError().getErrorMsg());
 		}
 		return val;
 	}
 
 
 	/**
-	 * Call this, when you expect the field to be non null and you do not re-validate the already entered value.
+	 * Call this, when you expect the field to be non null and you do not re-validate the already entered newValue.
 	 * @return
 	 * @throws PageVarError
 	 */
@@ -46,7 +46,7 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 
 	public void setValueCore(T val) {
 //		if (val == null) {
-//			throw new CodingErrorException(String.format("Attempt to set the value of %s to null. Prior value: ", fieldAssistant.getFieldName().name(), (val == null ? "null" : String.valueOf(val))));
+//			throw new CodingErrorException(String.format("Attempt to set the newValue of %s to null. Prior newValue: ", fieldAssistant.getFieldName().name(), (val == null ? "null" : String.valueOf(val))));
 //		}
 		this.val = val;
 	}
@@ -59,7 +59,7 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 	/**
 	 * Returns the most helpful string to be displayed. Handles null values gracefully.
 	 * @return
-	 * If no error exists: The formatted String based on the current internal value.
+	 * If no error exists: The formatted String based on the current internal newValue.
 	 * If an error exists: Last useful data (see implementation for details):
 	 */
 	public String getDisplayString() {
@@ -74,7 +74,7 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 					return unparsedStringValue;
 				}
 			} else {
-				if (unparsedStringValue == null) {  // If the error was set in the business logic, a parsed value exists.
+				if (unparsedStringValue == null) {  // If the error was set in the business logic, a parsed newValue exists.
 					if (val == null) {
 						return "";
 					} else {
@@ -94,7 +94,7 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 	}
 
 	/**
-	 * Returns the value as string. Assumes that the value is not null.
+	 * Returns the newValue as string. Assumes that the newValue is not null.
 	 * @return
 	 */
 	public abstract String getValAsString();

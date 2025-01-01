@@ -41,7 +41,7 @@ public class PageVarLocalDateTimeColdLink
 
     public LocalDateTime getVal() {
 //        if (hasError()) {
-//            throw new CodingErrorException("Illegal attempt to read the value of a PageVar with an error. Field: " + fieldAssistant.getFieldLabel() + " Error: " + getError().getErrorMsg());
+//            throw new CodingErrorException("Illegal attempt to read the newValue of a PageVar with an error. Field: " + fieldAssistant.getFieldLabel() + " Error: " + getError().getErrorMsg());
 //        }
         return val;
     }
@@ -95,7 +95,7 @@ public class PageVarLocalDateTimeColdLink
             }
 
 
-            if (currentTime != null) {  // We transfer the value to the entity only if date and time are OK.
+            if (currentTime != null) {  // We transfer the newValue to the entity only if date and time are OK.
                 LocalDateTime newVal = LocalDateTime.of(dateBuffer, currentTime);
                 val = newVal;
                 clearDateError();
@@ -127,7 +127,7 @@ public class PageVarLocalDateTimeColdLink
                 currentDate = dateBuffer;
             }
 
-            if (currentDate != null) { // We transfer the value to the entity only if date and time are OK.
+            if (currentDate != null) { // We transfer the newValue to the entity only if date and time are OK.
                 LocalDateTime newVal = LocalDateTime.of(currentDate, timeBuffer);
                 val = newVal;
                 clearTimeError();

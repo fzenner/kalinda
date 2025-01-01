@@ -1,6 +1,5 @@
 package com.fzenner.datademo.web.outmsg;
 
-import com.kewebsi.errorhandling.ErrorInfo;
 import com.kewebsi.html.HtmlTag;
 
 /**

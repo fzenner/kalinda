@@ -42,12 +42,12 @@ public class PageVarLongColdLink extends PageStateVarColdLink<Long> {
 
     public long getValidatedVal() throws PageVarError {
         //
-        // If the field was already edited, the value is not null or the field is in error state.
+        // If the field was already edited, the newValue is not null or the field is in error state.
         // If the field has not been edited yet, the  unparsedStringValue is null and we throw a PageVarError.
         //
 
         if (this.hasError()) {
-            throw  new CodingErrorException("Attempt to get the value of a field with an error. " + " Error: " + this.getError().getErrorMsg() + " Field: " + this);
+            throw  new CodingErrorException("Attempt to get the newValue of a field with an error. " + " Error: " + this.getError().getErrorMsg() + " Field: " + this);
         }
 
         if (val == null) {

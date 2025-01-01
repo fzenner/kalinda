@@ -82,7 +82,7 @@
 			console.log("inputFieldFocusLostHandler");
 			console.log(event);
 
-			var newVal = event.srcElement.value;
+			var newVal = event.srcElement.newValue;
 
 			var elementIdToReplace = 'tabEditField';
 
@@ -127,8 +127,8 @@
 
 			if (event.key === 's') {
 				var newTd = "<td id='13'>huch!</td>";
-				//var newInput = "<td style='margin:0px'><input style='width: 122px; border:0px;  padding:0px; id='777' value='hallo!!!'></td>"
-				var newInput = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='tabEditField' value='Input Test Text B'  onblur='inputFieldFocusLostHandler(event)'   >"
+				//var newInput = "<td style='margin:0px'><input style='width: 122px; border:0px;  padding:0px; id='777' newValue='hallo!!!'></td>"
+				var newInput = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='tabEditField' newValue='Input Test Text B'  onblur='inputFieldFocusLostHandler(event)'   >"
 				replaceElementById(idToReplace, newInput);
 			}
 
@@ -144,10 +144,10 @@
 				var tdElement = event.srcElement;
 				var tdContent = tdElement.children[0];
 				var spanFieldInTdText = tdContent.textContent;
-				var newInput = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='tabEditField' value='" + spanFieldInTdText + "'  onblur='inputFieldFocusLostHandler(event)'   >"
+				var newInput = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='tabEditField' newValue='" + spanFieldInTdText + "'  onblur='inputFieldFocusLostHandler(event)'   >"
 				var newTdContent = replaceElement(tdContent, newInput);
 				newTdContent.focus();
-				var inputFieldContent = newTdContent.value;
+				var inputFieldContent = newTdContent.newValue;
 				var strLen = inputFieldContent.length;
 				newTdContent.setSelectionRange(0, strLen);
 
@@ -361,8 +361,8 @@
 				<td>td33</td>
 			</tr>
 			<tr>><td  >td21<dddd</td>
-				<td><input class='tdInput' id='1000' value='hallo!!!'></td>
-				<td><input class='tdInput' id='1001' value='hallo!!!'></td>
+				<td><input class='tdInput' id='1000' newValue='hallo!!!'></td>
+				<td><input class='tdInput' id='1001' newValue='hallo!!!'></td>
 			</tr>
 
 

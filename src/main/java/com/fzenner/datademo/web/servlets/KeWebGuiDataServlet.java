@@ -61,14 +61,14 @@ public class KeWebGuiDataServlet extends HttpServlet {
 
 	/**
 	 * Part of the URI that indicates that files (including templates) in the web frontend are being requested.
-	 * This value should always match the urlPattern of this servlet except for the wildcard at the end of the 
+	 * This newValue should always match the urlPattern of this servlet except for the wildcard at the end of the
 	 * URL pattern. 
 	 */
 	public static final String MY_URI_PREFIX = "/kewebguidata/";
 	
 	/**
 	 * The folder in which we look for web frontend files (including templates). Slashes will be added by the functions
-	 * that use this value, so you do not have to worry.
+	 * that use this newValue, so you do not have to worry.
 	 */
 	public static final String WEB_FRONTEND_CLASSPATH_SUBFOLDER = "webFrontend";
 	

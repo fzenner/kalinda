@@ -54,11 +54,11 @@ export function parseDate(dateStr: string, monthBeforeDay: boolean, yearFirst: b
     const yearProvided = thirdIntResult.idx < 0 ? false : true;
 
     if (! yearProvided && yearDigitsMode === YEAR_REQUIRED) {
-        return {errorMessage: "Invalid date format. Year value must be provided. "};
+        return {errorMessage: "Invalid date format. Year newValue must be provided. "};
     }
 
     if (yearProvided && yearDigitsMode === YEAR_FORBIDDEN) {
-        return {errorMessage: "Invalid date format. Unexpected year value provided."};
+        return {errorMessage: "Invalid date format. Unexpected year newValue provided."};
     }
 
     let year = 0;
@@ -216,11 +216,11 @@ export function parseDateTimeIgnoresHoursAndMinutesXXX(dateTimeStr: string, mont
     const yearProvided = thirdIntResult.idx < 0 ? false : true;
 
     if (! yearProvided && yearDigitsMode === "YEAR_REQUIRED") {
-        return {errorMessage: "Invalid datetime format. Year value must be provided. "};
+        return {errorMessage: "Invalid datetime format. Year newValue must be provided. "};
     }
 
     if (yearProvided && yearDigitsMode === "YEAR_FORBIDDEN") {
-        return {errorMessage: "Invalid datetime format. Unexpected year value provided."};
+        return {errorMessage: "Invalid datetime format. Unexpected year newValue provided."};
     }
 
     let year = 0;

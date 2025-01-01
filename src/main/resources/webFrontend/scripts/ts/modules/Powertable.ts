@@ -526,7 +526,7 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 		
 
 
-		// var newInputStr = "<select name='cars' id='" + TAB_EDIT_FIELD_ID + "'> <option value='WRAP'>WRAP</option> 	<option value='PROTEIN'>PROTEIN</option> 	<option value='mercedes'>Mercedes</option> 	<option value='audi'>Audi</option>  </select>";
+		// var newInputStr = "<select name='cars' id='" + TAB_EDIT_FIELD_ID + "'> <option newValue='WRAP'>WRAP</option> 	<option newValue='PROTEIN'>PROTEIN</option> 	<option newValue='mercedes'>Mercedes</option> 	<option newValue='audi'>Audi</option>  </select>";
 		let newInputEl = generateSelectField(TAB_EDIT_FIELD_ID, fieldInfo.options, spanFieldInTdText);
 		spanFieldInTd.replaceWith(newInputEl);
 		//   replaceElementByHtmlString(spanFieldInTd, newInputStr) as HTMLInputElement;
@@ -568,7 +568,7 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 
 			return newInputEl;
 		} else {
-			let newInputElStr = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='" + TAB_EDIT_FIELD_ID + "' value='" + spanFieldInTdText + "'	>"
+			let newInputElStr = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='" + TAB_EDIT_FIELD_ID + "' newValue='" + spanFieldInTdText + "'	>"
 			let newInputEl = replaceElementByHtmlString(spanFieldInTd, newInputElStr) as HTMLInputElement;
 			setCellEditorEventHandlers(newInputEl);
 			tdElement.setAttribute(TD_HAS_INPUT_FIELD_CHILD, "y")
@@ -713,7 +713,7 @@ export function unplaceCellEditor(oldId: string, newVal: string, parentTdElement
 	parentTdElement.style.backgroundColor = "white";
 	parentTdElement.classList.remove("forcedFocusOutline");
 
-	// This is the default value. Once the focus loss event is handled, it needs to be set to its default.
+	// This is the default newValue. Once the focus loss event is handled, it needs to be set to its default.
 	// ted.restoreOldDataOnFocusLoss = false;
 
 	if (valueWasModified) {

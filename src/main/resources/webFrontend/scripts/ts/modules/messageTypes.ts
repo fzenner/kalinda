@@ -71,7 +71,7 @@ export type GuiDef = {
     cssClasses: string[] 
 	attrs: object  // Java: LinkedHashMap<String, String> attrs;
 	state: object  // For complex objects like tables.
-	errorInfo: ErrorInfo
+	errorUpdate: ErrorUpdate
 	tagSpecificData: any
 	visibility: string // Options: {VISIBILITY_HIDDEN, VISIBILITY_VISIBLE, DISPLAY_NONE, DISPLAY_BLOCK}
     children: GuiDef[]
@@ -82,14 +82,19 @@ export type GuiDef = {
     relatedPlacing: string
 }
 
-export type InputFieldGuiDef = {
-	typeOfValue: String
+
+export type CanBeDisabled = {
+    disabled: boolean
+    // value: any
+}
+
+export type InputFieldGuiDef = CanBeDisabled & {
+	typeOfValue: string
 	size: number
 	name: string
 	placeholder: string
 	value: string
 	required: boolean
-	disabled: boolean,
 }
 
 export type CheckBoxGuiDef = {
@@ -108,7 +113,7 @@ export type DateTimeFieldGuiDef = {
 	defaultTimeWireOrNull: TimeWireOrNull;
 }
 
-export type ErrorInfo = {
+export type ErrorUpdate = {
 	wireNull: string
 	errorText: string
 	errorCode: string

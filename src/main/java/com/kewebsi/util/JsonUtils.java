@@ -200,8 +200,8 @@ public class JsonUtils {
 
 	/**
 	 * Creates a String of the format <code>"key1":"value1", "key2":"value2", ...</code> to be used in the creation of JSON objects.
-	 * The key string as well as the value string will be enclosed in double quotes.
-	 * @param keyValue Array of Strings alternating key and value, that is key1 value1 key2 value2 ...
+	 * The key string as well as the newValue string will be enclosed in double quotes.
+	 * @param keyValue Array of Strings alternating key and newValue, that is key1 value1 key2 value2 ...
 	 * @return The formatted string
 	 */
 	public static String createJsonStrDoubleQuote(ArrayList<String> keyValue) {
@@ -292,12 +292,12 @@ public class JsonUtils {
 
 	/**
 	 * Creates a string of the format required for HTML tag attributes. 
-	 * That is a space separated list off attribute value pairs with the value
+	 * That is a space separated list off attribute newValue pairs with the newValue
 	 * put in single quotes. Example (without outer quotes): 
 	 * "attrName1:'value1', attr2='value2'"
-	 * If the key is null, empty or consists of only blanks, the attribute-value pair is not generated.
-	 * If the value is null, the attribute-value pair is also not generated. 
-	 * However, if the value is an empty or only-blanks string, the attribute-value pair is generated (if the also the key is valid of course).
+	 * If the key is null, empty or consists of only blanks, the attribute-newValue pair is not generated.
+	 * If the newValue is null, the attribute-newValue pair is also not generated.
+	 * However, if the newValue is an empty or only-blanks string, the attribute-newValue pair is generated (if the also the key is valid of course).
 	 * This way, unnecessary pairs are for non-info values are not generated, unless you provide intentionally the combination of a real key and an empty string. 
 	 * @param keyValue List of alternating attribute names and values
 	 * @return As described above.
@@ -306,7 +306,7 @@ public class JsonUtils {
 		String out = "";
 		if (keyValue != null) {
 			if (keyValue.length % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<keyValue.length) {
@@ -331,7 +331,7 @@ public class JsonUtils {
 	/**
 	 * Creates a string of the format <br><br>
 	 * <code>key1='value1' key2='value2'</code><br><br>
-	 * If the value is null, then only the key is generated for example <br><br>
+	 * If the newValue is null, then only the key is generated for example <br><br>
 	 * <code>key1='value1' key2 key3='value3'</code> <br><br>
 	 * That variant is for example
 	 * used by the attribute <code>checked<code> in HTML checkboxes
@@ -379,7 +379,7 @@ public class JsonUtils {
 	 * Creates a String of the form
 	 * <br><code></code>key1=value1 key2='value2'</code> <br>
 	 *
-	 * If the value is null, then no attribute is generated.
+	 * If the newValue is null, then no attribute is generated.
 	 *
 	 * @param keyValue
 	 * @return
@@ -388,7 +388,7 @@ public class JsonUtils {
 		String out = "";
 		if (keyValue != null) {
 			if (keyValue.length % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<keyValue.length) {
@@ -408,7 +408,7 @@ public class JsonUtils {
 	public static void addAttributes(ObjectNode attrs, String... keyValue) {
 		if (keyValue != null) {
 			if (keyValue.length % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<keyValue.length) {
@@ -434,14 +434,14 @@ public class JsonUtils {
 	public static void addAttributesNoEmptyClass(ObjectNode attrs, String... keyValue) {
 		if (keyValue != null) {
 			if (keyValue.length % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<keyValue.length) {
 				String key = keyValue[i++];
 				String value = keyValue[i++];
 				if (CommonUtils.hasInfo(key)) {
-					if (! key.equals("class") || CommonUtils.hasInfo(value)) {  // We skip class attributes without value
+					if (! key.equals("class") || CommonUtils.hasInfo(value)) {  // We skip class attributes without newValue
 						if (value != null) {
 							attrs.put(key, value);
 						} else {
@@ -456,15 +456,15 @@ public class JsonUtils {
 
 	/**
 	 * Creates a String of the format <code>"key1":"value1", "key2":"value2", ...</code> to be used in the creation of JSON objects.
-	 * The key string as well as the value string will be enclosed in double quotes.
-	 * @param keyValue Array of Strings alternating key and value, that is key1 value1 key2 value2 ...
+	 * The key string as well as the newValue string will be enclosed in double quotes.
+	 * @param keyValue Array of Strings alternating key and newValue, that is key1 value1 key2 value2 ...
 	 * @return The formatted string
 	 */
 	public static String createJsonKeyValueDoubleQuote(String... keyValue) {
 		String out = "";
 		if (keyValue != null) {
 			if (keyValue.length % 2 > 0) {
-				throw new CodingErrorException("Incorrect key value pairs");
+				throw new CodingErrorException("Incorrect key newValue pairs");
 			}
 			int i = 0;
 			while (i<keyValue.length) {

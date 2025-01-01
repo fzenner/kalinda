@@ -59,11 +59,9 @@ public class AtomicSearchConstraint<F> extends PageState {
         } else {
             equalOrMinVar = PageStateVarColdLink.createPageStateVarColdLink(this, fieldAssistant);
         }
-        equalOrMinVar.setCheckRelevance(pageStateVarIntf -> {return isConstraintIsActive();});
 
         if (maxValPossible) {
             maxVar = PageStateVarColdLink.createPageStateVarColdLink(this, fieldAssistant, "max-");
-            maxVar.setCheckRelevance(pageStateVarIntf -> {return (constraintType == ConstraintType.BETWEEN && isConstraintIsActive());});
         }
 
     }
@@ -92,9 +90,10 @@ public class AtomicSearchConstraint<F> extends PageState {
 
     public void setConstraintIsActive(boolean constraintIsActive) {
         this.constraintIsActive = constraintIsActive;
-//        if (!constraintIsActive) {   // CONTINUE HERE XXXXXXXXXXXXXXXXXXXXXXXXX check what to do in a fucntional way. calc error in HtmlPageVarField, in the PageVar or in the FieldAssistant
-//            clearErrors();
-//        }
+        equalOrMinVar.setIsRelevant(constraintIsActive);
+        if (maxVar != null && constraintType == ConstraintType.BETWEEN) {
+            maxVar.setIsRelevant(constraintIsActive);
+        }
     }
 
     public ConstraintType getConstraintType() {

@@ -127,14 +127,14 @@ public class WebFrontendDispatchServlet extends HttpServlet {
 
 	/**
 	 * Part of the URI that indicates that files (including templates) in the web frontend are being requested.
-	 * This value should always match the urlPattern of this servlet except for the wildcard at the end of the 
+	 * This newValue should always match the urlPattern of this servlet except for the wildcard at the end of the
 	 * URL pattern. 
 	 */
 	public static final String WEB_FRONTEND_URI_PREFIX = "/webFrontend/";
 	
 	/**
 	 * The folder in which we look for web frontend files (including templates). Slashes will be added by the functions
-	 * that use this value, so you do not have to worry.
+	 * that use this newValue, so you do not have to worry.
 	 */
 	public static final String WEB_FRONTEND_CLASSPATH_SUBFOLDER = "webFrontend";
 	
@@ -279,6 +279,7 @@ public class WebFrontendDispatchServlet extends HttpServlet {
 			case "IntegerFieldRequiredDisableTestPage" -> new IntegerFieldTestPageDisable("IntegerFieldRequiredDisableTestPage", "IntegerFieldRequiredDisableTestPage", true);
 			case "IntegerFieldOptionalDisableTestPage" -> new IntegerFieldTestPageDisable("IntegerFieldOptionalDisableTestPage", "IntegerFieldOptionalDisableTestPage", false);
 			case "MirroredIntegerFieldTestPageDisable" -> new MirroredIntegerFieldTestPageDisable("IntegerFieldTestPageDisable", "IntegerFieldTestPageDisable");
+			case "DateTimeTestPage" -> new DateTimeTestPage("DateTimeTestPage", "DateTimeTestPage", true);
 
 			case "Navigator" -> new NavigatorPage(1, userSession);
 			default -> null;

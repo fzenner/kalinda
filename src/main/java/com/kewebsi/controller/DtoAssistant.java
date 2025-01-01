@@ -436,7 +436,7 @@ public abstract class DtoAssistant<T> {
 				PageStateVarIntf pageStateVar = entityEditorState.getPageStateVar(fieldAssistant);
 
 				// If the pageVar has an error, we do not even read it.
-				// Otherwise we might read a (background) value that is not displayed
+				// Otherwise we might read a (background) newValue that is not displayed
 				var pve = pageStateVar.getEffectiveError();
 				if (pve != null) {
 					return new ExpectedClientDataError(pve);
