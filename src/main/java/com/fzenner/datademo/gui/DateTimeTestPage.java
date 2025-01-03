@@ -102,7 +102,7 @@ public class DateTimeTestPage extends HtmlPage {
 
         // dateTimeTestVar.setCheckRelevance( thisObj -> {return !checkBoxVar.getVal();});
 
-        HtmlPageVarFieldDateTime dateTimeTestField = new HtmlPageVarFieldDateTime(dateTimeTestVar, "idShouldBeTakenFromVar") {
+        HtmlPageVarFieldDateTime dateTimeTestField = new HtmlPageVarFieldDateTime(dateTimeTestVar, "dateTimeTestField") {
             @Override
             public boolean isDisabled() {
                 return this.pageStateVar.isMeaningless();

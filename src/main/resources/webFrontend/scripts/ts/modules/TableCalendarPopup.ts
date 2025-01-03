@@ -12,9 +12,10 @@ export class TableCalendarPopup extends CalendarPopup {
         return "kewebsi-table-calendar-popup"
     }
 
-    static create(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef): TableCalendarPopup {
+    static create(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef, idPrefix: string): TableCalendarPopup {
         const newEl = document.createElement(TableCalendarPopup.getTag()) as TableCalendarPopup;
-        newEl.configure(dateTimeEditorCompanion, guiDef);
+        dateTimeEditorCompanion.calendarPopup = newEl;
+        newEl.configure(dateTimeEditorCompanion, guiDef, idPrefix);
         return newEl;
     }
 

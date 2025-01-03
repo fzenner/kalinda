@@ -288,11 +288,11 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
         this.topDiv.appendChild(this.errorWrapper);
         this.errorWrapper.classList.add("vertStretchDiv");
 
-        this.dateEditor = this.createSubEditor("", 8);
-        this.timeEditor = this.createSubEditor("", 4);
+        this.dateEditor = this.createSubEditor("", 8, this.id + "-date");
+        this.timeEditor = this.createSubEditor("", 4, this.id + "-time");
 
   
-        this.calendarButton = createCalendarButton();
+        this.calendarButton = createCalendarButton(this.id + "-button");
     
         // A div that will contain the date field, the button, and the time field.
         const dateFieldButtonTimeFieldDiv = document.createElement("div");
@@ -335,8 +335,9 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     
     }
 
-    createSubEditor(text: string, size: number)  {
+    createSubEditor(text: string, size: number, id: string)  {
         let inputField = document.createElement("input")
+        inputField.id = id;
         inputField.type = "text";
         inputField.setAttribute("size", size.toString());
         inputField.value = text;
@@ -379,7 +380,7 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     }
 
     createCalendarPopup(guiDef: CalendarGuiDef) : StandardCalendarPopup {
-        const standardCalendarPopup =  StandardCalendarPopup.createCalendarPopup(this, guiDef)
+        const standardCalendarPopup =  StandardCalendarPopup.createCalendarPopup(this, guiDef, this.id)
         document.body.appendChild(standardCalendarPopup);
         return standardCalendarPopup;
     }

@@ -83,17 +83,16 @@ export type GuiDef = {
 }
 
 
-export type CanBeDisabled = {
+export type CanBeDisabled<T> = {
     disabled: boolean
-    // value: any
+    value: T
 }
 
-export type InputFieldGuiDef = CanBeDisabled & {
-	typeOfValue: string
+export type InputFieldGuiDef = CanBeDisabled<string> & {
+	typeOfValue: String  // Note that we also edit integers, floats etc in a simple input field
 	size: number
 	name: string
 	placeholder: string
-	value: string
 	required: boolean
 }
 

@@ -1,4 +1,4 @@
-TODO NEXT: Errorhandling and disabling see INtegerFieldTestPageDisable.
+TODO NEXT: Automated Testing and of DateTimeEditor status
 
 
 Analyse: Disabling von Feldern, die fehler enthalten können.

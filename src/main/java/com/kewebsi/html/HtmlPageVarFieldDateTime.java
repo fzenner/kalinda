@@ -24,9 +24,9 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
     protected LocalTime defaultTimeWhenDateIsSet;
 
 
-    public HtmlPageVarFieldDateTime(PageStateVarIntf<LocalDateTime> pageStateVar, String idPrefix) {
+    public HtmlPageVarFieldDateTime(PageStateVarIntf<LocalDateTime> pageStateVar, String id) {
         this.pageStateVar = pageStateVar;
-        this.id = idPrefix + pageStateVar.getPageVarId();
+        this.id = id;
     }
 
 
