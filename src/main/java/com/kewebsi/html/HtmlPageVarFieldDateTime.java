@@ -198,6 +198,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
 
     @Override
     public void setValueValidatingAllowNull(LocalDateTime val) {
+
         pageStateVar.setValueFromClient(val);  // TODO: Review null handling.
         setClientIsSynced();
     }

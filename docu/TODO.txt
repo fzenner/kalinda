@@ -1,4 +1,22 @@
-TODO NEXT: Automated Testing and of DateTimeEditor status
+TODO NEXT: Review sync handling:
+
+public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarEditor<T> {
+    /**
+     * A field is not synced, when the gui has delivered a newValue that could not be stored in the PageStateVar.
+     * The initial newValue is true, since we create a field with the newValue from the
+     * Example case: Error when the 31.2.2022 is entered as date.
+     */
+    protected boolean clientIsSynced = true;
+
+    protected ClientSyncState clientSyncState;
+
+
+public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
+    protected boolean isInSyncWithGui = true;
+
+
+Refactoring Idea: Investigate whether object setting (e.g. datetime) and string setting can be unified. Consider
+treating an empty string as null value at the beginning of the process chain.
 
 
 Analyse: Disabling von Feldern, die fehler enthalten können.

@@ -266,14 +266,21 @@ export function invokeServerCallbackForHtmlElement(serverMsgHandler: string, com
 
 export class SessionHandling {
 
-	static ajaxCall(requestObj, resultCallback: (payload: string, status: number) => void) {
+
+    static callsInProgress : number = 0
+
+    static delayInterval = 100 // milliseconds
+    static maxTotalDelay = 1000 // milliseconds
+
+
+
+	static async ajaxCall(requestObj, resultCallback: (payload: string, status: number) => void) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "/ajaxServlet", true);
 		xhttp.setRequestHeader("Content-type", "application/json");
 
 		xhttp.setRequestHeader("SENDING_CLIENT_URL", window.location.href);   // IS NOT NEEDED: Will be transferred as standard header. TODO: Remove
 		let gepid = document.hasOwnProperty("globalEditPageId") ? document["globalEditPageId"] : -1;
-		let obj = document as object;
 
 		if (typeof gepid === "number" && gepid !== null && gepid != undefined && gepid > 0) {
 			xhttp.setRequestHeader("EDIT_PAGE_ID", gepid.toString());
@@ -283,13 +290,41 @@ export class SessionHandling {
 
 		xhttp.onreadystatechange = function () {
 			if (this.readyState == 4) {
+                SessionHandling.callsInProgress--
+                if (SessionHandling.callsInProgress < 0) {
+                    console.warn(`SessionHandling.callsInProgress was ${SessionHandling.callsInProgress}. We reset it to 0.`)
+                    SessionHandling.callsInProgress = 0
+                }
 				resultCallback(this.responseText, this.status);
 			}
 		}
 		xhttp.withCredentials = true;
 
 		let requestJson = JSON.stringify(requestObj);
-		xhttp.send(requestJson);
+        
+
+        let waitMore = false;
+        do {
+            let totalTimeWaited = 0;
+            if (SessionHandling.callsInProgress > 0) {
+                console.log(`Delaying send because ${SessionHandling.callsInProgress} calls in progress. Waited so far: ${totalTimeWaited} ms`)
+                await delay(SessionHandling.delayInterval);
+                totalTimeWaited += SessionHandling.delayInterval
+                if (SessionHandling.callsInProgress > 0) {
+                    if (totalTimeWaited < SessionHandling.maxTotalDelay) {
+                        waitMore = true
+                    } else {
+                        console.warn(`Reached max delay time. Resetting calls in progress to 0`)
+                        SessionHandling.callsInProgress = 0;
+                    }
+                }
+            }
+        } while (waitMore);
+
+
+		this.callsInProgress++
+        xhttp.send(requestJson);
+        
 	}
 
 	/**
@@ -589,3 +624,7 @@ export function closeErrorModal() {
 export function warn(msg: string) {
 	console.log("WARNING:" + msg);
 }
+
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }

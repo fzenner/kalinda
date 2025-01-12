@@ -58,7 +58,7 @@ public class DateTimeTestPage extends HtmlPage {
                     int min = 1900;
                     int max = 2100;
                     if (!isBetweenIncluding(val.getYear(), min, max)) {
-                        return new FieldError(this, "Value out of range. Must be between ", val.toString());
+                        return new FieldError(this, String.format("Value out of range. Must be between %d and %d ", min, max), val.toString());
                     }
                     return super.validate(val);
                 }

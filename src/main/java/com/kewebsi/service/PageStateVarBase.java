@@ -133,7 +133,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
 
     public void setValueFromClient(F valueObject) {
-        validateObjectAndSetValueAndError(valueObject);
+        validateObjectAndSetValueAndErrorAllowNull(valueObject);
         // setClientSyncState(ClientSyncState.SYNCHRONIZED);
     }
 
