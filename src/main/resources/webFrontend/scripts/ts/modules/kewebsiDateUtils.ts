@@ -96,6 +96,18 @@ export function parseDate(dateStr: string, monthBeforeDay: boolean, yearFirst: b
         }
     }
 
+    if (year < 1500 || year > 10000) {
+        return {errorMessage: `Invalid date. Year (${year}) is out of range.`};
+    }
+
+    if (month < 1 || month > 12) {
+        return {errorMessage: `Invalid date. Month (${month}) is out of range.`};
+    }
+
+    if (day < 1 || day > 31) {
+        return {errorMessage: `Invalid date. Month (${month}) is out of range.`};
+    }
+
     const resultDate : LocalDate = {year: year, month: month, day: day}; // Note that we do not check here, whether the date is possible. (E.g. 33.1.2020)
     return resultDate;
 }

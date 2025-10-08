@@ -5,13 +5,11 @@ import com.fzenner.datademo.web.UserSession;
 import com.fzenner.datademo.web.outmsg.CheckBoxGuiDef;
 import com.fzenner.datademo.web.outmsg.GuiDef;
 import com.fzenner.datademo.web.outmsg.MsgAjaxResponse;
-import com.kewebsi.controller.StandardController;
-import com.kewebsi.controller.StaticGuiDelegate;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.DataOrError;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.*;
 import com.kewebsi.service.PageVarError;
 
-import java.util.HashMap;
 import java.util.function.Function;
 
 /**
@@ -22,6 +20,7 @@ import java.util.function.Function;
 public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements CheckBoxClickHandler {
 
     protected String fieldName;
+    Function<Boolean, DataOrError<Boolean>> customClickAction = null;
 
     public HtmlCheckbox(PageStateVarIntf<Boolean> pageStateVar, String id) {
         this.pageStateVar = pageStateVar;
@@ -45,7 +44,7 @@ public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements Ch
         setClientIsSynced();
     }
 
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         if (isDisabled()) {
             return null;
         }
@@ -66,8 +65,18 @@ public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements Ch
 
     @Override
     public MsgAjaxResponse handleClick(boolean checked, JsonNode rootNode, UserSession userSession) {
-        pageStateVar.setValueFromClient(checked);
-        return MsgAjaxResponse.createSuccessMsg();
+        if (customClickAction != null) {
+            var newValOrOrror = customClickAction.apply(checked);
+            if (!newValOrOrror.hasError()) {
+                pageStateVar.setValueFromClient(checked);
+                return MsgAjaxResponse.createSuccessMsg();
+            } else {
+                return MsgAjaxResponse.createErrorMsg(newValOrOrror.getError().getErrorText());
+            }
+        } else {
+            pageStateVar.setValueFromClient(checked);
+            return MsgAjaxResponse.createSuccessMsg();
+        }
     }
 
 
@@ -81,15 +90,8 @@ public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements Ch
         return guiDef;
     }
 
-
-//    @Override
-//    public boolean isContentOrGuiDefModified() {
-//        return false;
-//    }
-//
-//    @Override
-//    public void setContentOrGuiDefNotModified() {
-//
-//    }
+    public void setCustomClickAction(Function<Boolean, DataOrError<Boolean>> customClickAction) {
+        this.customClickAction = customClickAction;
+    }
 
 }

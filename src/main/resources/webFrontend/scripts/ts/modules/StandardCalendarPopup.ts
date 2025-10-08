@@ -9,15 +9,16 @@ import { CS_MESSAGE, MsgCalendarEditorPopupChange } from "./jointTypes";
 
 
 export class StandardCalendarPopup extends CalendarPopup {
-    
+
     static getTag() : string {
         return "kewebsi-standard-calendar-popup"
     }
 
-    static createCalendarPopup(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef): StandardCalendarPopup {
+    static createCalendarPopup(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef, idPrefix: string): StandardCalendarPopup {
         const newEl = document.createElement(StandardCalendarPopup.getTag()) as StandardCalendarPopup;
+        dateTimeEditorCompanion.calendarPopup = newEl;
 
-        newEl.configure(dateTimeEditorCompanion, guiDef);
+        newEl.configure(dateTimeEditorCompanion, guiDef, idPrefix);
         return newEl;
     }
 

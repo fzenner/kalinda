@@ -6,7 +6,15 @@ export type LocalDateTime = {
 
 export type LocalDate = {
     readonly year: number
+
+    /**
+     * 1-based: January is 1, December is 12
+     */
     readonly month: number
+
+    /**
+     * 1-based: January is 1-31
+     */
     readonly day: number
 
 }

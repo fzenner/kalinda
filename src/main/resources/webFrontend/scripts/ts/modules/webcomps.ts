@@ -5,6 +5,7 @@ import { StandardCalendarPopup } from "./StandardCalendarPopup";
 import { KewebsiInputElement } from "./KewebsiInputElement";
 
 import { Powertable } from "./Powertable";
+import { InputElementError } from "./InputFieldStates";
 
 
 export class MyFirstWebComp extends HTMLElement {
@@ -20,7 +21,11 @@ export class MyFirstWebComp extends HTMLElement {
 export interface WebCompSupportingUpdates {
     updateModifications(modifications: GuiDef): void;
     setErrorMessageForOverallComponent(errorMsg: string);  // TODO: Consider to rename to setServerErrorMsg
+    hasError(): boolean;
+    clearData();
     clearError();
+    getError(): InputElementError;
+
   }
 
 

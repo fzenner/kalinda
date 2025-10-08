@@ -49,8 +49,8 @@ export class TableDateTimeEditorCompanion extends TableEditorCompanion<HTMLDivEl
     // popupDisplayedYear?: number;
     // popupDisplayedMonth?: number;
 
-    constructor(el: HTMLDivElement, replacingSpanFieldId: string, oldValue: string) {
-        super(el, replacingSpanFieldId, oldValue);
+    constructor(el: HTMLDivElement, replacingSpanFieldId: string, oldValue: string, idPrefix: string) {
+        super(el, replacingSpanFieldId, oldValue, idPrefix);
     }
 
     override getStringValue() : string {
@@ -196,9 +196,10 @@ export function createTableDateTimeEditorWithCompanion(td: HTMLTableCellElement,
     topElement.classList.add(TABLE_DATE_TIME_EDITOR_CLASS)
     topElement.id = idOfNewElement;
 
+
     var spanFieldInTd = td.querySelector(".tableCellContentSpan") as HTMLElement;
 
-    const companion = new TableDateTimeEditorCompanion(topElement, spanFieldInTd.id, spanFieldInTd.textContent)
+    const companion = new TableDateTimeEditorCompanion(topElement, spanFieldInTd.id, spanFieldInTd.textContent, idOfNewElement)
 
     companion.errorWrapper =  document.createElement("div");
     topElement.appendChild(companion.errorWrapper);
@@ -235,7 +236,7 @@ export function createTableDateTimeEditorWithCompanion(td: HTMLTableCellElement,
     companion.dateEditor = createSubEditor(dateStr, 8);
     companion.timeEditor = createSubEditor(timeStr, 4);
 
-    companion.calendarButton = createCalendarButton();
+    companion.calendarButton = createCalendarButton(idOfNewElement + "-button");
 
     const dateFieldButtonTimeFieldDiv = document.createElement("div");
     companion.errorWrapper.appendChild(dateFieldButtonTimeFieldDiv);    
@@ -388,13 +389,13 @@ function sendEditorCreateRequestToServer(editorTopDiv: HTMLElement) {
         day: date.day,
     };
 
-    let createPopupCalendarForCallback = (calendarGuiDef: CalendarGuiDef) => createCalendarPopup(dateTimeEditor, calendarGuiDef);
+    let createPopupCalendarForCallback = (calendarGuiDef: CalendarGuiDef) => createCalendarPopup(dateTimeEditor, calendarGuiDef, this.idPrefix);
 
     SessionHandling.ajaxCallWithCallback(msg, createPopupCalendarForCallback);
 }
 
-export function createCalendarPopup(dateTimeEditorCompanion: TableDateTimeEditorCompanion, guiDef: CalendarGuiDef) : TableCalendarPopup {
-    const tableCalendarPopup =  TableCalendarPopup.create(dateTimeEditorCompanion, guiDef)
+export function createCalendarPopup(dateTimeEditorCompanion: TableDateTimeEditorCompanion, guiDef: CalendarGuiDef, idPrefix: string) : TableCalendarPopup {
+    const tableCalendarPopup =  TableCalendarPopup.create(dateTimeEditorCompanion, guiDef, idPrefix)
     document.body.appendChild(tableCalendarPopup);
     return tableCalendarPopup;
 

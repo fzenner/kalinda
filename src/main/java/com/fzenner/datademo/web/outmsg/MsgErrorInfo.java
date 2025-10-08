@@ -39,10 +39,10 @@ public class MsgErrorInfo extends MsgJsonOut{
 		this.errorCode = errorCode;
 	}
 	
-	public MsgErrorInfo(ErrorInfo errorInfo) {
+	public MsgErrorInfo(ErrorUpdate errorUpdate) {
 		super(MsgKewebsiOut.ERROR_INFO);
-		this.errorText = errorInfo.getErrorText();
-		this.errorCode = errorInfo.getErrorCode();
+		this.errorText = errorUpdate.getErrorText();
+		this.errorCode = errorUpdate.getErrorCode();
 	}
 	
 	public MsgErrorInfo(ValueAndError<?> valueAndError) {
@@ -50,9 +50,9 @@ public class MsgErrorInfo extends MsgJsonOut{
 		if (valueAndError.hasValue()) {
 			throw new  CodingErrorException("Attempt to generate an error message when no error has occurred.");
 		}
-		ErrorInfo errorInfo = valueAndError.getErrorInfo();
-		this.errorText = errorInfo.getErrorText();
-		this.errorCode = errorInfo.getErrorCode();
+		ErrorUpdate errorUpdate = valueAndError.getErrorInfo();
+		this.errorText = errorUpdate.getErrorText();
+		this.errorCode = errorUpdate.getErrorCode();
 	}
 	
 	@Override

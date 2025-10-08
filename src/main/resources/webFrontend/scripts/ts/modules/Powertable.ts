@@ -536,7 +536,7 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 
 		// createTableEditorCompanionForStandardStringEditor(newInputEl, spanFieldInTd);
 
-		new StandardStringEditorCompanion(newInputEl,spanFieldInTd);
+		new StandardStringEditorCompanion(newInputEl,spanFieldInTd, TAB_EDIT_FIELD_ID);
 
 		
 		newInputEl.focus();
@@ -575,7 +575,7 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 			setHasEditorChild(tdElement, true);
 			// newInputEl.setAttribute(OLD_VALUE_ATTR_NAME, spanFieldInTdText);
 			// newInputEl.setAttribute(OLD_SPAN_ID_ATTR_NAME, spanFieldInTd.id);
-			new StandardStringEditorCompanion(newInputEl, spanFieldInTd);
+			new StandardStringEditorCompanion(newInputEl, spanFieldInTd, TAB_EDIT_FIELD_ID);
 			// createTableEditorCompanionForStandardStringEditor(newInputEl, spanFieldInTd);
 			newInputEl.focus();
 			tdElement.style.backgroundColor = "darksalmon"; 

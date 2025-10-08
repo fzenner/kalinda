@@ -97,13 +97,13 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 //        }
 //    }
 
-    public ErrorInfo calculateModificationOfErrorInfoToSendToClient() {
+    public ErrorUpdate calculateModificationOfErrorInfoToSendToClient() {
         var errorOld = getErrorOld();
         var errorNew = getEffectiveError();
         return calculateModificationOfErrorInfoToSendToClient(errorOld, errorNew);
     };
 
-    public static ErrorInfo calculateModificationOfErrorInfoToSendToClient(PageVarError oldError, PageVarError newError) {
+    public static ErrorUpdate calculateModificationOfErrorInfoToSendToClient(PageVarError oldError, PageVarError newError) {
 
         if (Objects.equals(oldError, newError)) {
             return null;
@@ -122,7 +122,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
                 // If there is only one field monitoring the page var connected to this field, then we would actually
                 // not need to return any error info here and hence return null.
                 // But a second connected field might still be showing a server side error, which it should remove now.
-                return ErrorInfo.wireNull();
+                return ErrorUpdate.wireNull();
             }
             if (newError.isClientSideError()) {
                 return null;
@@ -134,7 +134,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         // When here, oldError is a server side error.
 
         if (newError == null) {
-            return ErrorInfo.wireNull();  // Server error display on the client side should be removed.
+            return ErrorUpdate.wireNull();  // Server error display on the client side should be removed.
         }
 
         if (newError.isClientSideError()) {
@@ -146,14 +146,15 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     }
 
 
-
-    public T calculateModificationOfValue() {
-        T valueModification = null;
-        if (valueModified()) {
-            valueModification = getValue();
+    public ValueChange<T> calculateModificationOfValue() {
+        if (! valueModified()) return null;
+        T newValue = getValue();
+        if (newValue == null) {
+            return new ValueChange<>(null);
         }
-        return valueModification;
-    };
+        return new ValueChange<>(newValue);
+    }
+
 
     public Boolean calculateModificationOfRequired() {
         Boolean requiredModification = null;
@@ -183,7 +184,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         }
 
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorInfo = new ErrorInfo(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
         }
     }
 
@@ -193,9 +194,9 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         return result;
     }
 
-    public ErrorInfo calcErrorInfo() {
+    public ErrorUpdate calcErrorInfo() {
         if (pageStateVar.hasEffectiveServerSideError()) {
-            return new ErrorInfo(pageStateVar.getEffectiveError().getErrorMsg());
+            return new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
         }
         return null;
     }

@@ -1,13 +1,11 @@
 package com.kewebsi.html;
 
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kewebsi.errorhandling.CanHaveError;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.table.HtmlPowerTable;
 import com.kewebsi.html.table.PowerTableModel;
 import com.kewebsi.util.CommonUtils;
-import com.kewebsi.util.JsonUtils;
 
 public class HtmlTableCellSpan extends SmartTag implements CanHaveError {
 
@@ -57,12 +55,12 @@ public class HtmlTableCellSpan extends SmartTag implements CanHaveError {
 
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         PowerTableModel<?> model = table.getModel();
         var error = model.getErrorCheckingForeignUpdates(rowIdx, columnHeader);
         if (error != null) {
             var errorDebugRemoveMe = model.getErrorCheckingForeignUpdates(rowIdx, columnHeader);
-            return new ErrorInfo(error.getMessage());
+            return new ErrorUpdate(error.getMessage());
 
         }
         return null;

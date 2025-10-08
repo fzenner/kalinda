@@ -6,7 +6,7 @@ import com.fzenner.datademo.web.UserSession;
 import com.fzenner.datademo.web.outmsg.GuiDef;
 import com.fzenner.datademo.web.outmsg.MsgAjaxResponse;
 import com.kewebsi.controller.FieldAssistantEnumIntf;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 import com.kewebsi.util.CommonUtils;
 import com.kewebsi.util.JsonUtils;
@@ -184,7 +184,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
     }
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         if (pageStateVar.hasEffectiveError()) {
             PageVarError error = pageStateVar.getEffectiveError();
             return error.getErrorInfo();

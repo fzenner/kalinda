@@ -279,6 +279,8 @@ public class WebFrontendDispatchServlet extends HttpServlet {
 			case "IntegerFieldRequiredDisableTestPage" -> new IntegerFieldTestPageDisable("IntegerFieldRequiredDisableTestPage", "IntegerFieldRequiredDisableTestPage", true);
 			case "IntegerFieldOptionalDisableTestPage" -> new IntegerFieldTestPageDisable("IntegerFieldOptionalDisableTestPage", "IntegerFieldOptionalDisableTestPage", false);
 			case "MirroredIntegerFieldTestPageDisable" -> new MirroredIntegerFieldTestPageDisable("IntegerFieldTestPageDisable", "IntegerFieldTestPageDisable");
+			case "DateTimeRequiredDisableTestPage" -> new DateTimeTestPage("DateTimeTestPage", "DateTimeTestPage", true);
+			case "DateTimeOptionalDisableTestPage" -> new DateTimeTestPage("DateTimeTestPage", "DateTimeTestPage", false);
 
 			case "Navigator" -> new NavigatorPage(1, userSession);
 			default -> null;

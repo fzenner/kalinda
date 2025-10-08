@@ -1,6 +1,5 @@
 package com.kewebsi.html;
 
-import com.kewebsi.errorhandling.ErrorInfo;
 import com.kewebsi.service.PageVarError;
 
 import java.time.LocalDate;

@@ -1,6 +1,6 @@
 package com.kewebsi.html;
 
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 
 public class HtmlRadioButton extends StringDisplay implements PageVarEditor<String> {
@@ -101,7 +101,7 @@ public class HtmlRadioButton extends StringDisplay implements PageVarEditor<Stri
     }
 
     @Override
-    public ErrorInfo getErrorInfoToDisplayToClient() {
+    public ErrorUpdate getErrorInfoToDisplayToClient() {
         var pageStateVar = getPageStateVar();
         if (pageStateVar != null) {
             if (pageStateVar.hasEffectiveError()) {

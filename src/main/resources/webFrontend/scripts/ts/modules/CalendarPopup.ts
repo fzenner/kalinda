@@ -17,6 +17,8 @@ import { LocalDate } from "./dateTime";
 
 export abstract class CalendarPopup extends HTMLElement {
 
+    idPrefixForChildren: string
+
     //static tag = "kewebsi-calendar-popup";
     static getTag() : string {
         throw new Error("CalendarPopup.getTag must be overloaded");
@@ -125,7 +127,9 @@ export abstract class CalendarPopup extends HTMLElement {
     // }
 
 
-    configure(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef): void {
+    configure(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef, idPrefix: string): void {
+
+        this.idPrefixForChildren = idPrefix
 
         this.centerChildrenParent = document.createElement("DIV") as HTMLDivElement;
         const centerChildrenParent = this.centerChildrenParent;
@@ -137,7 +141,7 @@ export abstract class CalendarPopup extends HTMLElement {
         centerChildrenParent.addEventListener("keydown", (e: KeyboardEvent) => { this.handleKeyDownOnPopupOuterDiv(e, dateTimeEditorCompanion) });
         centerChildrenParent.id = "popupCenterChildrenParentId";
         centerChildrenParent.classList.add("center-children-parent");
-        dateTimeEditorCompanion.calendarPopup = centerChildrenParent;
+
 
         let centerChildrenChild = createChildByTagName(centerChildrenParent, "div");
         centerChildrenChild.classList.add("center-children-child");
@@ -146,6 +150,7 @@ export abstract class CalendarPopup extends HTMLElement {
         divForCloseX.classList.add("div-for-close-x");
 
         let cancelButtonX = createChildByTagName(divForCloseX, "div");
+        cancelButtonX.id = this.idPrefixForChildren + "-closeButton"
         cancelButtonX.classList.add("close");
         cancelButtonX.innerHTML = "&#x2716;"
         this.preventTabBackward(cancelButtonX);
@@ -155,12 +160,14 @@ export abstract class CalendarPopup extends HTMLElement {
         cancelButtonX.addEventListener("click", (e: MouseEvent) => { dateTimeEditorCompanion.closeCalendarPopup() });
 
         const buttonLeft = document.createElement("button");
+        buttonLeft.id = this.idPrefixForChildren + "-monthDown"
         buttonLeft.textContent = "<"
         buttonLeft.addEventListener("click", (e: MouseEvent) => { this.monthButtonClicked(dateTimeEditorCompanion, false) });;
         // buttonLeft.addEventListener("keydown", (e: KeyboardEvent) => {preventTab(e, true) });
 
 
         const buttonRight = document.createElement("button");
+        buttonRight.id = this.idPrefixForChildren + "-monthUp"
         buttonRight.textContent = ">";
         buttonRight.addEventListener("click", (e: MouseEvent) => { this.monthButtonClicked(dateTimeEditorCompanion, true) });
 
@@ -173,6 +180,7 @@ export abstract class CalendarPopup extends HTMLElement {
         // buttonRightSpan.tabIndex = 0;
 
         this.yearSelect = this.createYearSelectBox(dateTimeEditorCompanion, guiDef);
+        this.yearSelect.id = this.idPrefixForChildren + "-yearSelect"
         addIdClass(this.yearSelect, "yearSelect");
         this.yearSelect.tabIndex = 0;
 
@@ -245,7 +253,7 @@ export abstract class CalendarPopup extends HTMLElement {
         return [table, firstButton, lastButton];
     }
 
-    updateCalendarPopup(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef,) {
+    updateCalendarPopup(dateTimeEditorCompanion: CalendarPopupPartner, guiDef: CalendarGuiDef) {
 
         this.displayedYear = guiDef.year;
         this.displayedMonth = guiDef.month;
@@ -297,6 +305,7 @@ export abstract class CalendarPopup extends HTMLElement {
                 td.classList.add("calendar-td");
                 tr.appendChild(td);
                 let dayButton = document.createElement("button");
+                dayButton.id = this.idPrefixForChildren + "-" + dayOfMonthInWeekArray.month + "-" + dayOfMonthInWeekArray.day
                 if (firstButton == null) {
                     firstButton = dayButton;
                 }

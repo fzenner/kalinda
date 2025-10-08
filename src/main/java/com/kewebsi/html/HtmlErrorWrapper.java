@@ -2,13 +2,13 @@ package com.kewebsi.html;
 
 import com.kewebsi.errorhandling.CanHaveError;
 import com.kewebsi.errorhandling.CodingErrorException;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.util.DebugUtils;
 
 public class HtmlErrorWrapper extends HtmlDiv2 {
 
     HtmlTag wrappedTag;
-    ErrorInfo oldError;
+    ErrorUpdate oldError;
 
     HtmlSpanText errorDisplayTag;
 
@@ -59,7 +59,7 @@ public class HtmlErrorWrapper extends HtmlDiv2 {
     }
 
 
-    public ErrorInfo getErrorInfo() {
+    public ErrorUpdate getErrorInfo() {
         return ((CanHaveError) wrappedTag).getErrorInfoToDisplayToClient();
     }
 }

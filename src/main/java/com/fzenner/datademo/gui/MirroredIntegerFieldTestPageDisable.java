@@ -5,11 +5,14 @@ import com.fzenner.datademo.web.UserSession;
 import com.fzenner.datademo.web.outmsg.MsgAjaxResponse;
 import com.kewebsi.controller.SimpleFieldAssistantBool;
 import com.kewebsi.controller.SimpleFieldAssistantInt;
+import com.kewebsi.errorhandling.DataOrError;
 import com.kewebsi.html.*;
 import com.kewebsi.html.search.HtmlCheckbox;
 import com.kewebsi.service.FieldError;
 import com.kewebsi.service.PageStateVarColdLink;
 import com.kewebsi.service.PageVarIntColdLink;
+
+import java.util.function.Function;
 
 public class MirroredIntegerFieldTestPageDisable extends HtmlPage {
 
@@ -56,7 +59,17 @@ public class MirroredIntegerFieldTestPageDisable extends HtmlPage {
         };
         sfi1.setEditable(true);
         PageStateVarColdLink<Integer> intTestVar = PageVarIntColdLink.createPageStateVar(pageState, sfi1);
-        intTestVar.setCheckRelevance( thisObj -> {return !checkBoxVar.getVal();});
+
+        Function<Boolean, DataOrError<Boolean>> clearErrorWhenDisabled = (Boolean disabled) -> {
+            if (disabled) {
+                intTestVar.setIsRelevant(false);
+            } else {
+                intTestVar.setIsRelevant(true);
+            }
+            return new DataOrError<>(disabled);
+        };
+
+        checkBox.setCustomClickAction(clearErrorWhenDisabled);
 
 
 

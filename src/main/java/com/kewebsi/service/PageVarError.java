@@ -144,8 +144,8 @@ public class PageVarError extends Exception {
         return errorMsg;
     }
 
-    public ErrorInfo getErrorInfo() {
-        return new ErrorInfo(errorMsg);
+    public ErrorUpdate getErrorInfo() {
+        return new ErrorUpdate(errorMsg);
     }
 
     public ErrorType getErrorType() {

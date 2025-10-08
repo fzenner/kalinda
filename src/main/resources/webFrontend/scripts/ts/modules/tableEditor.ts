@@ -7,12 +7,14 @@ export abstract class TableEditorCompanion<T extends HTMLElement> implements Com
     replacingSpanFieldId: string;
     oldValue: string;
     restoreOldDataOnFocusLoss: boolean;
+    idPrefix: string
 
-    constructor(el: T, replacingSpanFieldId: string, oldValue: string) {
+    constructor(el: T, replacingSpanFieldId: string, oldValue: string, idPrefix: string) {
         this.setTopElement(el)
         this.replacingSpanFieldId = replacingSpanFieldId;
         this.oldValue = oldValue;
         this.restoreOldDataOnFocusLoss = false;
+        this.idPrefix = idPrefix + "-editor";
     }
     getTopElement(): T {
         return this.topElement;
@@ -34,8 +36,8 @@ export abstract class TableEditorCompanion<T extends HTMLElement> implements Com
 
 export class StandardStringEditorCompanion<T extends HTMLInputElement| HTMLSelectElement> extends TableEditorCompanion<T> {
 
-    constructor(el: T, replacingSpanField: HTMLSpanElement) {
-        super(el, replacingSpanField.id, replacingSpanField.textContent)
+    constructor(el: T, replacingSpanField: HTMLSpanElement, idPrefix: string) {
+        super(el, replacingSpanField.id, replacingSpanField.textContent, idPrefix)
     
     }
 

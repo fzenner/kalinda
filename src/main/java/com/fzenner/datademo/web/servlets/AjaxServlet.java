@@ -218,6 +218,7 @@ public class AjaxServlet extends HttpServlet {
 			ArrayList<Pair<HtmlTag, MsgClientUpdate>> htmlUpdates = page.collectPageUpdates();
 			msgAjaxResponse.addHtmlUpdates(htmlUpdates);
 
+			// TODO: Performance: Only reset the modification markers of the changed elements.
 			page.getBody().resetModificationMarkersRecursively();
 
 			/*

@@ -25,7 +25,7 @@ public class UpdateProcessor {
         if (htmlTag.isNewChild()) {
             MsgClientUpdate msg = MsgClientUpdate.newMsg(htmlTag);
             modifiedTags.add(new Pair(htmlTag, msg));
-            htmlTag.setNotModified();
+            // htmlTag.setNotModified();
 
             // We do not collect further modifications on this new tag nor modifications of children of new tags,
             // because those children will be rendered freshly on the client side anyway.

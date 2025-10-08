@@ -9,12 +9,8 @@ import { WebCompSupportingUpdates} from "./webcomps.js";
 import { InputElementError, InputElementStateInBrowser, InputElementStateInfoFromClientToServer } from "./InputFieldStates";
 import { applyVisiblity, getColorForInputElementState } from "./kewebsiPageComposer";
 import { FieldType, mapClientInputStateInBrowserToStateInfoForServer } from "./InputFieldStates";
+import { updateErrorGivenServerUpdate } from "./editor";
 
-
-type ElemenStateAndValueStr = {
-    state: InputElementStateInBrowser;
-    value: string
-}
 
 
 export class KewebsiInputElement extends HTMLElement implements WebCompSupportingUpdates {
@@ -115,9 +111,10 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
      */
     applyGuiDef(guiDef: GuiDef, createMode: boolean) {
 
-
-        this.updateErrorGivenServerUpdate(this, guiDef);
         let inputFieldGuiDef: InputFieldGuiDef = guiDef.tagSpecificData;
+
+        updateErrorGivenServerUpdate(this, guiDef.errorUpdate, inputFieldGuiDef.disabled, inputFieldGuiDef.value);
+
         applyVisiblity(this, guiDef);
 
         this.typeOfValue = stringToEnum(FieldType, inputFieldGuiDef.typeOfValue.toString())
@@ -175,58 +172,6 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
 
         this.setStyleForFieldState();
 
-    }
-
-    private updateErrorGivenServerUpdate(elm: WebCompSupportingUpdates, guiDef: GuiDef) {
-	
-        const inputFieldGuiDef: InputFieldGuiDef = guiDef.tagSpecificData;
-        if (isWellDefined(inputFieldGuiDef.disabled)) {
-            if (inputFieldGuiDef.disabled) {
-                if (this.hasError()) {
-                    this.setValue("")  // We do not show values with errors  when disabled.
-                }
-                this.clearError()  // We also do not show and forget the errors when disabled.
-            }
-        }
-
-        //
-        // Errors are similar to data. When there is no change, nothing is being communicated.
-        // "undefined" hence means "no change" - but not "no error"!
-        //
-        if (isWellDefined(guiDef.errorInfo)) {
-            const errorInfo = guiDef.errorInfo;
-            if (errorInfo) {
-                if (errorInfo.wireNull) {
-                    elm.clearError();
-                } else {
-                    if (!errorInfo.errorText) {  // if on string: false if empty, null or undefined
-                        errorInfo.errorText = "Unspecified Error from Server"
-                    }
-                    elm.setErrorMessageForOverallComponent(errorInfo.errorText); 
-                }
-            } else {
-                console.warn("Error info null received. Null properties are not expected to be received from the server");
-            }
-        } else {
-            // If there is no error info from the server. If there are multiple fields connected to a single (server-side) page variable,
-            // there might be the following situation:
-            // here was a syntax error on field one.
-            // The input was corrected in field two.
-            // The server sends no error information, since the error was client-side.
-            // The error on field one needs to be cleared, but is not, since no client side activity (change and focus loss) is done on field one.
-            // The clearing of the error is done by recognizing that we recognize the following state:
-            // - There is no server side error in the update
-            // - There is a new value in the update (the framework must make sure, that the server does not send an updated value when 
-            //   the request for the update at hand was the notification of a client side error)
-            // - We have a client side error on the input field
-            if (this.error) {
-                if (this.error.isClientSideError) {
-                    if (isWellDefined(inputFieldGuiDef.value)) {
-                        this.clearError()
-                    }
-                }
-            }
-        }
     }
 
     public isDisabled() : boolean {
@@ -331,6 +276,10 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
         this.inputEl.focus();
     }
 
+    clearData() {
+        this.setValue("")
+    }
+
     clearError() {
         this.inputEl.classList.add("textInput");
         if (this.errorDisplayCompanion) {
@@ -340,8 +289,12 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
         this.error = null;
     }
 
-    private hasError() {
+    public hasError() {
         return isWellDefined(this.error);
+    }
+
+    public getError() : InputElementError {
+        return this.error
     }
 
     setOldData() {

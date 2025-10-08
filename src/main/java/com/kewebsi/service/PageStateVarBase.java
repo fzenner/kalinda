@@ -131,7 +131,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
 
     public void setValueFromClient(F valueObject) {
-        validateObjectAndSetValueAndError(valueObject);
+        validateObjectAndSetValueAndErrorAllowNull(valueObject);
         // setClientSyncState(ClientSyncState.SYNCHRONIZED);
     }
 
@@ -486,7 +486,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
         return this;
     }
 
-    public static PageStateVarColdLink createPageStateVar(PageState pageState, SimpleFieldAssistant fieldAssistant) {
+    public static <G> PageStateVarColdLink<G> createPageStateVar(PageState pageState, SimpleFieldAssistant<G> fieldAssistant) {
         return createPageStateVar(pageState, fieldAssistant, null);
     }
 
@@ -539,15 +539,18 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
     @Override
     public boolean isRelevant() {
-        if (checkRelevance == null) {
-            return true;
-        } else {
-            return checkRelevance.apply(this);
-        }
+        return isRelevant;
     }
 
-    public void setCheckRelevance(Function<PageStateVarIntf, Boolean> checkRelevance) {
-        this.checkRelevance = checkRelevance;
+
+    public void setIsRelevant(boolean isRelevant) {
+        this.isRelevant = isRelevant;
+        if (!isRelevant) {
+            if (hasError()) {
+                clear();
+                clearError();
+            }
+        }
     }
 
 

@@ -467,29 +467,6 @@ export function applyVisiblity(elm: HTMLElement, guiDef: GuiDef) {
 	}
 }
 
-export function applyServerError(elm: WebCompSupportingUpdates, guiDef: GuiDef) {
-	
-	//
-	// Errors are similar to data. When there is no change, nothing is being communicated.
-	// "undefined" hence means "no change" - but not "no error"!
-	//
-	if (isWellDefined(guiDef.errorInfo)) {
-		const errorInfo = guiDef.errorInfo;
-		if (errorInfo) {
-			if (errorInfo.wireNull) {
-				elm.clearError();
-			} else {
-				if (!errorInfo.errorText) {  // if on string: false if empty, null or undefined
-					errorInfo.errorText = "Unspecified Error from Server"
-				}
-				elm.setErrorMessageForOverallComponent(errorInfo.errorText); 
-			}
-		} else {
-			console.warn("Error info null received. Null properties are not expected to be received from the server");
-		}
-	}
-}
-
 
 export function getColorForInputElementState(state: InputElementStateInBrowser) {
 	let color : string;
