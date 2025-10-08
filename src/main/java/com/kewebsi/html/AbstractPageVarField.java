@@ -1,6 +1,7 @@
 package com.kewebsi.html;
 
 import com.fzenner.datademo.web.outmsg.GuiDef;
+import com.fzenner.datademo.web.outmsg.ValueChange;
 import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 

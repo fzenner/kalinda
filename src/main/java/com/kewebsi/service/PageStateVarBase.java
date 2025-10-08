@@ -51,7 +51,9 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
     // real value.
     // protected PageVarError parsingError;
 
-    protected Function<PageStateVarIntf, Boolean> checkRelevance;
+    // protected Function<PageStateVarIntf, Boolean> checkRelevance;
+
+    protected boolean isRelevant = true;
 
     public PageStateVarBase() {
 

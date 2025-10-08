@@ -254,6 +254,14 @@ public class CommonUtils {
 		}
 	}
 
+	public static boolean isBetweenIncluding(int val, int min, int max) {
+		if (val >= min && val <= max) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public static final String[] arr(String... in) {
 		return in;
 	}
