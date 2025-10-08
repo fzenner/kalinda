@@ -1,7 +1,7 @@
 package com.fzenner.datademo.web.outmsg;
 
 import com.kewebsi.errorhandling.CodingErrorException;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.errorhandling.ValueAndError;
 
 

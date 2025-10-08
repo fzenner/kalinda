@@ -1,6 +1,6 @@
 package com.kewebsi.service;
 
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.PageStateVarIntf;
 
 import jakarta.validation.constraints.NotNull;

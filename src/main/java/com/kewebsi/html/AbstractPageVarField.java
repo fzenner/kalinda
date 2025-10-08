@@ -1,7 +1,7 @@
 package com.kewebsi.html;
 
 import com.fzenner.datademo.web.outmsg.GuiDef;
-import com.kewebsi.errorhandling.ErrorInfo;
+import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
 
 import java.util.Objects;
