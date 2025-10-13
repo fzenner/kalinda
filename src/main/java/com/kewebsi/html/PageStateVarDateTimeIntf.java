@@ -1,6 +1,7 @@
 package com.kewebsi.html;
 
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,14 +52,14 @@ public interface PageStateVarDateTimeIntf extends PageStateVarIntf<LocalDateTime
     public LocalTime getTimeBuffer();
 
 
-    public PageVarError getDateError();
+    public PageVarErrorCore getDateError();
 
-    public PageVarError getTimeError();
+    public PageVarErrorCore getTimeError();
 
     /**
      * An error that is not solely confined to the date or the time (Confined errors are typically syntax errors.
      */
-    public PageVarError getDateTimeError();
+    public PageVarErrorCore getDateTimeError();
 
 
 }

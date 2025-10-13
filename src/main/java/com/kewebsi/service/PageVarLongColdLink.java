@@ -47,13 +47,14 @@ public class PageVarLongColdLink extends PageStateVarColdLink<Long> {
         //
 
         if (this.hasError()) {
-            throw  new CodingErrorException("Attempt to get the value of a field with an error. " + " Error: " + this.getError().getErrorMsg() + " Field: " + this);
+            throw  new CodingErrorException("Attempt to get the value of a field with an error. " + " Error: " + this.getError().errorMsg() + " Field: " + this);
         }
 
         if (val == null) {
             String unparsedStringValue = getUnparsedStringValue();
             if (unparsedStringValue == null || unparsedStringValue.length() == 0) {
-                throw new PageVarError(this, "Field must not be empty!");
+                var pvec = PageVarErrorCore.createAndLinkServerSideError(this, "Field must not be empty!");
+                throw new PageVarError(pvec);
             }
         }
         return val;

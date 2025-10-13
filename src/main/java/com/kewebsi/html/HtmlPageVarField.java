@@ -8,6 +8,7 @@ import com.fzenner.datademo.web.outmsg.*;
 import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.errorhandling.MalformedClientDataException;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 import com.kewebsi.util.CommonUtils;
 
 import java.util.ArrayList;
@@ -42,15 +43,20 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
 
 
     public HtmlPageVarField(PageStateVarIntf pageStateVar, String id) {
-        this.pageStateVar = pageStateVar;
+        linkMeToPageStateVar(pageStateVar);
         this.id = id;
         setOldValuesToCurrentValues();
     }
 
     public HtmlPageVarField(PageStateVarIntf pageStateVar) {
-        this.pageStateVar = pageStateVar;
+        linkMeToPageStateVar(pageStateVar);
         this.id = pageStateVar.getPageVarId();
         setOldValuesToCurrentValues();
+    }
+
+    public void linkMeToPageStateVar(PageStateVarIntf pageStateVar) {
+        this.pageStateVar = pageStateVar;
+        pageStateVar.linkField(this);
     }
 
 
@@ -76,7 +82,7 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
     @Override
     public GuiDef getGuiDefUpdate() {
 
-        GuiDef guiDef = new GuiDef(getTagName(), getId(), calculateModificationOfVisibility(), calculateModificationOfErrorInfoToSendToClient());
+        GuiDef guiDef = new GuiDef(getTagName(), getId(), calculateModificationOfVisibility(), calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState());
         guiDef.setUpdateMode(GuiDef.UpdateMode.MODIFICATIONS_ONLY);
         Boolean modificationOfRequired = calculateModificationOfRequired();
         Boolean modificationOfDisabled = calculateModificationOfDisabled();
@@ -160,14 +166,14 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
 
     public void setNonNullValueValidating(String val) {
         this.lastReceivedVerbatimValue = val;
-        pageStateVar.setStringValueFromClient(val);
+        pageStateVar.setStringValueFromClient(val, this);
         setClientIsSynced();
     }
 
     @Override
     public void setValueValidatingAllowNull(String val) {
         this.lastReceivedVerbatimValue = val;
-        pageStateVar.setStringValueFromClientAllowNull(val);
+        pageStateVar.setStringValueFromClientAllowNull(val, this);
         setClientIsSynced();
     }
 
@@ -228,7 +234,7 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
             return null;
         }
         if (pageStateVar.hasEffectiveError()) {
-            PageVarError error = pageStateVar.getEffectiveError();
+            var error = pageStateVar.getEffectiveError();
             return error.getErrorInfo();
         }
         return null;
@@ -247,7 +253,7 @@ public class HtmlPageVarField extends AbstractPageVarField<String> implements In
                 }
 
                 case CLIENT_INPUT_NOT_TRANSMISSABLE -> {
-                    pageStateVar.setClientSideIncompleteOrParsingError();
+                    pageStateVar.setClientSideIncompleteOrParsingError(this);
                     setClientIsNotSynced(ClientSyncState.CLIENT_INPUT_UNPARSEABLE_ON_CLIENT);
                 }
                 case CLIENT_INPUT_FILLED_OK -> {

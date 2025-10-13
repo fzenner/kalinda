@@ -2,6 +2,10 @@ package com.kewebsi.html;
 
 import com.kewebsi.controller.SimpleFieldAssistant;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
+import com.kewebsi.service.PageVarErrorType;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -35,14 +39,20 @@ public interface PageStateVarIntf<F>  {
 
     public boolean getIsInSyncWithGui();
 
+    public ArrayList<PageVarEditor> getLinkedEditors();
+    public void linkField(PageVarEditor field);
+    public void unlinkField(PageVarEditor field);
+
     //
     // Setter
     //
-    public void setStringValueFromClient(String userInputString);
+    public void setStringValueFromClient(String userInputString, PageVarEditor field);
 
-    public void setStringValueFromClientAllowNull(String userInputString);
+    public void setStringValueFromClientAllowNull(String userInputString, PageVarEditor pageVarEditor);
 
-    public void setValueFromClient(F valueObject);
+    public PageVarEditor getLastUpdatingEditor();
+
+    public void setValueFromClient(F valueObject, PageVarEditor pageVarEditor);
 
     public void clear();
 
@@ -68,17 +78,17 @@ public interface PageStateVarIntf<F>  {
     // Error Handling
     //
 
-    public void setError(PageVarError error);
+    public void setError(PageVarErrorCore error);
 
-    public void setError(String errorMsg);
+    // public void setError(String errorMsg);
 
-    public void setClientSideIncompleteOrParsingError();
+    public void setClientSideIncompleteOrParsingError(PageVarEditor updatingEditor);
 
     public void setServerSideParsingError(String errorMsg);
 
-    public PageVarError getError();
+    public PageVarErrorCore getError();
 
-    public default PageVarError getEffectiveError() {
+    public default PageVarErrorCore getEffectiveError() {
         if (isMeaningless()) {
             return null;
         }
@@ -98,7 +108,7 @@ public interface PageStateVarIntf<F>  {
      * necessary.
      * @return
      */
-    public PageVarError validateAndCeckIfInvalidNull();
+    public PageVarErrorCore validateAndCeckIfInvalidNull();
 
 
 
@@ -116,7 +126,7 @@ public interface PageStateVarIntf<F>  {
             return false;
         }
         if (hasError()) {
-            if (getError().getErrorType() != PageVarError.ErrorType.CLIENT_DATA_NOT_TRANSMISSABLE) {
+            if (getError().errorType() != PageVarErrorType.CLIENT_DATA_NOT_TRANSMISSABLE) {
                 return true;
             }
         }

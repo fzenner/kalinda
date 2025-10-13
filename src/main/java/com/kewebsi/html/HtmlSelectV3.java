@@ -8,6 +8,7 @@ import com.fzenner.datademo.web.outmsg.MsgAjaxResponse;
 import com.kewebsi.controller.FieldAssistantEnumIntf;
 import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 import com.kewebsi.util.CommonUtils;
 import com.kewebsi.util.JsonUtils;
 
@@ -126,12 +127,12 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
 
     @Override
     public void setNonNullValueValidating(String val) {
-        pageStateVar.setStringValueFromClient(val);
+        pageStateVar.setStringValueFromClient(val, this);
     }
 
     @Override
     public void setValueValidatingAllowNull(String val) {
-        pageStateVar.setStringValueFromClientAllowNull(val);
+        pageStateVar.setStringValueFromClientAllowNull(val, this);
     }
 
     @Override
@@ -186,7 +187,7 @@ public class HtmlSelectV3 extends StringDisplay implements PageVarEditor<String>
     @Override
     public ErrorUpdate getErrorInfoToDisplayToClient() {
         if (pageStateVar.hasEffectiveError()) {
-            PageVarError error = pageStateVar.getEffectiveError();
+            PageVarErrorCore error = pageStateVar.getEffectiveError();
             return error.getErrorInfo();
         }
         return null;

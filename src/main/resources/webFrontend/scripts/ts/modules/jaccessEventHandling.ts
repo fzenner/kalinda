@@ -304,8 +304,8 @@ export class SessionHandling {
 
 
         let waitMore = false;
+        let totalTimeWaited = 0;
         do {
-            let totalTimeWaited = 0;
             if (SessionHandling.callsInProgress > 0) {
                 console.log(`Delaying send because ${SessionHandling.callsInProgress} calls in progress. Waited so far: ${totalTimeWaited} ms`)
                 await delay(SessionHandling.delayInterval);

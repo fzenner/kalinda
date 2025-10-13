@@ -185,3 +185,56 @@ StandardController.SMH_fieldDataEntered
 Thought
 =======
 Maybe we should make a principal distinction between fields holding business data (DTO-fields) and functional fields.
+
+
+Sequence of events that leads to a unintended state
+==========================================================
+Tow integer fields pointing to the same variable.
+1. Enter "123" in field 1. "123" will be displayed in all fields.
+2. Add "yy" in field 2 resulting in "123yy".
+3. Tab out of field so. FocusLost event is sent to the server.
+4. Client side error message is being displayed. Server status is "UNPARSEABLE"
+5. Add "xx" in field 1 resulting in "123xx".
+6. Delete "yy" in field 2 resulting in "123".
+7. Tab out of field 2.
+8. Note that field 1 still displays "123xx" whereas field 2 displays "123".
+
+Insight:
+When a once unparseable field becomes parseable again with the same value as when it was parseable, nothing changes
+on the variable and hence updates on other observing fields for this variable are not triggered.
+One solution would be to trigger updates on all fields when a field becomes parseable again, even if the value on the
+server side did not change. We would need to send the unchanged value from the server to the client to trigger the update.
+Unnecesary updates on the GUI could be triggered. They might interfere with focus handling, e.g. when we update a field
+that we just clicked into. (First test shows that this is not a problem.)
+
+Should work: Send a new value even if the value did not change. This forces an update on all fields.
+
+Finale Gedanken zum Thema "Ist der ClientSyncState an der Variable oder am Feld?"
+Wir entscheiden uns für folgende Strategie: Das letzte editierte Feld bestimmt den Wert der Variable. Alle anderen
+Felder werden aktualisiert mit dem am letzten übertragenen Wert. Der Synchronisationsstatus bezieht sich daher immmer
+zwischen der Variable und dem letzten editierten Feld.
+Offene Frage: Das letzte editierte Feld kann seine Daten (falsches Format) nicht übertragen. Wie aktualisieren wir die
+anderen Felder?
+Antwort: Wir sollten dem User zeigen, dass ein Feld, das einen "guten" Wert anzeigt, nicht der intendierte Wert ist,
+das in einem anderen Feld (nicht parsbar) versucht wurde einzutragen.
+D.j, der Server-Status synced/not synced sollte  auf dem Client optisch reflektiert werdem. Neuer Client-Status:
+NOT_SYNCED_BY_OTHER_FIELD.
+Woher weiß ein Feld, dass das Update, welches es gerade vom Server empfängt, nicht von ihm getriggert wurde?
+Wenn das Feld schon auf UNPARSEABLE/INCOMPLETE ist, dann wird es nicht auf NOT_SYNCED_BY_OTHER_FIELD umgeschaltet.
+Wenn es auf FILLED_OK / EMPTY.. ist, dann wird es auf NOT_SYNCED_BY_OTHER_FIELD umgeschaltet.
+
+Observation:
+When we edit and submit (by tab) a field with an unparseable value, then other fields still displaying the last successfully
+submitted value should display a visual indicator that they display a possibly unintended value.
+We need to handle the fact that there is an unsynced state better.
+
+Idea: There should be no clientSyncState at the field level, but only at the variable level.
+The clientSyncState of the variable is determined by the last field that was edited.
+All other fields are either in sync or not in sync, depending on the clientSyncState of the variable.
+The clientSyncState of the variable is set to NOT_SYNCED_BY_OTHER_FIELD when
+
+Problem: The clientSyncState of a field must be adapted when another field is out of sync.
+
+
+Problem: The pageVarError is on the variable. On the field we have an "oldError". That is not clean.
+

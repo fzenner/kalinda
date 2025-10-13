@@ -25,21 +25,20 @@ public class PageVarIntColdLink extends PageStateVarColdLink<Integer> {
 
 
     @Override
-    public PageVarError validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
+    public PageVarErrorCore validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
         try {
             val = Integer.parseInt(getUnparsedStringValue().trim());
             var error = this.fieldAssistant.validate(val);
             if (error != null) {
-                return new PageVarError(this, error);
+                return PageVarErrorCore.createAndLinkServerSideError(this, error);
+            } else {
+                clearError();
+                unparsedStringValue = null;
+                return null;
             }
-            clearError();
-            unparsedStringValue = null;
         } catch(Exception e) {
-            var newError = new PageVarError(this, "Not a valid number");
-            newError.setErrorType(PageVarError.ErrorType.SERVER_SIDE_PARSING);
-            setError(newError);
+            return PageVarErrorCore.createAndLinkServerSideParsingError(this, "Not a valid number");
         }
-        return getError();
     }
 
 

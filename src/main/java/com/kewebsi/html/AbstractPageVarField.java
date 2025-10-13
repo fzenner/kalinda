@@ -4,6 +4,7 @@ import com.fzenner.datademo.web.outmsg.GuiDef;
 import com.fzenner.datademo.web.outmsg.ValueChange;
 import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     protected ClientSyncState clientSyncState;
 
     protected T valueOld;
-    protected PageVarError errorOld = null;
+    protected PageVarErrorCore errorOld = null;
     protected boolean requiredOld;
     protected boolean disabledOld;
 
@@ -64,14 +65,14 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     public void setContentOrGuiDefNotModified() {
         setGuiDoesNotNeedRefresh();
         setOldValuesToCurrentValues();
-        setClientIsSynced();
+        // setClientIsSynced();  XXX we we wrongly assume here that the client is in sync
 
     }
 
 
     public void setOldValuesToCurrentValues() {
         setValueOld(getValue());
-        setErrorOld(getEffectiveError());
+        setErrorOld(getEffectivePageVarError());
         setDisabledOld(isDisabled());
         setRequiredOld(isRequired());
     }
@@ -98,47 +99,107 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 //        }
 //    }
 
-    public ErrorUpdate calculateModificationOfErrorInfoToSendToClient() {
+    public ErrorUpdate calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState() {
         var errorOld = getErrorOld();
-        var errorNew = getEffectiveError();
-        return calculateModificationOfErrorInfoToSendToClient(errorOld, errorNew);
+        var errorNew = getEffectivePageVarError();
+        return calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState(errorOld, errorNew);
     };
 
-    public static ErrorUpdate calculateModificationOfErrorInfoToSendToClient(PageVarError oldError, PageVarError newError) {
 
-        if (Objects.equals(oldError, newError)) {
+    public void getLatestEditingField() {
+
+    }
+
+    public static void log(String msg) {
+        System.out.println(msg);
+    }
+
+    public ErrorUpdate calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState(PageVarErrorCore oldError, PageVarErrorCore newError) {
+
+        log("calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState:" + this.id);
+
+        if (oldError == null && newError == null) {
+            log("pos001");
             return null;
         }
 
+        log("pos002");
         if (oldError == null) {
-
+            log("pos003");
             if (newError.isClientSideError()) {
-                return null;
+                log("pos004");
+                if (pageStateVar.getLastUpdatingEditor() == this) {
+                    log("pos005");
+                    // When here, the client has created a client side error and we are the field that has created it.
+                    // We do not need to inform the client about an error that it has created itself.
+                    return null;
+                }
+                log("pos006");
+                // When here, we have a client editor that not the last updating editor.
+                // But now another field has created a client side error on the same page var.
+                // (No error existed before at all.)
+                // This means, that the client is not in sync anymore (due to the other field).
+                // We need to inform the client about this error, since it might have a valid and synced looking value
+                // which we must assume does not reflect the users intention anymore because he has been edited
+                // (so far without successfully syncing) another field that is connected to the same page var.
+                setClientIsNotSynced(ClientSyncState.CLIENT_NOT_SYNCED_BY_OTHER_FIELD);
+                return new ErrorUpdate(ErrorUpdate.StandardErrorCodes.NOT_SYNCED_BY_OTHER_FIELD, "Sync error");
             }
+
+            log("pos007");
+
+            // When here, we have a new client side error replacing no error at all.
             return newError.getErrorInfo();
         }
 
+        log("pos008");
+
         if (oldError.isClientSideError()) {
+            log("pos009");
             if (newError == null) {
+                log("pos010");
                 // If there is only one field monitoring the page var connected to this field, then we would actually
                 // not need to return any error info here and hence return null.
                 // But a second connected field might still be showing a server side error, which it should remove now.
                 return ErrorUpdate.wireNull();
             }
             if (newError.isClientSideError()) {
-                return null;
+                log("pos011");
+                log("Last updating editor: " + pageStateVar.getLastUpdatingEditor());
+                if (pageStateVar.getLastUpdatingEditor() == this) {
+                    log("pos012");
+                    // When here, the client has created a (new) client side error (replacing an old client side error)
+                    // and we are the field that has created it.
+                    // We do not need to inform the client about an error that it has created itself.
+                    return null;
+                }
+                log("pos013");
+                // When here, we have a client editor that not the last updating editor.
+                // But now another field has created a client side error on the same page var.
+                // This means, that the client is not in sync anymore (due to the other field).
+                // We need to inform the client about this error, since it might have a valid and synced looking value
+                // which we must assume does not reflect the users intention anymore because he has been edited
+                // (so far without successfully syncing) another field that is connected to the same page var.
+                // If the editor had an older client side error, we will replace that error by the new one.
+                setClientIsNotSynced(ClientSyncState.CLIENT_NOT_SYNCED_BY_OTHER_FIELD);
+                return new ErrorUpdate(ErrorUpdate.StandardErrorCodes.NOT_SYNCED_BY_OTHER_FIELD, "Sync error");
             }
-
+            log("pos014");
+            // When here, we have a new server side error replacing a client side error.
             return newError.getErrorInfo();
         }
+        log("pos015");
 
         // When here, oldError is a server side error.
 
         if (newError == null) {
+            log("pos016");
             return ErrorUpdate.wireNull();  // Server error display on the client side should be removed.
         }
+        log("pos017");
 
         if (newError.isClientSideError()) {
+            log("pos018");
             // return ErrorInfo.wireNull();  // Server error display on the client side should be removed.
             return null;  // The client is solely responsible for handling client side errors.
         }
@@ -185,7 +246,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
         }
 
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().errorMsg());
         }
     }
 
@@ -197,7 +258,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 
     public ErrorUpdate calcErrorInfo() {
         if (pageStateVar.hasEffectiveServerSideError()) {
-            return new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
+            return new ErrorUpdate(pageStateVar.getEffectiveError().errorMsg());
         }
         return null;
     }
@@ -225,12 +286,37 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 
     protected boolean valueModified() {
 
+        T oldValue = getValueOld();
+        T currentValue = getValue();
         // Only when the client is supposed to by in sync, we update the data.
-        if (! getClientIsSynced()) {
+        if (! getClientIsSynced()) {  // We need to distinguish between not synced by this field and not synced by other fields. switch on clientSyncState
+            var lue = pageStateVar.getLastUpdatingEditor();
+            if (lue != this && lue.getClientSyncState() == ClientSyncState.CLIENT_IS_SYNCED) {
+                // When here, we are not the last editor that has updated the page var and we
+                // are out of sync due to an earlier bad input.
+                // If the value has changed, we do not want to propagate this change to the client, since it must
+                // have been changed by another field that successfully updated the page var.
+                // Hence we do not update our value, since it might be out of date.
+                // We do even update when the old value is the same as the new value, since the last editing field
+                // might have switched from unparseable to parseable input without changing the value in the page var
+                // while we had an unparseable string in the field ourselves.
+                // Consider the following sequence of events:
+                // - Field A and Field B are connected to the same page var P.
+                // - The user enters "1" in field A. The value 1 is stored in P and also displaxyed in field B.
+                // - The user enters "yyy" in field B. This is unparseable. No value change happens. Error info is updated on the fields.
+                // - The users entes "xxx" in field A. This is unparseable. No value change happens. Error info is updated on the fields.
+                // - The user enters "1" again in field A. This is parseable and the value 1 is stored in P again but the value has
+                //   not changed. But field B must be updated to display "1" again instead of "yyy".
+
+                return true;
+            }
+
+            // When here, we are the last editor that has updated the page var and we
+            // are out of sync due to our own bad input. There is no new value to propagate to the client.
             return false;
         }
 
-        T currentValue = getValue();
+
         if (! java.util.Objects.equals(currentValue, getValueOld())) {
             return true;
         }
@@ -261,11 +347,11 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 
     }
 
-    public PageVarError getErrorOld() {
+    public PageVarErrorCore getErrorOld() {
         return errorOld;
     }
 
-    public void setErrorOld(PageVarError errorOld) {
+    public void setErrorOld(PageVarErrorCore errorOld) {
         this.errorOld = errorOld;
     }
 
@@ -273,28 +359,34 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 
     public boolean errorToDisplayToClientIsModified() {
 
-        PageVarError oldError = getErrorOld();
-        PageVarError newError = getEffectiveError();
+        PageVarErrorCore oldError = getErrorOld();
+        PageVarErrorCore newError = getEffectivePageVarError();
 
-        if (Objects.equals(getErrorOld(), getEffectiveError())) {
-            return false;
-        }
-
-        if (oldError == null) {
-            return true;   // When here, newError is not null.
-        }
-
-        if (newError == null) {
-            return true;   // When here, oldError is not null.
-        }
-
-        // When here, oldError and newError are both not null and not exactly the same.
-        // When old and new error are clientSideErrors, we really consider them equal
-        if (oldError.isClientSideError() && newError.isClientSideError()) {
+        if (Objects.equals(oldError, newError)) {
             return false;
         }
 
         return true;
+//
+//        if (Objects.equals(getErrorOld(), getEffectiveError())) {
+//            return false;
+//        }
+//
+//        if (oldError == null) {
+//            return true;   // When here, newError is not null.
+//        }
+//
+//        if (newError == null) {
+//            return true;   // When here, oldError is not null.
+//        }
+//
+//        // When here, oldError and newError are both not null and not exactly the same.
+//        // When old and new error are clientSideErrors, we really consider them equal
+//        if (oldError.isClientSideError() && newError.isClientSideError()) {
+//            return false;
+//        }
+//
+//        return true;
 
 
     }
@@ -360,11 +452,11 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
                 + " error: " + hasError() + " hasErrorOld " + errorOld;
     }
 
-    public PageVarError getEffectiveError() {
+    public PageVarErrorCore getEffectivePageVarError() {
         return getPageStateVar().getEffectiveError();
     }
 
-    public PageVarError getRawError() {
+    public PageVarErrorCore getRawError() {
         return getPageStateVar().getError();
     }
 }

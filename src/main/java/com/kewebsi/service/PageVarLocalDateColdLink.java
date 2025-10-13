@@ -47,7 +47,7 @@ public class PageVarLocalDateColdLink extends PageStateVarColdLink<LocalDate> im
 
     public LocalDate getValOrThrowError() throws PageVarError {
         if (hasError()) {
-            throw getError();
+            throw new PageVarError(getError());
         }
         return val;
     }

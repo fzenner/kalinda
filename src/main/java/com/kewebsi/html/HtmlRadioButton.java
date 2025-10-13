@@ -2,6 +2,7 @@ package com.kewebsi.html;
 
 import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 
 public class HtmlRadioButton extends StringDisplay implements PageVarEditor<String> {
 
@@ -48,7 +49,7 @@ public class HtmlRadioButton extends StringDisplay implements PageVarEditor<Stri
     public void setNonNullValueValidating(String val) {
         PageStateVarIntf pageStateVar = getPageStateVar();
         // dtoAssistant.verifyValue(fieldName, val, entity);
-        pageStateVar.setStringValueFromClient(val);
+        pageStateVar.setStringValueFromClient(val, this);
     }
 
 
@@ -56,7 +57,7 @@ public class HtmlRadioButton extends StringDisplay implements PageVarEditor<Stri
     public void setValueValidatingAllowNull(String val) {
         PageStateVarIntf pageStateVar = getPageStateVar();
         // dtoAssistant.verifyValue(fieldName, val, entity);
-        pageStateVar.setStringValueFromClientAllowNull(val);
+        pageStateVar.setStringValueFromClientAllowNull(val, this);
     }
 
 
@@ -105,7 +106,7 @@ public class HtmlRadioButton extends StringDisplay implements PageVarEditor<Stri
         var pageStateVar = getPageStateVar();
         if (pageStateVar != null) {
             if (pageStateVar.hasEffectiveError()) {
-                PageVarError error = pageStateVar.getEffectiveError();
+                PageVarErrorCore error = pageStateVar.getEffectiveError();
                 return error.getErrorInfo();
             }
         }

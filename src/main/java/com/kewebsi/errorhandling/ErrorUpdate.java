@@ -9,7 +9,7 @@ public class ErrorUpdate	 {
 
 	public String wireNull = null;
 
-	enum StandardErrorCodes {INFO_IN_TEXT_ONLY, CLEAR_ERROR};
+	public enum StandardErrorCodes {INFO_IN_TEXT_ONLY, CLEAR_ERROR, NOT_SYNCED_BY_OTHER_FIELD};
 
 	private static ErrorUpdate clearError = null;
 

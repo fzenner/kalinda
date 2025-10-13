@@ -37,8 +37,8 @@ public class PageVarEntityProviderBackedDateTime<T>
     protected String unparsedStringValueTime;
     protected LocalTime timeBuffer;
 
-    protected PageVarError dateError;
-    protected PageVarError timeError;
+    protected PageVarErrorCore dateError;
+    protected PageVarErrorCore timeError;
 
     public PageVarEntityProviderBackedDateTime(PageState pageState, EntityForDetailDisplayProvider entityProvider, DtoAssistant dtoAssistant, FieldAssistant fieldAssistant) {
         super(pageState, entityProvider, dtoAssistant, fieldAssistant);
@@ -82,7 +82,8 @@ public class PageVarEntityProviderBackedDateTime<T>
         } catch (StringParsingError | ExpectedClientDataError ex) {
             unparsedStringValueDate = userInputString;
             setDateBuffer(null);
-            setDateError(new PageVarError(this, ex.getMessage(), false));
+            var pvec = PageVarErrorCore.createAndLinkServerSideError(this, ex.getMessage());
+            setDateError(pvec);
         }
     }
 
@@ -121,11 +122,12 @@ public class PageVarEntityProviderBackedDateTime<T>
         } catch (StringParsingError | ExpectedClientDataError ex) {
             unparsedStringValueTime = userInputString;
             setTimeBuffer(null);
-            setTimeError(new PageVarError(this, ex.getMessage(), false));
+            var pvec = PageVarErrorCore.createAndLinkServerSideError(this, ex.getMessage());
+            setTimeError(pvec);
         }
     }
 
-    public void setDateError(PageVarError error) {
+    public void setDateError(PageVarErrorCore error) {
         this.dateError = error;
         entityWhenErrorWasSet = getManagedEntity();
         valWhenErrorWasSet = getValCore();
@@ -138,7 +140,7 @@ public class PageVarEntityProviderBackedDateTime<T>
     }
 
 
-    public void setTimeError(PageVarError error) {
+    public void setTimeError(PageVarErrorCore error) {
         this.timeError = error;
         entityWhenErrorWasSet = getManagedEntity();
         valWhenErrorWasSet = getValCore();
@@ -152,19 +154,19 @@ public class PageVarEntityProviderBackedDateTime<T>
     }
 
     @Override
-    public PageVarError getDateError() {
+    public PageVarErrorCore getDateError() {
         updateErrorIfBackingValueChanged();
         return dateError;
     }
 
     @Override
-    public PageVarError getTimeError() {
+    public PageVarErrorCore getTimeError() {
         updateErrorIfBackingValueChanged();
         return timeError;
     }
 
     @Override
-    public PageVarError getDateTimeError() {
+    public PageVarErrorCore getDateTimeError() {
         updateErrorIfBackingValueChanged();
         return error;
     }
@@ -172,14 +174,14 @@ public class PageVarEntityProviderBackedDateTime<T>
 
 
     @Override
-    public PageVarError getError() {
+    public PageVarErrorCore getError() {
         updateErrorIfBackingValueChanged();
         return getErrorCore();
     }
 
 
     @Override
-    protected PageVarError getErrorCore() {
+    protected PageVarErrorCore getErrorCore() {
         if (dateError != null) {
             return dateError;
         }

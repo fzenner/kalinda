@@ -3,6 +3,7 @@ package com.kewebsi.html;
 import com.kewebsi.controller.FieldAssistant;
 import com.kewebsi.errorhandling.CodingErrorException;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -75,11 +76,6 @@ public class PageState {
         return pageStateVars.values();
     }
 
-    public void setPageStateVar(String htmlId, String value) {
-        pageStateVars.get(htmlId).setStringValueFromClient(value);
-    }
-
-
 //    public void registerChildState(String childStateId, PageState pageState) {
 //        if (childStates.containsKey(childStateId)) {
 //            throw new CodingErrorException("Duplicate registering of child state " + childStateId);
@@ -141,7 +137,7 @@ public class PageState {
      */
     public PageStateError getFirstInvalidFieldAndMarkFieldWithError() {
         for (var psv : pageStateVars.values()) {
-            PageVarError pageVarError = psv.validateAndCeckIfInvalidNull();
+            PageVarErrorCore pageVarError = psv.validateAndCeckIfInvalidNull();
             if (pageVarError != null) {
                 return new PageStateError(pageVarError);
             }

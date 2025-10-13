@@ -9,6 +9,7 @@ import com.kewebsi.errorhandling.DataOrError;
 import com.kewebsi.errorhandling.ErrorUpdate;
 import com.kewebsi.html.*;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 
 import java.util.function.Function;
 
@@ -34,13 +35,13 @@ public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements Ch
 
     @Override
     public void setNonNullValueValidating(Boolean val) {
-        pageStateVar.setValueFromClient(val);
+        pageStateVar.setValueFromClient(val, this);
         setClientIsSynced();
     }
 
     @Override
     public void setValueValidatingAllowNull(Boolean val) {
-        pageStateVar.setValueFromClient(val);
+        pageStateVar.setValueFromClient(val, this);
         setClientIsSynced();
     }
 
@@ -49,7 +50,7 @@ public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements Ch
             return null;
         }
         if (pageStateVar.hasEffectiveError()) {
-            PageVarError error = pageStateVar.getEffectiveError();
+            PageVarErrorCore error = pageStateVar.getEffectiveError();
             return error.getErrorInfo();
         }
         return null;
@@ -68,13 +69,13 @@ public class HtmlCheckbox<T> extends AbstractPageVarField<Boolean> implements Ch
         if (customClickAction != null) {
             var newValOrOrror = customClickAction.apply(checked);
             if (!newValOrOrror.hasError()) {
-                pageStateVar.setValueFromClient(checked);
+                pageStateVar.setValueFromClient(checked, this);
                 return MsgAjaxResponse.createSuccessMsg();
             } else {
                 return MsgAjaxResponse.createErrorMsg(newValOrOrror.getError().getErrorText());
             }
         } else {
-            pageStateVar.setValueFromClient(checked);
+            pageStateVar.setValueFromClient(checked, this);
             return MsgAjaxResponse.createSuccessMsg();
         }
     }
