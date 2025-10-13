@@ -75,7 +75,7 @@ public class PageVarEnumColdLink extends PageStateVarColdLink<Enum<?>> {
 
     public Enum<?> getValidatedVal() throws PageVarError {
         if (hasError()) {
-            throw getError();
+            throw new PageVarError(getError());
         }
         return val;
     }

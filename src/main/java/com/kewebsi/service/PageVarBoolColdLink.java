@@ -44,7 +44,7 @@ public class PageVarBoolColdLink extends PageStateVarColdLink<Boolean> {
         //
 
         if (this.hasError()) {
-            throw  new CodingErrorException("Attempt to get the value of a field with an error. " + " Error: " + this.getError().getErrorMsg() + " Field: " + this);
+            throw  new CodingErrorException("Attempt to get the value of a field with an error. " + " Error: " + this.getError().errorMsg() + " Field: " + this);
         }
 
         return val;

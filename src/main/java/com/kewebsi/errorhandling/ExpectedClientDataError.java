@@ -1,6 +1,8 @@
 package com.kewebsi.errorhandling;
 
 
+import com.kewebsi.service.PageVarErrorCore;
+
 public class ExpectedClientDataError extends Exception {
 
 	protected String badValue;
@@ -26,6 +28,10 @@ public class ExpectedClientDataError extends Exception {
 
 	public ExpectedClientDataError(Throwable cause) {
 		super(cause);
+	}
+
+	public ExpectedClientDataError(PageVarErrorCore pageVarErrorCore) {
+		super(pageVarErrorCore.errorMsg());
 	}
 
 	public String getBadValue() {

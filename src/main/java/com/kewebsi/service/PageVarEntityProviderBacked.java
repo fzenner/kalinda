@@ -4,6 +4,7 @@ import com.kewebsi.controller.*;
 import com.kewebsi.errorhandling.CodingErrorException;
 import com.kewebsi.errorhandling.ExpectedClientDataError;
 import com.kewebsi.html.PageState;
+import com.kewebsi.html.PageVarEditor;
 import com.kewebsi.html.table.EntityForDetailDisplayProvider;
 import com.kewebsi.util.DebugUtils;
 
@@ -47,7 +48,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
 
 
     @Override
-    public void setStringValueFromClient(String userInputString) {
+    public void setStringValueFromClient(String userInputString, PageVarEditor pageVarEditor)  {
         unparsedStringValue = userInputString;
         var error = validateUnparsedStringValueAndSetValueOrErrorAllowNull();
         if (error == null) {
@@ -56,7 +57,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
     }
 
     @Override
-    public PageVarError validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
+    public PageVarErrorCore validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
         checkAccidentalOverwriting();
 
         try {
@@ -64,7 +65,8 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
             clearError();
             unparsedStringValue = null;
         } catch (ExpectedClientDataError e) {
-            setError(new PageVarError(this, e.getMessage()));
+            var pvec = PageVarErrorCore.createAndLinkServerSideError(this, e.getMessage());
+            setError(pvec);
         }
         return getError();
     }
@@ -78,7 +80,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
     }
 
     @Override
-    public void setError(PageVarError error) {
+    public void setError(PageVarErrorCore error) {
         super.setError(error);
         entityWhenErrorWasSet = getManagedEntity();
         valWhenErrorWasSet = getValCore();
@@ -93,7 +95,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
 
 
     @Override
-    public PageVarError getError() {
+    public PageVarErrorCore getError() {
         updateErrorIfBackingValueChanged();
         return getErrorCore();
     }
@@ -133,7 +135,7 @@ public class PageVarEntityProviderBacked<T, F> extends PageStateVarBase<F> {
         }
     }
 
-    protected PageVarError getErrorCore() {
+    protected PageVarErrorCore getErrorCore() {
         return error;
     }
 

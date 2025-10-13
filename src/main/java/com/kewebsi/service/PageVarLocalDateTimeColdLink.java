@@ -20,8 +20,8 @@ public class PageVarLocalDateTimeColdLink
     protected String unparsedStringValueTime;
     protected LocalTime timeBuffer;
 
-    protected PageVarError dateError;
-    protected PageVarError timeError;
+    protected PageVarErrorCore dateError;
+    protected PageVarErrorCore timeError;
 
 //    protected LocalTime defaultTimeWhenDateIsSet;
 
@@ -49,7 +49,7 @@ public class PageVarLocalDateTimeColdLink
 
     public LocalDateTime getValOrThrowError() throws PageVarError {
         if (hasError()) {
-            throw getError();
+            throw new PageVarError(getError());
         }
         return val;
     }
@@ -105,7 +105,8 @@ public class PageVarLocalDateTimeColdLink
         } catch (StringParsingError spe) {
             unparsedStringValueDate = userInputString;
             setDateBuffer(null);
-            setDateError(new PageVarError(this, spe.getMessage(), false));
+            var pvec = PageVarErrorCore.createAndLinkServerSideError(this, spe.getMessage());
+            setDateError(pvec);
         }
     }
 
@@ -137,7 +138,8 @@ public class PageVarLocalDateTimeColdLink
         } catch (StringParsingError spe) {
             unparsedStringValueTime = userInputString;
             setTimeBuffer(null);
-            setTimeError(new PageVarError(this, spe.getMessage(),false));
+            var pvec = PageVarErrorCore.createAndLinkServerSideError(this, spe.getMessage());
+            setTimeError(pvec);
         }
     }
 
@@ -187,7 +189,7 @@ public class PageVarLocalDateTimeColdLink
         clearTimeError();
     }
 
-    public void setDateError(PageVarError error) {
+    public void setDateError(PageVarErrorCore error) {
         this.dateError = error;
     }
 
@@ -196,7 +198,7 @@ public class PageVarLocalDateTimeColdLink
     }
 
 
-    public void setTimeError(PageVarError error) {
+    public void setTimeError(PageVarErrorCore error) {
         this.timeError = error;
     }
 
@@ -206,17 +208,17 @@ public class PageVarLocalDateTimeColdLink
     }
 
     @Override
-    public PageVarError getDateError() {
+    public PageVarErrorCore getDateError() {
         return dateError;
     }
 
     @Override
-    public PageVarError getTimeError() {
+    public PageVarErrorCore getTimeError() {
         return timeError;
     }
 
     @Override
-    public PageVarError getDateTimeError() {
+    public PageVarErrorCore getDateTimeError() {
         return error;
     }
 

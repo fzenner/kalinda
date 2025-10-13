@@ -432,6 +432,15 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
 
         const newVal : LocalDateTime = this.updateStateAndGetTypedValueAfterClientSideChange(dateInputString, timeInputString);
 
+        // We pretty print/format the input
+
+        if (newVal) {
+            this.dateEditor.value = printDateDDMMYYYY(newVal.date);
+            this.timeEditor.value = printTime24h(newVal.time);
+        }
+
+        // TODO: If the input is not parseable on the client side, we do NOT YET inform the server of an unsynced client.
+
         const dateTimeWireOrNull = localDateTimeToDateTimeWireOrNull(newVal)
 
         const inputElementStateInfoFromClientToServer = mapClientInputStateInBrowserToStateInfoForServer(this.inputElementState);

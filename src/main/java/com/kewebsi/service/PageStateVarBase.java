@@ -1,12 +1,18 @@
 package com.kewebsi.service;
 
+import com.fzenner.datademo.web.AjaxDispatcher;
 import com.kewebsi.controller.FieldAssistant;
 import com.kewebsi.controller.SimpleFieldAssistant;
+import com.kewebsi.html.AbstractPageVarField;
 import com.kewebsi.html.PageState;
 import com.kewebsi.html.PageStateVarIntf;
+import com.kewebsi.html.PageVarEditor;
 import com.kewebsi.util.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.codec.CodecException;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 
 public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
@@ -20,9 +26,25 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
     protected SimpleFieldAssistant<F> fieldAssistant;
 
-    protected PageVarError error;
+    protected ArrayList<PageVarEditor> linkedFields;
+
+    private PageVarEditor lastUpdatingEditor;
+
+    @Override
+    public PageVarEditor getLastUpdatingEditor() {
+        return lastUpdatingEditor;
+    }
+
+    public void setLastUpdatingEditor(PageVarEditor lastUpdatingEditor) {
+        this.lastUpdatingEditor = lastUpdatingEditor;
+    }
+
+    protected PageVarErrorCore error;
 
     protected boolean isInSyncWithGui = true;
+
+    static final Logger LOG = LoggerFactory.getLogger(PageStateVarIntf.class);
+
 
     public boolean getIsInSyncWithGui() {
         return isInSyncWithGui;
@@ -34,6 +56,24 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 
     public void setIsInSyncWithGuiToTrue() {
         isInSyncWithGui = true;
+    }
+
+    @Override
+    public ArrayList<PageVarEditor> getLinkedEditors() {
+        return null;
+    }
+
+    public void linkField(PageVarEditor field) {
+        if (linkedFields == null) {
+            linkedFields = new ArrayList<>();
+        }
+        linkedFields.add(field);
+    }
+
+    public void unlinkField(PageVarEditor field) {
+        if (linkedFields != null) {
+            linkedFields.remove(field);
+        }
     }
 
     // protected ClientSyncState clientSyncState;
@@ -113,13 +153,15 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
      * 	typed "real" value will remain unchanged.
      */
     @Override
-    public void setStringValueFromClient(String userInputString)  /* throws StringParsingError  */{
+    public void setStringValueFromClient(String userInputString, PageVarEditor pageVarEditor)  /* throws StringParsingError  */{
         unparsedStringValue = userInputString;
         validateUnparsedStringValueAndSetValueOrErrorAllowNull();
+        setLastUpdatingEditor(pageVarEditor);
         // setClientSyncState(ClientSyncState.SYNCHRONIZED);
     }
 
-    public void setStringValueFromClientAllowNull(String userInputString) {
+    @Override
+    public void setStringValueFromClientAllowNull(String userInputString, PageVarEditor pageVarEditor) {
         unparsedStringValue = userInputString;
         if (CommonUtils.hasNoInfo(userInputString)) {
             setValueCoreAndSync(null);
@@ -128,12 +170,14 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
         } else {
             validateUnparsedStringValueAndSetValueOrErrorAllowNull();
         }
+        setLastUpdatingEditor(pageVarEditor);
         // setClientSyncState(ClientSyncState.SYNCHRONIZED);
     }
 
 
-    public void setValueFromClient(F valueObject) {
+    public void setValueFromClient(F valueObject, PageVarEditor pageVarEditor) {
         validateObjectAndSetValueAndErrorAllowNull(valueObject);
+        setLastUpdatingEditor(pageVarEditor);
         // setClientSyncState(ClientSyncState.SYNCHRONIZED);
     }
 
@@ -256,11 +300,11 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
 //    - again: handle parsing errors on fields separate from errors on variables.
 //    Parsing Error --> Variable Error --> Save-Phase-Object-Error
 
-    public PageVarError validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
+    public PageVarErrorCore validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
 
         String strVal = getUnparsedStringValue();
 
-        PageVarError pagerVarError;
+        PageVarErrorCore pagerVarError;
         if (CommonUtils.hasNoInfo(strVal)) {
             setValueCoreAndSync(null);
             pagerVarError = null;
@@ -273,13 +317,13 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
             } else {
                 setValueCore(null);  // We set the null value, although it is not a valid value. Otherwise the old (valid but by the user unintended) value stays in the field.
                 setIsInSyncWithGuiToFalse();
-                pagerVarError = new PageVarError(this, parseResult.fieldError.getMessage(), false);
-                // pagerVarError.setIsParsingError(true);
-                pagerVarError.setErrorType(PageVarError.ErrorType.SERVER_SIDE_PARSING);
+                pagerVarError = PageVarErrorCore.createAndLinkError(this, PageVarErrorType.SERVER_SIDE_PARSING, parseResult.fieldError.getMessage());
             }
         }
 
-        setError(pagerVarError);
+        if (pagerVarError == null) {
+            clearError();
+        }
         return pagerVarError;
 
     }
@@ -300,11 +344,10 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
      * 2, Der Funktionsaufruf
      */
 
-    public PageVarError validateObjectAndSetValueAndError(F value) {
+    public PageVarErrorCore validateObjectAndSetValueAndError(F value) {
         FieldError error = fieldAssistant.validate(value);
         if (error != null) {
-            var pve = new PageVarError(this, error.getMessage());
-            setError(pve);
+            var pve = PageVarErrorCore.createAndLinkServerSideError(this, error.getMessage());
             setValueCoreAndSync(value);
             return pve;
         } else {
@@ -323,7 +366,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
      * @param value
      * @return
      */
-    public PageVarError validateObjectAndSetValueAndErrorAllowNull(F value) {
+    public PageVarErrorCore validateObjectAndSetValueAndErrorAllowNull(F value) {
         if (value == null) {
             clearError();
             unparsedStringValue = null;
@@ -338,19 +381,19 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
      * This method is meant to be called as a final scalar validation of an input field.
      * @return
      */
-    public PageVarError validateAndCeckIfInvalidNull() {   // TODO PRIO1 VALIDATING: Handle synchronized state
+    public PageVarErrorCore validateAndCeckIfInvalidNull() {   // TODO PRIO1 VALIDATING: Handle synchronized state
 
-        PageVarError result;
+        PageVarErrorCore result;
 
         if (!isRelevant()) {
             result = null;
         } else {
             if (hasError()) {
-                switch (getError().getErrorType()) {
+                switch (getError().errorType()) {
                     case SERVER_SIDE_VALUE -> {
                         if (isNull()) {
                             if (!fieldAssistant.canBeNull) {
-                                result = new PageVarError(this, "Field must not be empty");
+                                result = PageVarErrorCore.createAndLinkServerSideError(this, "Field must not be empty");
                             } else {
                                 clearError();
                                 unparsedStringValue = null;
@@ -364,7 +407,7 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
                     }
                     case SERVER_SIDE_PARSING -> result = error;
                     case CLIENT_DATA_NOT_TRANSMISSABLE -> result = error;
-                    default -> throw new CodecException("Unexpected enum found: " + getError().getErrorType());
+                    default -> throw new CodecException("Unexpected enum found: " + getError().errorType());
                 }
             } else {
                 // We have no error. But there might be one now due to the context.
@@ -375,21 +418,21 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
     }
 
 
-    public PageVarError validateAndCeckIfInvalidNullOld() {   // TODO PRIO1 VALIDATING: Handle synchronized state
+    public PageVarErrorCore validateAndCeckIfInvalidNullOld() {   // TODO PRIO1 VALIDATING: Handle synchronized state
 
-        PageVarError result;
+        PageVarErrorCore result;
 
         if (!isRelevant()) {
             result = null;
         } else {
             if (hasError()) {
                 // A parsing error cannot be resolved by re-validating.
-                if (getError().getErrorType() == PageVarError.ErrorType.SERVER_SIDE_PARSING) {
+                if (getError().errorType() == PageVarErrorType.SERVER_SIDE_PARSING) {
                     result = error;
                 } else {
                     if (isNull()) {
                         if (!fieldAssistant.canBeNull) {
-                            result = new PageVarError(this, "Field must not be empty");
+                            result = PageVarErrorCore.createAndLinkServerSideError(this, "Field must not be empty");
                         } else {
                             clearError();
                             unparsedStringValue = null;
@@ -409,14 +452,12 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
         return result;
     }
 
-    private PageVarError revalidateNonNullValue() {
+    private PageVarErrorCore revalidateNonNullValue() {
         assert(getVal() != null);
-        PageVarError result;
+        PageVarErrorCore result;
         FieldError errorAfterRevalidation = fieldAssistant.validate(this.getValCore());
         if (errorAfterRevalidation != null) {
-            var pve = new PageVarError(this, errorAfterRevalidation.getMessage());
-            setError(pve);
-            result = pve;
+            result  = PageVarErrorCore.createAndLinkServerSideError(this, errorAfterRevalidation.getMessage());
         } else {
             clearError();
             unparsedStringValue = null;
@@ -435,18 +476,20 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
     }
 
 
-    public void setError(PageVarError error) {
+    public void setError(PageVarErrorCore error) {
+        LOG.trace("Setting error on PageVar " + getPageVarId() + " to " + (error != null ? error.toString() : "null"));
         this.error = error;
     }
 
-    public void setError(String errorMsg) {
-        new PageVarError(this, errorMsg, true);
-    }
+//    public void setError(String errorMsg) {
+//        new PageVarError(this, errorMsg, true);
+//    }
 
     @Override
-    public void setClientSideIncompleteOrParsingError() {
+    public void setClientSideIncompleteOrParsingError(PageVarEditor updatingEditor) {
         var newError = PageVarError.createClientSideIncompleteOrParsingError(this);
         setError(newError);
+        setLastUpdatingEditor(updatingEditor);
     }
 
     @Override
@@ -455,11 +498,11 @@ public abstract class PageStateVarBase<F> implements PageStateVarIntf<F> {
         setError(newError);
     }
 
-    public PageVarError getError() {
+    public PageVarErrorCore getError() {
         return error;
     }
 
-    public PageVarError getEffectiveError() {
+    public PageVarErrorCore getEffectiveError() {
         if (! isRelevant()) {
             return null;
         }

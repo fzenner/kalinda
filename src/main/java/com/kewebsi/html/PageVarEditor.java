@@ -27,7 +27,12 @@ public interface PageVarEditor<T> extends CanHaveError  {   // TODO: Review if t
      * in fact changed. (See HmtlPageVarField.valueModified()).
      *
      */
-    enum ClientSyncState {CLIENT_INPUT_INCOMPLETE, CLIENT_INPUT_UNPARSEABLE_ON_CLIENT, CLIENT_INPUT_UNPARSEABLE_ON_SERVER, CLIENT_IS_SYNCED};
+    enum ClientSyncState {
+        CLIENT_INPUT_INCOMPLETE,
+        CLIENT_INPUT_UNPARSEABLE_ON_CLIENT,
+        CLIENT_INPUT_UNPARSEABLE_ON_SERVER,
+        CLIENT_NOT_SYNCED_BY_OTHER_FIELD, // If field A displaying page var V is out of sync, we consider all fields displaying V as out of sync.
+        CLIENT_IS_SYNCED};
 
     // public void setClientSyncInfo(ClientSyncState clientSyncState);
 

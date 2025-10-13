@@ -40,7 +40,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
         DateTimeFieldGuiDef inputFieldGuiDef = new DateTimeFieldGuiDef(dtw, isRequired(), isDisabled(), new TimeWireOrNull(TimeWire.from(defaultTimeWhenDateIsSet)));
         guiDef.setTagSpecificData(inputFieldGuiDef);
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().errorMsg());
         }
         return guiDef;
     }
@@ -48,7 +48,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
 
 
     public GuiDef getGuiDefUpdate() {
-        GuiDef guiDef = new GuiDef(getTagName(), getId(), calculateModificationOfVisibility(), calculateModificationOfErrorInfoToSendToClient());
+        GuiDef guiDef = new GuiDef(getTagName(), getId(), calculateModificationOfVisibility(), calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState());
         guiDef.setUpdateMode(GuiDef.UpdateMode.MODIFICATIONS_ONLY);
 
         Boolean modificationOfRequired = calculateModificationOfRequired();
@@ -78,7 +78,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
         guiDef.setTagSpecificData(inputFieldGuiDef);
 
         if (pageStateVar.hasEffectiveServerSideError()) {
-            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().getErrorMsg());
+            guiDef.errorUpdate = new ErrorUpdate(pageStateVar.getEffectiveError().errorMsg());
         }
 
         return guiDef;
@@ -142,7 +142,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
 
     @Override
     public ErrorUpdate getErrorInfoToDisplayToClient() {
-        return calculateModificationOfErrorInfoToSendToClient(null, getEffectiveError());
+        return calculateModificationOfErrorInfoToSendToClientAndUpdateClientSyncState(null, getEffectivePageVarError());
     }
 
     @Override
@@ -160,7 +160,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
                 }
 
                 case CLIENT_INPUT_NOT_TRANSMISSABLE -> {
-                    pageStateVar.setClientSideIncompleteOrParsingError();
+                    pageStateVar.setClientSideIncompleteOrParsingError(this);
                     setClientIsNotSynced(ClientSyncState.CLIENT_INPUT_UNPARSEABLE_ON_CLIENT);
                 }
                 case CLIENT_INPUT_FILLED_OK -> {
@@ -191,7 +191,7 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
 
     @Override
     public void setNonNullValueValidating(LocalDateTime val) {
-        pageStateVar.setValueFromClient(val);
+        pageStateVar.setValueFromClient(val, this);
         setClientIsSynced();
 
     }
@@ -199,12 +199,12 @@ public class HtmlPageVarFieldDateTime extends AbstractPageVarField<LocalDateTime
     @Override
     public void setValueValidatingAllowNull(LocalDateTime val) {
 
-        pageStateVar.setValueFromClient(val);  // TODO: Review null handling.
+        pageStateVar.setValueFromClient(val, this);  // TODO: Review null handling.
         setClientIsSynced();
     }
 
     public void setValueToNull() {
-        pageStateVar.setValueFromClient(null);  // TODO: Review null handling.
+        pageStateVar.setValueFromClient(null, this);  // TODO: Review null handling.
         setClientIsSynced();
     }
 

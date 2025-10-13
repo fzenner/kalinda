@@ -29,7 +29,7 @@ public class PageVarStringColdLink extends PageStateVarColdLink<String> {
 	}
 
 	@Override
-	public PageVarError validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
+	public PageVarErrorCore validateUnparsedStringValueAndSetValueOrErrorAllowNull() {
 		this.val = unparsedStringValue.trim();
 		clearError();
 		unparsedStringValue = null;

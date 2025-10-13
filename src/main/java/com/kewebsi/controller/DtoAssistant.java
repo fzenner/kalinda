@@ -7,6 +7,7 @@ import com.kewebsi.html.search.EntityEditorState;
 import com.kewebsi.service.FieldError;
 import com.kewebsi.service.PageStateVarColdLink;
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 import com.kewebsi.util.CommonUtils;
 import com.kewebsi.util.JsonUtils;
 
@@ -391,8 +392,8 @@ public abstract class DtoAssistant<T> {
 				try {
 					setValueByFieldEnum(fieldName, value, entity);
 				} catch (ExpectedClientDataError e) {
-					PageVarError error = new PageVarError(pageStateVar, e.getMessage());
-					pageStateVar.setError(error);
+
+					PageVarErrorCore.createAndLinkServerSideError(pageStateVar, e.getMessage());
 
 					// It is not enough to set the error on the variable. We also throw it up so the transaction
 					// is cancelled.
@@ -445,7 +446,7 @@ public abstract class DtoAssistant<T> {
 				Object value = pageStateVar.getVal();
 				FieldError error = fieldAssistant.validate(value);
 				if (error != null) {
-					pageStateVar.setError(new PageVarError(pageStateVar, error.getMessage()));
+					PageVarErrorCore.createAndLinkServerSideError(pageStateVar, error.getMessage());
 					return new ExpectedClientDataError(error);
 				}
 			}

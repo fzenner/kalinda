@@ -1,6 +1,7 @@
 package com.kewebsi.html;
 
 import com.kewebsi.service.PageVarError;
+import com.kewebsi.service.PageVarErrorCore;
 
 public class PageStateError {
 
@@ -13,10 +14,10 @@ public class PageStateError {
     }
 
 
-    public PageStateError(PageVarError pageVarError) {
-        pageState = pageVarError.getPageStateVar().getPageState();
+    public PageStateError(PageVarErrorCore pageVarError) {
+        pageState = pageVarError.pageStateVar().getPageState();
         assert(pageState != null);
-        errorMsg = "Input error: " + pageVarError.getErrorMsg() + ". Check input values. ";
+        errorMsg = "Input error: " + pageVarError.errorMsg() + ". Check input values. ";
     }
 
 

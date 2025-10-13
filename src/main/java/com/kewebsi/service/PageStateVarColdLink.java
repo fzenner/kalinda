@@ -13,7 +13,8 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 
 	public T getVal() {
 		if (hasError()) {
-			throw new CodingErrorException("Illegal attempt to read the value of a PageVar with an error. Field: " + fieldAssistant.getFieldLabel() + " Error: " + getError().getErrorMsg());
+			throw new CodingErrorException("Illegal attempt to read the value of a PageVar with an error. Field: "
+					+ fieldAssistant.getFieldLabel() + " Error: " + getError().errorMsg());
 		}
 		return val;
 	}
@@ -26,7 +27,8 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 	 */
 	public T getNonNullVal() throws PageVarError {
 		if (val == null) {
-			throw new PageVarError(this, "Field must not be empty!");
+			var pvec = PageVarErrorCore.createAndLinkServerSideError(this, "Field must not be empty");
+			throw new PageVarError(pvec);
 		}
 
 		//
@@ -34,7 +36,7 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 		// a popup warning or so in addition to the error displayed on the field.
 		//
 		if (hasError()) {
-			throw getError();
+			throw new PageVarError(getError());
 		}
 		return val;
 	}
@@ -64,7 +66,7 @@ public abstract class PageStateVarColdLink<T> extends PageStateVarBase<T> /* imp
 	 */
 	public String getDisplayString() {
 		if (hasError()) {
-			if (getError().getErrorType() == PageVarError.ErrorType.SERVER_SIDE_PARSING) {
+			if (getError().errorType() == PageVarErrorType.SERVER_SIDE_PARSING) {
 				if (unparsedStringValue == null) {
 					// This situation should never occur.
 					Logger LOG = LoggerFactory.getLogger(UserSessionHandler.class);
