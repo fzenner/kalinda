@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-04-20T12:50:15.991Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.1.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="rVqyHOvtdUjeoB-VlpGS" version="24.1.0" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
   <diagram name="Page-1" id="slS-i54JM-N5ZSzpBJAk">
-    <mxGraphModel dx="1068" dy="988" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1396" dy="1270" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -20,7 +20,7 @@
           <mxGeometry x="600" y="540" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="qxJrcSxVET2VQ3xojnO4-26" value="&lt;div&gt;INCOMPLETE means, that the data is not complete enough to be synced. When the data is incomplete but synced, it is a server side error. We do not support an incomplete synced situation.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;align=left;" parent="1" vertex="1">
-          <mxGeometry x="30" y="710" width="200" height="94" as="geometry" />
+          <mxGeometry x="30" y="890" width="200" height="94" as="geometry" />
         </mxCell>
         <mxCell id="qxJrcSxVET2VQ3xojnO4-28" value="UNPARSEABLE" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="160" y="560" width="360" height="20" as="geometry" />
@@ -100,11 +100,11 @@
         <mxCell id="qxJrcSxVET2VQ3xojnO4-66" value="&lt;div style=&quot;font-size: 17px;&quot;&gt;Server Side Status&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Error display elements are managed component-specific accoring to these general states.&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;align=center;fontSize=17;" parent="1" vertex="1">
           <mxGeometry x="600" y="340" width="360" height="94" as="geometry" />
         </mxCell>
-        <mxCell id="rhh01OG-IXCvojbALjEP-2" value="IN_TRANSIT" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="510" y="700" width="120" height="20" as="geometry" />
+        <mxCell id="rhh01OG-IXCvojbALjEP-2" value="IN_TRANSIT" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="510" y="880" width="120" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="rhh01OG-IXCvojbALjEP-3" value="REQUIRED" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="510" y="747" width="120" height="20" as="geometry" />
+        <mxCell id="rhh01OG-IXCvojbALjEP-3" value="REQUIRED" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="510" y="927" width="120" height="20" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

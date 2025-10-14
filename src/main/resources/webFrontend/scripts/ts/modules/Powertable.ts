@@ -21,7 +21,7 @@ import { isParsingError, parseGermanDate, parseIsoDateTime, parseTime } from "./
 import { Companion, getCompanion} from "./Companion.js";
 import { StyleManager } from "./StyleManager.js";
 
-const TAB_EDIT_FIELD_ID = "tabEditField";  // The ID of the edit (input) field within a table cell. The editor always gets the same ID.
+const TAB_EDIT_FIELD_ID = "tabEditFieldId";  // The ID of the edit (input) field within a table cell. The editor always gets the same ID.
 const TD_HAS_INPUT_FIELD_CHILD = "data-td-has-input-field-child";
 
 export const TD_MAP_TARGET_ATTR_NAME = "data-maptarget";

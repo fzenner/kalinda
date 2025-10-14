@@ -24,7 +24,7 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
     protected ClientSyncState clientSyncState;
 
     protected T valueOld;
-    protected PageVarErrorCore errorOld = null;
+    protected PageVarErrorCore errorOld = null; // Should be renamed to lastErrorSentToClient.
     protected boolean requiredOld;
     protected boolean disabledOld;
 
@@ -347,6 +347,10 @@ public abstract class AbstractPageVarField<T>extends HtmlTag implements PageVarE
 
     }
 
+    /**
+     * Should be renamed to getLastErrorSentToClient.
+     * @return
+     */
     public PageVarErrorCore getErrorOld() {
         return errorOld;
     }

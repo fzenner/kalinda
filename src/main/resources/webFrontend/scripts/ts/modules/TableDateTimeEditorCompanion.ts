@@ -389,7 +389,7 @@ function sendEditorCreateRequestToServer(editorTopDiv: HTMLElement) {
         day: date.day,
     };
 
-    let createPopupCalendarForCallback = (calendarGuiDef: CalendarGuiDef) => createCalendarPopup(dateTimeEditor, calendarGuiDef, this.idPrefix);
+    let createPopupCalendarForCallback = (calendarGuiDef: CalendarGuiDef) => createCalendarPopup(dateTimeEditor, calendarGuiDef, "popupCalendarPrefix");
 
     SessionHandling.ajaxCallWithCallback(msg, createPopupCalendarForCallback);
 }

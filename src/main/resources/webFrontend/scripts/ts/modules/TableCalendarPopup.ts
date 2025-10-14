@@ -3,6 +3,7 @@ import { CalendarPopupPartner } from "./CalendarPopupPartner";
 import { SessionHandling } from "./jaccessEventHandling.js";
 import { MsgPowerTable_CalendarPopupChange, CS_MESSAGE } from "./jointTypes";
 import { MSG_HANDLER_HANDLE_POWERTABLE_ACTION, CalendarGuiDef } from "./messageTypes";
+import { getWebComponent } from "./Powertable";
 import { getTableFromChildElement, getTdFromChildElement, getTrFromChildElement, getRowIdxFromTr, getSymbolColId } from "./powerTableNavigation";
 
 
@@ -62,13 +63,16 @@ export class TableCalendarPopup extends CalendarPopup {
         const rowIdx = getRowIdxFromTr(tr);
         const symbolColId = getSymbolColId(td);
 
+        const tableWebComponent  = getWebComponent(table);
+        const tableWebComponentId = tableWebComponent.id;
+
         const selectedYear = parseInt(selectedYearStr);
 
         let msg: MsgPowerTable_CalendarPopupChange = {
             msgName: CS_MESSAGE,
             serverMsgHandler: MSG_HANDLER_HANDLE_POWERTABLE_ACTION,
             subCommand: "CALENDAR_POPUP_UPDATE",
-            tableId: table.id,
+            tableId: tableWebComponentId,
             tdId: td.id,
             rowIdx: rowIdx,
             symbolColId: symbolColId,

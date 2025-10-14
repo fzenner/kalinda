@@ -237,4 +237,7 @@ Problem: The clientSyncState of a field must be adapted when another field is ou
 
 
 Problem: The pageVarError is on the variable. On the field we have an "oldError". That is not clean.
+Solution: That is OK. oldError is actually lastErrorSentToClient. It is used to determine if the error changed.
 
+
+NEXT: Error handling in table editor. MAJOR TASK!!!
