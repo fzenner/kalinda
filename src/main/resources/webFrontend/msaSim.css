@@ -603,6 +603,79 @@ input[type=text]:focus {
   flex-shrink: 0;
 }
 
+/***********************************************************************
+*** Input Field Styling Begin ***
+************************************************************************/
+
+
 .heightToMinContent {
   height: min-content;
 }
+
+.div-for-close-x {
+    justify-content: right;
+    display: flex;
+    padding: 0.2em;
+} 
+.error-button-text {
+    border:1px solid;
+    color: rgba(255, 78, 78);
+    font-size: 120%;
+    line-height: 0.8;
+    font-weight: bold;
+    margin: 1px;
+} 
+.error-button-text:hover,
+.error-button-text:focus {
+    color: rgba(255, 0, 0);
+    text-decoration: none;
+    cursor: pointer;
+} 
+.error-button-text:active {
+    background-color: grey;
+    outline-width: 3px;
+    outline-style:  solid;
+    outline-color: rgba(80, 80, 80, 0.9);
+} 
+.error-msg-div-overlap {
+    position: absolute;
+    border-style: solid;
+    border-width: thin;
+    border-color: red;
+    color: red;
+    background: white;
+    opacity: 0.8;
+    display: flex;
+    flex-flow: row;
+} 
+.right-top-button-group {
+    padding-left: 0.5em;
+    display: flex;
+    flex-flow: row;
+} 
+.input-field-div {
+    padding-left: 0.5em;
+    display: flex;
+    flex-flow: row;
+} 
+.tooltip-anchor .tooltip {
+    visibility: hidden;
+} 
+.tooltip-anchor:hover .tooltip {
+    visibility: visible;
+} 
+.tooltip {
+    visibility: hidden;
+    width: 120px;
+    color: #fff;
+    background-color: blue;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+} 
+
+/***********************************************************************
+*** Input Field Styling End ***
+************************************************************************/

@@ -37,7 +37,7 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
     // visibilityCopy: string
 
     static create(guiDef: GuiDef): KewebsiInputElement {
-        const newEl = document.createElement("kewebsi-input") as KewebsiInputElement;
+        const newEl = document.createElement(KewebsiInputElement.tag) as KewebsiInputElement;
         newEl.configure(guiDef)
         return newEl;
     }
@@ -54,14 +54,17 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
         this.toolTip.textContent = "Unset"
         this.topDiv.appendChild(this.toolTip)
         this.lastKnownErrorFreeValue = "";
+        // this.appendChild(this.topDiv)
     }
 
     connectedCallback() {
-        const shadowRoot = this.attachShadow({ mode: "open" });
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(StyleManager.inputFieldStyle);
-        shadowRoot.adoptedStyleSheets = [sheet];
-        shadowRoot.appendChild(this.topDiv);
+        this.appendChild(this.topDiv)
+        console.log(StyleManager.inputFieldStyle);
+        // const shadowRoot = this.attachShadow({ mode: "open" });
+        // const sheet = new CSSStyleSheet();
+        // sheet.replaceSync(StyleManager.inputFieldStyle);
+        // shadowRoot.adoptedStyleSheets = [sheet];
+        // shadowRoot.appendChild(this.topDiv);
     }
 
     configure(guiDef: GuiDef) {
@@ -281,6 +284,7 @@ export class KewebsiInputElement extends HTMLElement implements WebCompSupportin
     }
 
     clearError() {
+        this.inputEl.classList.remove("textInputWithError");
         this.inputEl.classList.add("textInput");
         if (this.errorDisplayCompanion) {
             this.errorDisplayCompanion.remove();

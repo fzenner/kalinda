@@ -240,4 +240,5 @@ Problem: The pageVarError is on the variable. On the field we have an "oldError"
 Solution: That is OK. oldError is actually lastErrorSentToClient. It is used to determine if the error changed.
 
 
-NEXT: Error handling in table editor. MAJOR TASK!!!
+NEXT: Error handling in table editor. Works to a certain degree already with datetime editor.
+Make it now work with normal editor: create in establishCellEditorCore a adapted copy of KewebsiInputElement

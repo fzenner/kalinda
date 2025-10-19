@@ -59,7 +59,7 @@ public class IntegerFieldTestPage extends HtmlPage {
 
         var buttonTest = new HtmlButtonStandard("myTest", "Test It") {
             public MsgAjaxResponse handleClick(JsonNode rootNode, UserSession userSession) {
-                return StandardController.makeATest();
+                return StandardController.doNothing();
             }
         };
 

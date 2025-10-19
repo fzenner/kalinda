@@ -216,6 +216,11 @@ public class StandardController {
 	}
 
 
+	public static MsgAjaxResponse doNothing() {
+		return MsgAjaxResponse.createSuccessMsg();
+	}
+
+
 	// @Transactional
 //	public static MsgAjaxResponse makeATest2() {
 //
