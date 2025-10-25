@@ -198,6 +198,14 @@ export class StyleManager {
     + "    font-size: 12px;\n"
     + "    padding: 0px;\n"
     + "    margin: 0px;\n"
+   + "}\n"    
+    + ".table-stringeditor {\n"
+    + "    border:none;\n"
+    + "    white-space: nowrap;\n"
+    + "    font-size: 12px;\n"
+    + "    padding: 0px;\n"
+    + "    margin: 0px;\n"
+    + "    width: 100%;\n"
     + "}\n"
 
     static calendarLaunchButtonClass = "calendar-launch-button";

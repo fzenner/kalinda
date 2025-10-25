@@ -167,6 +167,11 @@ export function findFirstParentWithClass(el: HTMLElement, className: string) : H
   	return el.closest("." + className);
 }
 
+export function  getClosestAncestorByTag<T>(tag: string, childElement: HTMLElement) : T {
+    let ancestor = childElement.closest(tag) as T
+    return ancestor;
+}
+
 export function selectAll(el: HTMLInputElement) {
 	el.setSelectionRange(0, el.value.length);
 }
@@ -183,4 +188,34 @@ export function stringIsInt(possiblyUntrimmedString: string) : boolean {
 	var reg = /^\d+$/;
 	var isInt = reg.test(possiblyUntrimmedString.trim());
 	return isInt;
+}
+
+
+// In V2 we do consider any focus loss without focusReceiver as temporary.
+export function focusLossIsPermanentV2(focusLossEvent: FocusEvent) {
+
+
+    let focusLoser = focusLossEvent.currentTarget as HTMLElement;
+    let focusReceiver = focusLossEvent.relatedTarget as HTMLElement;
+ 
+    let eventReceiverHasLostFocus = false;
+    if (focusReceiver != null) {
+        console.log("PPPP");
+        if (!focusLoser.contains(focusReceiver)) {
+            console.log("QQQQ");
+            if (!(focusLoser == focusReceiver)) {
+                console.log("RRRR");
+                eventReceiverHasLostFocus = true;  // The focusReceiver exists and the focus is not a child of the focusLoser (nor itself, which should not be possible)
+            }
+        }
+    } else {
+        console.log("SSSS");
+        if (!modalWindowIsShown()) {
+            console.log("EEEEE");
+            eventReceiverHasLostFocus = true;
+        } else {
+            eventReceiverHasLostFocus = false;
+        }
+    }
+    return eventReceiverHasLostFocus;
 }

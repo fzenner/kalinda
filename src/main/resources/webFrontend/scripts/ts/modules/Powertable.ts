@@ -1,28 +1,30 @@
 
 import { createLocalDateTime, LocalDateTime } from "./dateTime.js";
-import { StandardStringEditorCompanion, TableEditorCompanion } from "./tableEditor.js";
+import { StandardStringEditorCompanion, TableEditor, TableEditorCompanion } from "./tableEditor.js";
 import { replaceElementByHtmlString, replaceElementByIdAndHtmlString } from "./kewebsiPageComposer.js";
-import {isFocused, getPageName, getBooleanAttribute, modalWindowIsShown, setBooleanAttribute, setSmartFocus} from "./kewebsiUtils.js";
+import {isFocused, getPageName, getBooleanAttribute, modalWindowIsShown, setBooleanAttribute, setSmartFocus, getClosestAncestorByTag, focusLossIsPermanentV2} from "./kewebsiUtils.js";
 import {SessionHandling, getServerMsgHandler, findFirstChildWithAttribute, displayErrorAsModalWindow, warn} from "./jaccessEventHandling.js";
 import {GuiDef, MSG_HANDLER_HANDLE_POWERTABLE_ACTION, UPDATE_BY_DEF_CUSTOM, TableFocusDef, CalendarGuiDef} from "./messageTypes.js";
 import * as jointTypes from"./jointTypes.js";
-import {createTableDateTimeEditorWithCompanion, setTdBaseData_string, setTdBaseData_LocalDateTime, TableDateTimeEditorCompanion} from "./TableDateTimeEditorCompanion.js";
+import { TableDateTimeEditorCompanion } from "./TableDateTimeEditor2.js";
+import {createTableDateTimeEditorWithCompanion, setTdBaseData_string, setTdBaseData_LocalDateTime, TableDataTypes} from "./TableDateTimeEditor.js";
 
 import {printDateDDMMYYYY, printTime24h } from "./stringUtils.js";
 
 import {constructRowStateSpanId, constructSelectTdId, constructSelectCheckboxId, constructTrId, constructRowStateTdId, constructStrippedId,
 	constructPayloadTdIdFast, setStrippedTableId,
 	constructPayloadTdId, getIndexOfFieldInFieldInfo, getRowIdxFromTr, parseTdCoordFromTd, parseTdCoordFromTdId, getFieldInfo, getFieldInfoFromTd,
-	getTableFromChildElement, getTrFromChildElement, getTdFromChildElement, getHeadInfo, getPowertabeFromChildElement as getPowertableFromChildElement, getPowerTable
+	getTableFromChildElement, getTrFromChildElement, getTdFromChildElement, getHeadInfo, getPowertabeFromChildElement as getPowertableFromChildElement, getPowerTable,
+    getTableEditor
 } from "./powerTableNavigation.js"
 
 import { isParsingError, parseGermanDate, parseIsoDateTime, parseTime } from "./kewebsiDateUtils.js";
 
-import { Companion, getCompanion} from "./Companion.js";
 import { StyleManager } from "./StyleManager.js";
+import { TableStringEditor } from "./TableStringEditor.js";
 
 const TAB_EDIT_FIELD_ID = "tabEditFieldId";  // The ID of the edit (input) field within a table cell. The editor always gets the same ID.
-const TD_HAS_INPUT_FIELD_CHILD = "data-td-has-input-field-child";
+// const TD_HAS_INPUT_FIELD_CHILD = "data-td-has-input-field-child";
 
 export const TD_MAP_TARGET_ATTR_NAME = "data-maptarget";
 const TABLE_ROWCOUNT_ATTR_NAME = "data-rowcount";
@@ -217,20 +219,23 @@ export function tdHandleKeyDown(eventOnTd: KeyboardEvent) {
 	if (eventOnTd.key==="F2" || eventOnTd.key==="Enter") {
 		let newInputEl :HTMLElement  = establishCellEditorOnKeyboardEvent(eventOnTd);
 		console.log("F2 pressed.")
+        
+        if (newInputEl) {
 
-		if (newInputEl.tagName === "SELECT") {
-			let selectBox = newInputEl as HTMLSelectElement;
-			selectBox.value = inputFieldContent;
-		} else {
-			if (newInputEl.tagName === "INPUT") {
-				let inputField = newInputEl as HTMLInputElement;
-				var inputFieldContent = inputField.value;
-				inputField.value = inputFieldContent;
-				inputField.setSelectionRange(0, inputFieldContent.length);
-			} else {
-				warn("Error in tdHandleKeyDown: Unhanlded input field type: " + newInputEl.tagName);
-			}
-		}
+            if (newInputEl.tagName === "SELECT") {
+                let selectBox = newInputEl as HTMLSelectElement;
+                selectBox.value = inputFieldContent;
+            } else {
+                if (newInputEl.tagName === "INPUT") {
+                    let inputField = newInputEl as HTMLInputElement;
+                    var inputFieldContent = inputField.value;
+                    inputField.value = inputFieldContent;
+                    inputField.setSelectionRange(0, inputFieldContent.length);
+                } else {
+                    warn("Error in tdHandleKeyDown: Unhanlded input field type: " + newInputEl.tagName);
+                }
+            }
+        }
 	} else if (eventOnTd.key == "ArrowUp") {
 		let eventTarget:EventTarget = eventOnTd.target;
 		let tdElement : HTMLElement = eventTarget as HTMLElement;
@@ -365,44 +370,6 @@ function focusLossIsPermanent(focusEvent: FocusEvent) {
 	return eventReceiverHasLostFocus;
 }
 
-// In V2 we do consider any focus loss without focusReceiver as temporary.
-function focusLossIsPermanentV2(focusLossEvent: FocusEvent) {
-
-
-	let focusLoser = focusLossEvent.currentTarget as HTMLElement;
-	let focusReceiver = focusLossEvent.relatedTarget as HTMLElement;
- 
-	let eventReceiverHasLostFocus = false;
-	if (focusReceiver != null) {
-		console.log("PPPP");
-		if (!focusLoser.contains(focusReceiver)) {
-			console.log("QQQQ");
-			if (!(focusLoser == focusReceiver)) {
-				console.log("RRRR");
-				eventReceiverHasLostFocus = true;  // The focusReceiver exists and the focus is not a child of the focusLoser (nor itself, which should not be possible)
-			}
-		}
-	} else {
-		console.log("SSSS");
-		if (!modalWindowIsShown()) {
-			console.log("EEEEE");
-			eventReceiverHasLostFocus = true;
-		} else {
-			eventReceiverHasLostFocus = false;
-		}
-	}
-	return eventReceiverHasLostFocus;
-}
-
-
-
-
-
-
-
-
-
- 
 
 function focusTdId(tdId: string) {
 	let element = document.getElementById(tdId);
@@ -493,9 +460,14 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 		return null;
 	}
 
+    const powerTable = getPowertableFromChildElement(tdElement);
 
-
-	var isEditable = tdElement.getAttribute("data-editable");
+    if (powerTable.tdWithEstablishedEditor) {
+        // There is only one established editor 
+        // CONTINUE HERE
+        // if (!establishedEditor.itIsOkToLoseFocus())
+        //     return null;
+    }
 
 	let isSelectBox = false;
 
@@ -510,6 +482,8 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 
 	let payloadTypeInfo = fieldInfo.dataType;
 
+    mapFieldInfoDataTypeToFieldType(fieldInfo.dataType)
+
 	// if (payloadTypeInfo === "selectbox") {
 	// 	isSelectBox = true;
 	// }
@@ -521,6 +495,9 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 	var spanFieldInTdText = spanFieldInTd.textContent;
 
 	if (isSelectBox) {
+
+        /*
+
 		// let tdWithSelectionValues = document.getElementById(thIdWithTypeInfo);
 		// let selectionValuesAsJsonString = tdWithSelectionValues.getAttribute(SELECTION_VALUES_ATTR_NAME);
 		
@@ -531,7 +508,7 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 		spanFieldInTd.replaceWith(newInputEl);
 		//   replaceElementByHtmlString(spanFieldInTd, newInputStr) as HTMLInputElement;
 		setCellEditorEventHandlers(newInputEl);
-		tdElement.setAttribute(TD_HAS_INPUT_FIELD_CHILD, "y")  // TODO: retire
+		// tdElement.setAttribute(TD_HAS_INPUT_FIELD_CHILD, "y")  // TODO: retire
 		setHasEditorChild(tdElement, true);
 
 		// createTableEditorCompanionForStandardStringEditor(newInputEl, spanFieldInTd);
@@ -546,6 +523,8 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 		//
 		tdElement.classList.add("forcedFocusOutline"); 	
 		return newInputEl;
+
+        */
 	
 	
 	} else {
@@ -568,10 +547,13 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 
 			return newInputEl;
 		} else {
-			let newInputElStr = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='" + TAB_EDIT_FIELD_ID + "' value='" + spanFieldInTdText + "'	>"
-			let newInputEl = replaceElementByHtmlString(spanFieldInTd, newInputElStr) as HTMLInputElement;
-			setCellEditorEventHandlers(newInputEl);
-			tdElement.setAttribute(TD_HAS_INPUT_FIELD_CHILD, "y")
+			// let newInputElStr = "<input class='tdInput'; style='width: 100%; border:0px; padding:0px;' id='" + TAB_EDIT_FIELD_ID + "' value='" + spanFieldInTdText + "'	>"
+			// let newInputEl = replaceElementByHtmlString(spanFieldInTd, newInputElStr) as HTMLInputElement;
+
+            let newInputEl = new TableStringEditor(spanFieldInTd, this, spanFieldInTdText, TableDataTypes.INTEGER, TAB_EDIT_FIELD_ID);
+            spanFieldInTd.replaceWith(newInputEl)
+			// setCellEditorEventHandlers(newInputEl);
+			// tdElement.setAttribute(TD_HAS_INPUT_FIELD_CHILD, "y")
 			setHasEditorChild(tdElement, true);
 			// newInputEl.setAttribute(OLD_VALUE_ATTR_NAME, spanFieldInTdText);
 			// newInputEl.setAttribute(OLD_SPAN_ID_ATTR_NAME, spanFieldInTd.id);
@@ -589,7 +571,16 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 	
 }
 
-function setHasEditorChild(tdElement: HTMLElement, val: boolean) {
+function setHasEditorChild(tdElement: HTMLTableCellElement, val: boolean) {
+    const powerTable = getPowertableFromChildElement(tdElement);        
+    if (val) {
+        if (powerTable.tdWithEstablishedEditor) {
+            throw new Error("Table has alread an editor.")
+        }
+        powerTable.tdWithEstablishedEditor = tdElement;
+    } else {
+        powerTable.tdWithEstablishedEditor = null;
+    }
 	tdElement["hasEditorChild"] = val;
 }
 
@@ -605,8 +596,6 @@ function getHasEdtiorChild(tdElement: HTMLElement) : boolean {
 	}
 
 	return false;
-
-
 }
 
 		
@@ -628,11 +617,11 @@ function generateSelectField(id: string, options : string[], currentValue: strin
 
 
 
-function setCellEditorEventHandlers(cellEditor: HTMLElement) {
-	cellEditor.addEventListener("blur", inputFieldFocusLostHandler);
-	cellEditor.addEventListener("keydown", keyDownInputField);
-	cellEditor.addEventListener("mousedown", mouseDownInputField);
-}
+// function setCellEditorEventHandlers(cellEditor: HTMLElement) {
+// 	cellEditor.addEventListener("blur", inputFieldFocusLostHandler);
+// 	cellEditor.addEventListener("keydown", keyDownInputField);
+// 	cellEditor.addEventListener("mousedown", mouseDownInputField);
+// }
 
 
 // function setCompoundCellEditorEventHandlers(cellEditor: HTMLElement) {
@@ -642,70 +631,116 @@ function setCellEditorEventHandlers(cellEditor: HTMLElement) {
 // }
 
 
-function inputFieldFocusLostHandler(event: FocusEvent) {
-	console.log("inputFieldFocusLostHandler entered.");
+// function inputFieldFocusLostHandler(event: FocusEvent) {
+// 	console.log("inputFieldFocusLostHandler entered.");
 
-	let eventTarget:EventTarget = event.target;
-	let targetInputElement = eventTarget as HTMLInputElement;
+// 	let eventTarget:EventTarget = event.target;
+// 	let targetInputElement = eventTarget as HTMLInputElement;
+//     let tableEditor = getTableEditor(targetInputElement);
 
-	let table = getTableFromChildElement(targetInputElement);
-	let strippedTableId = constructStrippedId(table.id);
+// 	let table = getTableFromChildElement(targetInputElement);
+// 	let strippedTableId = constructStrippedId(table.id);
 
-	if (! focusLossIsPermanentV2(event)) {
-		return;
-	}
+// 	if (! focusLossIsPermanentV2(event)) {
+// 		return;
+// 	}
 
-	console.log("inputFieldFocusLostHandler 1.");
-	let parentTdElement : HTMLTableCellElement = getTdFromChildElement(targetInputElement) as HTMLTableCellElement;
+// 	console.log("inputFieldFocusLostHandler 1.");
+// 	let parentTdElement : HTMLTableCellElement = getTdFromChildElement(targetInputElement) as HTMLTableCellElement;
 
-	if (parentTdElement == null) {
-		//
-		// The input was lost because the cell editor has been programmatically removed. In this case, there is nothing to do.
-		//
-		console.log("inputFieldFocusLostHandler 2.");
-		return;
+// 	if (parentTdElement == null) {
+// 		//
+// 		// The input was lost because the cell editor has been programmatically removed. In this case, there is nothing to do.
+// 		//
+// 		console.log("inputFieldFocusLostHandler 2.");
+// 		return;
 
-	}
-	console.log("inputFieldFocusLostHandler 3.");
+// 	}
+// 	console.log("inputFieldFocusLostHandler 3.");
 	
-	const ted = getCompanion(targetInputElement) as TableEditorCompanion<HTMLInputElement>;
+// 	// const ted = getCompanion(targetInputElement) as TableEditorCompanion<TableEditor>;
 
-	let oldVal : string = ted.oldValue;
-	let oldId : string = ted.replacingSpanFieldId;
+
+// 	let oldVal : string = tableEditor.oldValue;
+// 	let oldId : HTMLElement = tableEditor.replacingSpanField;
 	
-	let newVal : string;
-	let valueWasModified: boolean = false;
-	if (ted.restoreOldDataOnFocusLoss) {
-		// Typically when Escape was pressed on the input field. 
-		newVal = oldVal;  
-	}  else {
-		newVal = ted.getStringValue();
-		valueWasModified = true;
-	}
+// 	let newVal : string;
+// 	let valueWasModified: boolean = false;
+// 	if (tableEditor.restoreOldDataOnFocusLoss) {
+// 		// Typically when Escape was pressed on the input field. 
+// 		newVal = oldVal;  
+// 	}  else {
+// 		newVal = tableEditor.getStringValue();
+// 		valueWasModified = true;
+// 	}
 
-	unplaceCellEditor(oldId, newVal, parentTdElement, ted, valueWasModified);
+// 	unplaceCellEditor(oldId, newVal, parentTdElement, tableEditor, valueWasModified);
 
-	console.log("inputFieldFocusLostHandler leaving.");
-}
+// 	console.log("inputFieldFocusLostHandler leaving.");
+// }
 
 
-export function unplaceCellEditor(oldId: string, newVal: string, parentTdElement: HTMLTableCellElement, ted: TableEditorCompanion<HTMLElement>, valueWasModified: boolean) {
-	// let elementIdToReplace = TAB_EDIT_FIELD_ID;
-	const elementIdToReplace = ted.topElement.id;
 
-	const elementToReplace = ted.topElement;
+// XXXXXXXXXXXXXXX TODO: newVal is a string here, that does not work for datetimeeditor.
+export function unplaceCellEditorNew(oldId: string, newVal: string, parentTdElement: HTMLTableCellElement, ted: TableDateTimeEditorCompanion, valueWasModified: boolean) {
 
 	let newEl = document.createElement("span");
 	newEl.id = oldId;
 	newEl.classList.add("tableCellContentSpan");
 	newEl.innerHTML = newVal;
 
-	elementToReplace.replaceWith(newEl)
+	ted.replaceWith(newEl)
 
 	// let newElementDef = "<span id='" + oldId + "' class='tableCellContentSpan'>" + newVal + "</span>";
 	// 7let newElement = replaceElementByIdAndHtmlString(elementIdToReplace, newElementDef);
 	
-	parentTdElement.removeAttribute(TD_HAS_INPUT_FIELD_CHILD);
+	// parentTdElement.removeAttribute(TD_HAS_INPUT_FIELD_CHILD);
+	setHasEditorChild(parentTdElement, false);
+	let coords = parseTdCoordFromTd(parentTdElement);
+
+
+	parentTdElement.style.backgroundColor = "white";
+	parentTdElement.classList.remove("forcedFocusOutline");
+
+	// This is the default value. Once the focus loss event is handled, it needs to be set to its default.
+	// ted.restoreOldDataOnFocusLoss = false;
+
+	if (valueWasModified) {
+		//
+		// We update the server side model with the data since it might get lost during a full refresh of the table with server-side data.
+		//
+		const powerTable = getPowertableFromChildElement(parentTdElement);
+		const pageName = getPageName(powerTable);
+		const serverMsgHandler = MSG_HANDLER_HANDLE_POWERTABLE_ACTION;
+		const fieldName = parentTdElement.getAttribute(TD_MAP_TARGET_ATTR_NAME);
+		const msg: jointTypes.MsgPowertableAction_SaveCell = {
+			msgName: jointTypes.CS_MESSAGE,
+			module: null,
+			serverMsgHandler: serverMsgHandler,
+			pageName: pageName,
+			command: POWERTABLE_COMMAND,
+			subCommand: SYNC_CELL_DATA,
+			fieldName: fieldName,
+			rowIdx: coords.row,
+			tableId: powerTable.id,
+			value: newVal
+		};
+
+		SessionHandling.ajaxCallStandard(msg);
+	}
+}
+
+
+export function unplaceCellEditor(oldSpanField: HTMLElement, newVal: string, parentTdElement: HTMLTableCellElement, ted: TableEditor, valueWasModified: boolean) {
+	const elementToReplace = ted.topElement;
+
+	let newEl = document.createElement("span");
+	newEl.id = oldSpanField.id;
+	newEl.classList.add("tableCellContentSpan");
+	newEl.innerHTML = newVal;
+
+	elementToReplace.replaceWith(newEl)
+
 	setHasEditorChild(parentTdElement, false);
 	let coords = parseTdCoordFromTd(parentTdElement);
 
@@ -757,7 +792,7 @@ export function compoundCellEditorFocusLostHandler(event: FocusEvent) {
 	//
 	// As long as there is a popup window open for this editor, we ignore the focus loss events.
 	//
-	const dateTimeEditorCompanion: TableDateTimeEditorCompanion = getCompanion(cellEditorTopDiv) as TableDateTimeEditorCompanion;
+	const dateTimeEditorCompanion: TableDateTimeEditorCompanion = getClosestAncestorByTag(TableDateTimeEditorCompanion.tag, cellEditorTopDiv) as TableDateTimeEditorCompanion;
 	if (dateTimeEditorCompanion.calendarPopup) {
 		console.log("compoundCellEditorFocusLostHandler POS02.");
 		return;
@@ -790,52 +825,58 @@ export function compoundCellEditorFocusLostHandler(event: FocusEvent) {
 	console.log("compoundCellEditorFocusLostHandler 3.");
 	let parentTrElement : HTMLTableRowElement = parentTdElement.parentElement as HTMLTableRowElement;
 
-	let tableEditorCompanion = getCompanion(targetInputElement) as TableEditorCompanion<HTMLInputElement>;
 
-	let oldVal : string = tableEditorCompanion.oldValue;
-	let oldId : string = tableEditorCompanion.replacingSpanFieldId;
-	
-	let newVal : string;
-	let valueWasModified: boolean = false;
-	if (dateTimeEditorCompanion.restoreOldDataOnFocusLoss) {
-		// Typically when Escape was pressed on the input field. 
-		newVal = oldVal;  
-	}  else {
-		let parsingErrorOccurred = false;
-		let parsedDateOrError = parseGermanDate(dateTimeEditorCompanion.dateEditor.value);
-		if (isParsingError(parsedDateOrError)) {
-			parsingErrorOccurred = true;
-			dateTimeEditorCompanion.setErrorMessageDate(parsedDateOrError.errorMessage);
-		} else {
-			dateTimeEditorCompanion.removeErrorMessageDateIfExists();
-		}
+    // We handle the DateTimeInputEditor temporarily in a separate case until we wrap the string editor in a web component as well.
 
-		let parsedTimeOrError = parseTime(dateTimeEditorCompanion.timeEditor.value);
-		if (isParsingError(parsedTimeOrError)) {
-			parsingErrorOccurred = true;
-			dateTimeEditorCompanion.setErrorMessageTime(parsedTimeOrError.errorMessage);
-		} else {
-			dateTimeEditorCompanion.removeErrorMessageTimeIfExists();
-		}
+    const tableEditor = getTableEditor(targetInputElement);
+
+    if (tableEditor) {  // So fare only DateTimeEditors possible here
+
+        let oldVal : string = tableEditor.oldValue;
+        let oldId : string = tableEditor.replacingSpanField.id;
+        
+        let newVal : string;
+        let valueWasModified: boolean = false;
+        if (dateTimeEditorCompanion.restoreOldDataOnFocusLoss) {
+            // Typically when Escape was pressed on the input field. 
+            newVal = oldVal;  
+        }  else {
+            let parsingErrorOccurred = false;
+            let parsedDateOrError = parseGermanDate(dateTimeEditorCompanion.dateEditor.value);
+            if (isParsingError(parsedDateOrError)) {
+                parsingErrorOccurred = true;
+                dateTimeEditorCompanion.setErrorMessageDate(parsedDateOrError.errorMessage);
+            } else {
+                dateTimeEditorCompanion.removeErrorMessageDateIfExists();
+            }
+
+            let parsedTimeOrError = parseTime(dateTimeEditorCompanion.timeEditor.value);
+            if (isParsingError(parsedTimeOrError)) {
+                parsingErrorOccurred = true;
+                dateTimeEditorCompanion.setErrorMessageTime(parsedTimeOrError.errorMessage);
+            } else {
+                dateTimeEditorCompanion.removeErrorMessageTimeIfExists();
+            }
 
 
-		//
-		// If there is a formatting error, we do not set underlying variables.
-		//
-		if (parsingErrorOccurred) {
-			return;
-		}
+            //
+            // If there is a formatting error, we do not set underlying variables.
+            //
+            if (parsingErrorOccurred) {
+                return;
+            }
 
-		// Make type deduction magic obvious here.
-		let date = parsedDateOrError;
-		let time = parsedTimeOrError;
+            // Make type deduction magic obvious here.
+            let date = parsedDateOrError;
+            let time = parsedTimeOrError;
 
-		newVal = tableEditorCompanion.getStringValue();
+            newVal = tableEditor.getStringValue();
 
-		valueWasModified = true;
-	}
+            valueWasModified = true;
+        }
 
-	unplaceCellEditor(oldId, newVal, parentTdElement, dateTimeEditorCompanion, valueWasModified);
+        unplaceCellEditorNew(oldId, newVal, parentTdElement, dateTimeEditorCompanion, valueWasModified);
+    }
 
 	console.log("compoundCellEditorFocusLostHandler leaving.");
 }
@@ -843,29 +884,29 @@ export function compoundCellEditorFocusLostHandler(event: FocusEvent) {
 
 
 
-export function keyDownInputField(event: KeyboardEvent) {
-	console.log("keyDownInputField: " + event.key);
-	if (event.key === "Escape") {
-		console.log("keyDownInputField entered 1."); 
-		let eventTarget:EventTarget = event.target;
-		let targetInputElement = eventTarget as HTMLInputElement;
-		let parentTdElement = getTdFromChildElement(targetInputElement);
-		console.log(parentTdElement)
+// export function keyDownInputField(event: KeyboardEvent) {
+// 	console.log("keyDownInputField: " + event.key);
+// 	if (event.key === "Escape") {
+// 		console.log("keyDownInputField entered 1."); 
+// 		let eventTarget:EventTarget = event.target;
+// 		let targetInputElement = eventTarget as HTMLInputElement;
+// 		let parentTdElement = getTdFromChildElement(targetInputElement);
+// 		console.log(parentTdElement)
 
-		const companion = getCompanion(targetInputElement) as TableEditorCompanion<HTMLInputElement>; 
+// 		const tableEditor = getTableEditor(targetInputElement); 
 
-		companion.restoreOldDataOnFocusLoss = true;
-		parentTdElement.focus();
-	} else {
-		if (event.key ==="Enter") {
-			let eventTarget:EventTarget = event.target;
-			let targetInputElement = eventTarget as HTMLInputElement;
-			let parentTdElement = getTdFromChildElement(targetInputElement);
-			parentTdElement.focus();
-		}
-	}
-	console.log("keyDownInputField leaving.");
-}
+// 		tableEditor.restoreOldDataOnFocusLoss = true;
+// 		parentTdElement.focus();
+// 	} else {
+// 		if (event.key ==="Enter") {
+// 			let eventTarget:EventTarget = event.target;
+// 			let targetInputElement = eventTarget as HTMLInputElement;
+// 			let parentTdElement = getTdFromChildElement(targetInputElement);
+// 			parentTdElement.focus();
+// 		}
+// 	}
+// 	console.log("keyDownInputField leaving.");
+// }
 
 
 export function keyDownDateTimeEditorInputField(dateTimeEditorCompanion: TableDateTimeEditorCompanion, event: KeyboardEvent) {
@@ -885,10 +926,10 @@ export function keyDownDateTimeEditorInputField(dateTimeEditorCompanion: TableDa
 }
 
 
-function mouseDownInputField(event: MouseEvent) {
-	console.log("mouseDownInputField");
- 	event.stopPropagation();
-}
+// function mouseDownInputField(event: MouseEvent) {
+// 	console.log("mouseDownInputField");
+//  	event.stopPropagation();
+// }
 
 
 
@@ -1151,6 +1192,12 @@ export class Powertable extends HTMLElement {
 	root: HTMLTableElement;
 	private headInfo: FieldInfo[];
 
+    /**
+     * Is set to the table cell that has an established editor, if an editor exists.
+     */
+    tdWithEstablishedEditor: HTMLTableCellElement;
+    
+
 
 	constructor() {
 		super();
@@ -1265,6 +1312,16 @@ export class Powertable extends HTMLElement {
 		}
 		return editorEstablished;
 	}
+
+    getEstablishedEdior() : TableEditor {
+        return null;
+        // XXXXXXXXXXXXXXXX CONTINUE HERE 2025-10-22
+        if (! this.tdWithEstablishedEditor) {
+            return null;
+        }
+
+        
+    }
 
 
 }
@@ -1702,3 +1759,9 @@ export function setTableFocus(focusDef: TableFocusDef) {
 	setFocusOnTd(powerTable, focusDef.rowIdx, focusDef.fieldName);
 }
 
+
+function mapFieldInfoDataTypeToFieldType(fieldInfoDataType: string) {
+    switch (fieldInfoDataType) {
+        
+    }
+}

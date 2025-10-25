@@ -1,14 +1,8 @@
-import { GuiDef, MSG_HANDLER_HANDLE_POWERTABLE_ACTION } from "./messageTypes";
-import { TableDateTimeEditorCompanion } from "./TableDateTimeEditorCompanion";
 import { CalendarGuiDef, CalendarGuiDay } from "./messageTypes";
 import { createChildByTagName } from "./kewebsiPageComposer";
 import { addIdClass, findChildChildByIdClass } from "./kewebsiPageComposer";
 import { setSmartFocus } from "./kewebsiUtils";
-import { selectAll } from "./kewebsiUtils";
-import { getTableFromChildElement, getTdFromChildElement, getTrFromChildElement, getRowIdxFromTr, getSymbolColId } from "./powerTableNavigation";
 import { warn } from "./jaccessEventHandling";
-import { MsgPowerTable_CalendarPopupChange } from "./jointTypes.js";
-import { SessionHandling } from "./jaccessEventHandling";
 import { CalendarPopupPartner } from "./CalendarPopupPartner";
 import { LocalDate } from "./dateTime";
 

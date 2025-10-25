@@ -52,6 +52,8 @@ export function getCompanion<T extends HTMLElement> (el: T) {
     return  el[COMPANION_PROP] as Companion<T>;
 }
 
+
+
 // /**
 //  * Establishes the biderectional link
 //  * @param el 

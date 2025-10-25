@@ -348,6 +348,11 @@ export class KewebsiDateTimeEditor extends HTMLElement implements WebCompSupport
     }
 
     mouseDownCompoundCellEditor(event: MouseEvent) {
+
+        if (event.button != 0) {  // Only left button clicks are handled
+            return;
+        }
+
         let target = event.target as HTMLElement;  // The clicked element.
         if (this.calendarButton == target) {
             this.sendCalendarPopupRequestToServer();	

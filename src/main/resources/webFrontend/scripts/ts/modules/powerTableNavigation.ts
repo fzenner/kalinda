@@ -1,4 +1,5 @@
 import { FieldInfo, TdCoord, ROW_IDX_ATTR_NAME, COL_IDX_ATTR_NAME, TD_MAP_TARGET_ATTR_NAME, COLTYPE_ATTR_NAME, Powertable, getWebComponent } from "./Powertable";
+import { TableEditor } from "./tableEditor";
 
 
 const COORD_SPLITTER = "-";
@@ -224,5 +225,24 @@ function findFirstParentOfType(childElement: HTMLElement, tagType : string) : HT
 	}
 }
 
+/**
+ * Finds the first anchestor with properte isTableEditor = true
+ */
+export function getTableEditor(child: HTMLElement) : TableEditor{
 
+    const unknownChild = child as unknown;
+    const potentialTableEditor = unknownChild as TableEditor; 
+
+    if (potentialTableEditor.isTableEditor) {
+        return potentialTableEditor;
+    }
+
+    const parent = child.parentElement;
+    if (! parent) {
+        return null;
+    }
+
+    return getTableEditor(parent);
+
+}
 

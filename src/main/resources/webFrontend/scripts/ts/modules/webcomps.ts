@@ -34,7 +34,7 @@ export function defineWebComponents() {
 
     customElements.define("my-first-webcomp", MyFirstWebComp);
     registerKewebsiComponent(KewebsiInputElement.tag, KewebsiInputElement);
-    registerKewebsiComponent(KewebsiDateTimeEditor.tag, KewebsiDateTimeEditor);
+        registerKewebsiComponent(KewebsiDateTimeEditor.tag, KewebsiDateTimeEditor);
     // registerKewebsiComponent(HtmlErrorDisplayCompanion.tag, HtmlErrorDisplayCompanion);
     registerKewebsiComponent(StandardCalendarPopup.getTag(), StandardCalendarPopup);
     registerKewebsiComponent(TableCalendarPopup.getTag(), TableCalendarPopup);

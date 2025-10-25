@@ -38,3 +38,5 @@ the factory of element B, especially for linking event handlers to element B if 
 This way, custom components can be used without modification. Their embedding in Kalisa is done via their companions.
 A link from Element A goes to the companion of element B. Full typisation. The companion can provide the original HTML element B
 where necessary.
+
+

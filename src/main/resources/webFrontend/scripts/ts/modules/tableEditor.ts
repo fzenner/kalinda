@@ -1,7 +1,9 @@
 
 import { COMPANION_PROP, Companion} from "./Companion";
+import { TableDataTypes } from "./TableDateTimeEditor";
+import { Powertable } from "./Powertable";
 
-export abstract class TableEditorCompanion<T extends HTMLElement> implements Companion<T> {
+export abstract class TableEditorCompanion<T extends TableEditor>  {
 
     topElement: T;
     replacingSpanFieldId: string;
@@ -31,18 +33,58 @@ export abstract class TableEditorCompanion<T extends HTMLElement> implements Com
         this.topElement.remove();
     }
 
-    abstract getStringValue();
+    // abstract getStringValue();
 }
 
-export class StandardStringEditorCompanion<T extends HTMLInputElement| HTMLSelectElement> extends TableEditorCompanion<T> {
+export class StandardStringEditorCompanion<T extends TableEditor> extends TableEditorCompanion<T> {
 
     constructor(el: T, replacingSpanField: HTMLSpanElement, idPrefix: string) {
         super(el, replacingSpanField.id, replacingSpanField.textContent, idPrefix)
     
     }
 
-    getStringValue() : string {
-        return this.topElement.value;
+    // getStringValue() : string {
+    //     return this.topElement.value;
+    // }
+
+}
+
+
+
+export abstract class TableEditor extends HTMLElement {
+    isTableEditor : boolean;
+    dataType : TableDataTypes;
+    powerTable: Powertable
+
+
+    topElement: HTMLElement;
+    replacingSpanField: HTMLElement;
+    oldValue: string;
+    restoreOldDataOnFocusLoss: boolean;
+    idPrefix: string
+
+    constructor(replacingSpanField: HTMLElement, oldValue: string, dataType: TableDataTypes, idPrefix: string) {
+        super()
+        this.replacingSpanField = replacingSpanField;
+        this.oldValue = oldValue;
+        this.dataType = dataType;
+        this.restoreOldDataOnFocusLoss = false;
+        this.id = idPrefix + "-editor";
     }
+    getTopElement(): HTMLElement {
+        return this.topElement;
+    }
+    setTopElement(el: HTMLElement) {
+        
+        if (this.topElement) {
+            throw Error("Overwriting this.topElement not supported");
+        }
+        this.topElement = el;
+        el[COMPANION_PROP] = this;
+    }
+
+    abstract getStringValue() : string;
+
+    abstract hasSyntacticError() : boolean; 
 
 }
