@@ -1,4 +1,5 @@
 import { focusLossIsPermanentV2, stringIsInt } from "./kewebsiUtils";
+import { displayErrorAsModalWindow } from "./modalDialog";
 import { Powertable, unplaceCellEditor } from "./Powertable";
 import { getTableEditor, getTdFromChildElement } from "./powerTableNavigation";
 import { TableDataTypes } from "./TableDateTimeEditor";
@@ -49,9 +50,10 @@ export class TableStringEditor extends TableEditor {
     }
 
     override hasSyntacticError() {
+        const currentStringValue = this.getStringValue()
         switch (this.dataType) {
             case TableDataTypes.INTEGER:
-                return stringIsInt(this.getStringValue())
+                return ! stringIsInt(currentStringValue)
             default: 
             return false;
         }
@@ -104,8 +106,13 @@ function inputFieldFocusLostHandler(event: FocusEvent) {
 		valueWasModified = true;
 	}
 
-	unplaceCellEditor(oldId, newVal, parentTdElement, tableEditor, valueWasModified);
-
+    if (tableEditor.hasSyntacticError()) {
+        console.log("inputFieldFocusLostHandler 4.");
+        displayErrorAsModalWindow("Incorrect input format.", "Please correct before edit another table cell")
+    } else {
+        console.log("inputFieldFocusLostHandler 5.");
+        unplaceCellEditor(oldId, newVal, parentTdElement, tableEditor, valueWasModified);
+    }
 	console.log("inputFieldFocusLostHandler leaving.");
 }
 

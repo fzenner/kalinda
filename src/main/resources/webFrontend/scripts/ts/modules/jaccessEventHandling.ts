@@ -21,6 +21,7 @@ import { replaceElementByIdAndHtmlString, appendElementByIdAndHtmlString, remove
 
 import * as jointTypes from "./jointTypes.js";
 import { mapClientInputStateInBrowserToStateInfoForServer } from "./InputFieldStates.js";
+import { displayErrorAsModalWindow } from "./modalDialog.js";
 
 
 const SERVICE_NAME_ATTR_NAME = 'data-service-name';
@@ -575,51 +576,9 @@ export function CEH_preventDefault(mouseEvent: MouseEvent) {
 
 
 
-export function displayErrorAsModalWindow(errorMsg1: string, errorMsg2: string) {
 
 
-	var msgSpan = document.createElement("span");
-	msgSpan.textContent = errorMsg1;
 
-    var okButton = document.createElement("button");
-    okButton.textContent = "OK";
-    okButton.onclick = closeErrorModal;
-
-	var contentLayoutDiv = document.createElement("div");
-	contentLayoutDiv.classList.add("modalErrorContentDiv")
-    
-    var innerDiv = document.createElement("div");
-    innerDiv.classList.add("center-children-child")
-
-    var middleDiv = document.createElement("div");
-    middleDiv.classList.add("center-children-parent");
-
-    var outerDiv = document.createElement("div");
-    outerDiv.id = "error-modal";
-    outerDiv.classList.add("modal-error");
-    
-
-    outerDiv.appendChild(middleDiv);
-    middleDiv.appendChild(innerDiv);
-	innerDiv.appendChild(contentLayoutDiv);
-    contentLayoutDiv.appendChild(msgSpan);
-
-	if (errorMsg2) {
-		var msgSpan2 = document.createElement("span");
-		msgSpan2.textContent = errorMsg2;
-		contentLayoutDiv.appendChild(msgSpan2);
-	}
-
-	contentLayoutDiv.appendChild(okButton);
-
-    document.body.appendChild(outerDiv);
-
-}
-
-export function closeErrorModal() {
-    let modalWindow = document.getElementById("error-modal");
-    modalWindow.remove();
-}
 
 export function warn(msg: string) {
 	console.log("WARNING:" + msg);

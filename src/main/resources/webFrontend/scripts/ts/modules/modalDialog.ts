@@ -51,23 +51,6 @@ export function createModalStandardDialog(guiDef: GuiDef) : HTMLDivElement {
 
     setSmartFocus(cancelButton);
 
-    // let popupUnderId = modalDialogDef.popupUnderId;
-    
-    
-    //  // The placing information is optional
-    // if (popupUnderId) {
-    //     let popupUnderTag = document.getElementById(popupUnderId);
-        
-    //     // This defines the tag that needs to be placed underneath the given tag.
-    //     // let visiblePopupContentTag = document.getElementById(visiblePopupContentTagId);
-
-    //     let rect = popupUnderTag.getBoundingClientRect();
-
-    //     centerChildrenChild.style.position = "fixed";
-    //     centerChildrenChild.style.top = rect.bottom.toString() + "px";
-    //     centerChildrenChild.style.left = rect.left.toString() + "px";
-    // }
-
     return centerChildrenParent;
 }
 
@@ -75,35 +58,89 @@ export function createKewebsiPlacedPopup(guiDef: GuiDef) : HTMLElement {
 
     let placedPopupDef = guiDef as PlacedPopupDef;
 
-
-
-    // let newElement = createElementByGuiDef(guiDef);
     let newElement = document.createElement("DIV");
-    setStandardProperties(newElement, guiDef);
+    setStandardProperties(newElement, placedPopupDef);
     createAndAppendChildren(newElement, guiDef);
 
-
-    // let popupUnderId = placedPopupDef.relatedHtmlElementId;
-    // if (popupUnderId) {
-
-    //     if (newElement.childElementCount != 1) {
-    //         warn("Error in createKewebsiPlacedPopup: Number of children is not 1 but " + newElement.childElementCount);
-    //     }
-    
-    //     let childToPlace = newElement.children[0] as HTMLElement;
-    
-    //     let popupUnderTag = document.getElementById(popupUnderId);
-        
-    //     let rect = popupUnderTag.getBoundingClientRect();
-
-    //     childToPlace.style.position = "fixed";
-    //     childToPlace.style.top = rect.bottom.toString() + "px";
-    //     childToPlace.style.left = rect.left.toString() + "px";
-    // }
     return newElement;
 }
 
+export function createSimpleModalPopup(message: string, okButtonText: string = "OK"): HTMLDivElement {
+    // Create the modal background
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
 
+    // Create the modal content box
+    const modalContent = document.createElement("div");
+    modalContent.classList.add("modal-content");
+
+    // Add the message
+    const msgDiv = document.createElement("div");
+    msgDiv.textContent = message;
+    modalContent.appendChild(msgDiv);
+
+    // Create the OK button
+    const okButton = document.createElement("button");
+    okButton.textContent = okButtonText;
+    okButton.onclick = () => {
+        modal.style.display = "none";
+    };
+    modalContent.appendChild(okButton);
+
+    // Add content to modal
+    modal.appendChild(modalContent);
+
+    // Optionally, append to body
+    document.body.appendChild(modal);
+
+    return modal;
+}
+
+export function displayErrorAsModalWindow(errorMsg1: string, errorMsg2: string) {
+
+
+	var msgSpan = document.createElement("span");
+	msgSpan.textContent = errorMsg1;
+
+    var okButton = document.createElement("button");
+    okButton.textContent = "OK";
+    okButton.onclick = closeErrorModal;
+
+	var contentLayoutDiv = document.createElement("div");
+	contentLayoutDiv.classList.add("modalErrorContentDiv")
+    
+    var innerDiv = document.createElement("div");
+    innerDiv.classList.add("center-children-child")
+
+    var middleDiv = document.createElement("div");
+    middleDiv.classList.add("center-children-parent");
+
+    var outerDiv = document.createElement("div");
+    outerDiv.id = "error-modal";
+    outerDiv.classList.add("modal-error");
+    
+
+    outerDiv.appendChild(middleDiv);
+    middleDiv.appendChild(innerDiv);
+	innerDiv.appendChild(contentLayoutDiv);
+    contentLayoutDiv.appendChild(msgSpan);
+
+	if (errorMsg2) {
+		var msgSpan2 = document.createElement("span");
+		msgSpan2.textContent = errorMsg2;
+		contentLayoutDiv.appendChild(msgSpan2);
+	}
+
+	contentLayoutDiv.appendChild(okButton);
+
+    document.body.appendChild(outerDiv);
+
+}
+
+export function closeErrorModal() {
+    let modalWindow = document.getElementById("error-modal");
+    modalWindow.remove();
+}
 
 export function hideModalDialogById(id: string) {
     let dialog = document.getElementById(id) as HTMLElement;

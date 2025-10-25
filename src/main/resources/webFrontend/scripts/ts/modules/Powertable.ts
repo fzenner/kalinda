@@ -3,7 +3,7 @@ import { createLocalDateTime, LocalDateTime } from "./dateTime.js";
 import { StandardStringEditorCompanion, TableEditor, TableEditorCompanion } from "./tableEditor.js";
 import { replaceElementByHtmlString, replaceElementByIdAndHtmlString } from "./kewebsiPageComposer.js";
 import {isFocused, getPageName, getBooleanAttribute, modalWindowIsShown, setBooleanAttribute, setSmartFocus, getClosestAncestorByTag, focusLossIsPermanentV2} from "./kewebsiUtils.js";
-import {SessionHandling, getServerMsgHandler, findFirstChildWithAttribute, displayErrorAsModalWindow, warn} from "./jaccessEventHandling.js";
+import {SessionHandling, getServerMsgHandler, findFirstChildWithAttribute, warn} from "./jaccessEventHandling.js";
 import {GuiDef, MSG_HANDLER_HANDLE_POWERTABLE_ACTION, UPDATE_BY_DEF_CUSTOM, TableFocusDef, CalendarGuiDef} from "./messageTypes.js";
 import * as jointTypes from"./jointTypes.js";
 import { TableDateTimeEditorCompanion } from "./TableDateTimeEditor2.js";
@@ -22,6 +22,7 @@ import { isParsingError, parseGermanDate, parseIsoDateTime, parseTime } from "./
 
 import { StyleManager } from "./StyleManager.js";
 import { TableStringEditor } from "./TableStringEditor.js";
+import { createSimpleModalPopup } from "./modalDialog.js";
 
 const TAB_EDIT_FIELD_ID = "tabEditFieldId";  // The ID of the edit (input) field within a table cell. The editor always gets the same ID.
 // const TD_HAS_INPUT_FIELD_CHILD = "data-td-has-input-field-child";
@@ -456,17 +457,18 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 		return null;
 	}
 
+    const powerTable = getPowertableFromChildElement(tdElement);
+
 	if (getHasEdtiorChild(tdElement)) {
 		return null;
 	}
 
-    const powerTable = getPowertableFromChildElement(tdElement);
-
-    if (powerTable.tdWithEstablishedEditor) {
-        // There is only one established editor 
-        // CONTINUE HERE
-        // if (!establishedEditor.itIsOkToLoseFocus())
-        //     return null;
+    if (powerTable.hasEstablishedEditor()) {
+        const currentEstablishedEditor : TableEditor = powerTable.getEstablishedEditor();
+        if (currentEstablishedEditor.hasSyntacticError()) {
+            createSimpleModalPopup("Correct input in cell XY first.", "OK-Buttontext")
+            return null;
+        }
     }
 
 	let isSelectBox = false;
@@ -530,12 +532,12 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 	} else {
 		if (payloadTypeInfo === "LOCALDATETIME") {
 
-			let newInputEl = createTableDateTimeEditorWithCompanion(tdElement, TAB_EDIT_FIELD_ID);
+			let newInputEl : TableEditor = createTableDateTimeEditorWithCompanion(tdElement, TAB_EDIT_FIELD_ID);
 			spanFieldInTd.replaceWith(newInputEl);
 
 			// setCompoundCellEditorEventHandlers(newInputEl);
 
-			setHasEditorChild(tdElement, true);
+			registerEstablishedEditor(tdElement, newInputEl);
 
 
 
@@ -554,7 +556,7 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
             spanFieldInTd.replaceWith(newInputEl)
 			// setCellEditorEventHandlers(newInputEl);
 			// tdElement.setAttribute(TD_HAS_INPUT_FIELD_CHILD, "y")
-			setHasEditorChild(tdElement, true);
+			registerEstablishedEditor(tdElement, newInputEl);
 			// newInputEl.setAttribute(OLD_VALUE_ATTR_NAME, spanFieldInTdText);
 			// newInputEl.setAttribute(OLD_SPAN_ID_ATTR_NAME, spanFieldInTd.id);
 			new StandardStringEditorCompanion(newInputEl, spanFieldInTd, TAB_EDIT_FIELD_ID);
@@ -571,25 +573,26 @@ function establishCellEditorCore(tdElement: HTMLTableCellElement) : HTMLElement 
 	
 }
 
-function setHasEditorChild(tdElement: HTMLTableCellElement, val: boolean) {
+function registerEstablishedEditor(tdElement: HTMLTableCellElement, establishedEditor: TableEditor) {
     const powerTable = getPowertableFromChildElement(tdElement);        
-    if (val) {
-        if (powerTable.tdWithEstablishedEditor) {
-            throw new Error("Table has alread an editor.")
-        }
-        powerTable.tdWithEstablishedEditor = tdElement;
-    } else {
-        powerTable.tdWithEstablishedEditor = null;
+    if (powerTable.tdWithEstablishedEditor) {
+        throw new Error("Table has alread an editor.")
     }
-	tdElement["hasEditorChild"] = val;
+    powerTable.tdWithEstablishedEditor = tdElement;
+    powerTable.establishedEditor = establishedEditor
+}
+
+function unregisterEstablishedEditor(powerTable: Powertable) {
+    if (! powerTable.tdWithEstablishedEditor) {
+        throw new Error("Table has no editor.")
+    }
+    powerTable.tdWithEstablishedEditor = null;
+    powerTable.establishedEditor = null;
 }
 
 
+
 function getHasEdtiorChild(tdElement: HTMLElement) : boolean {
-	var val = tdElement["hasEditorChild"];
-	if (val === true) {
-		return true;
-	} 
 
 	if (findFirstChildWithAttribute(tdElement, "data-is-cell-editor") !== null) {
 		return true;
@@ -615,72 +618,6 @@ function generateSelectField(id: string, options : string[], currentValue: strin
 }
 
 
-
-
-// function setCellEditorEventHandlers(cellEditor: HTMLElement) {
-// 	cellEditor.addEventListener("blur", inputFieldFocusLostHandler);
-// 	cellEditor.addEventListener("keydown", keyDownInputField);
-// 	cellEditor.addEventListener("mousedown", mouseDownInputField);
-// }
-
-
-// function setCompoundCellEditorEventHandlers(cellEditor: HTMLElement) {
-// 	cellEditor.addEventListener("focusout", compoundCellEditorFocusLostHandler);
-// 	cellEditor.addEventListener("keydown", keyDownInputField);
-// 	cellEditor.addEventListener("mousedown", mouseDownCompoundCellEditor);
-// }
-
-
-// function inputFieldFocusLostHandler(event: FocusEvent) {
-// 	console.log("inputFieldFocusLostHandler entered.");
-
-// 	let eventTarget:EventTarget = event.target;
-// 	let targetInputElement = eventTarget as HTMLInputElement;
-//     let tableEditor = getTableEditor(targetInputElement);
-
-// 	let table = getTableFromChildElement(targetInputElement);
-// 	let strippedTableId = constructStrippedId(table.id);
-
-// 	if (! focusLossIsPermanentV2(event)) {
-// 		return;
-// 	}
-
-// 	console.log("inputFieldFocusLostHandler 1.");
-// 	let parentTdElement : HTMLTableCellElement = getTdFromChildElement(targetInputElement) as HTMLTableCellElement;
-
-// 	if (parentTdElement == null) {
-// 		//
-// 		// The input was lost because the cell editor has been programmatically removed. In this case, there is nothing to do.
-// 		//
-// 		console.log("inputFieldFocusLostHandler 2.");
-// 		return;
-
-// 	}
-// 	console.log("inputFieldFocusLostHandler 3.");
-	
-// 	// const ted = getCompanion(targetInputElement) as TableEditorCompanion<TableEditor>;
-
-
-// 	let oldVal : string = tableEditor.oldValue;
-// 	let oldId : HTMLElement = tableEditor.replacingSpanField;
-	
-// 	let newVal : string;
-// 	let valueWasModified: boolean = false;
-// 	if (tableEditor.restoreOldDataOnFocusLoss) {
-// 		// Typically when Escape was pressed on the input field. 
-// 		newVal = oldVal;  
-// 	}  else {
-// 		newVal = tableEditor.getStringValue();
-// 		valueWasModified = true;
-// 	}
-
-// 	unplaceCellEditor(oldId, newVal, parentTdElement, tableEditor, valueWasModified);
-
-// 	console.log("inputFieldFocusLostHandler leaving.");
-// }
-
-
-
 // XXXXXXXXXXXXXXX TODO: newVal is a string here, that does not work for datetimeeditor.
 export function unplaceCellEditorNew(oldId: string, newVal: string, parentTdElement: HTMLTableCellElement, ted: TableDateTimeEditorCompanion, valueWasModified: boolean) {
 
@@ -691,11 +628,8 @@ export function unplaceCellEditorNew(oldId: string, newVal: string, parentTdElem
 
 	ted.replaceWith(newEl)
 
-	// let newElementDef = "<span id='" + oldId + "' class='tableCellContentSpan'>" + newVal + "</span>";
-	// 7let newElement = replaceElementByIdAndHtmlString(elementIdToReplace, newElementDef);
-	
-	// parentTdElement.removeAttribute(TD_HAS_INPUT_FIELD_CHILD);
-	setHasEditorChild(parentTdElement, false);
+    const powerTable = getPowertableFromChildElement(parentTdElement);
+	unregisterEstablishedEditor(powerTable);
 	let coords = parseTdCoordFromTd(parentTdElement);
 
 
@@ -709,7 +643,7 @@ export function unplaceCellEditorNew(oldId: string, newVal: string, parentTdElem
 		//
 		// We update the server side model with the data since it might get lost during a full refresh of the table with server-side data.
 		//
-		const powerTable = getPowertableFromChildElement(parentTdElement);
+		
 		const pageName = getPageName(powerTable);
 		const serverMsgHandler = MSG_HANDLER_HANDLE_POWERTABLE_ACTION;
 		const fieldName = parentTdElement.getAttribute(TD_MAP_TARGET_ATTR_NAME);
@@ -741,7 +675,9 @@ export function unplaceCellEditor(oldSpanField: HTMLElement, newVal: string, par
 
 	elementToReplace.replaceWith(newEl)
 
-	setHasEditorChild(parentTdElement, false);
+    const powerTable = getPowertableFromChildElement(parentTdElement);
+
+	unregisterEstablishedEditor(powerTable);
 	let coords = parseTdCoordFromTd(parentTdElement);
 
 
@@ -1196,6 +1132,7 @@ export class Powertable extends HTMLElement {
      * Is set to the table cell that has an established editor, if an editor exists.
      */
     tdWithEstablishedEditor: HTMLTableCellElement;
+    establishedEditor: TableEditor;
     
 
 
@@ -1313,14 +1250,15 @@ export class Powertable extends HTMLElement {
 		return editorEstablished;
 	}
 
-    getEstablishedEdior() : TableEditor {
-        return null;
-        // XXXXXXXXXXXXXXXX CONTINUE HERE 2025-10-22
-        if (! this.tdWithEstablishedEditor) {
-            return null;
-        }
+    getEstablishedEditor() : TableEditor {
+        return this.establishedEditor;
+    }
 
-        
+    hasEstablishedEditor() : boolean {
+        if (this.establishedEditor) {
+            return true;
+        }
+        return false;
     }
 
 
