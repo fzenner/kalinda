@@ -250,4 +250,4 @@ Make all other editors a web component  implementing interface  TableEditor
 Those TableEditors have a method "okToBeUnEstablished" that returns true of there is no syntax error.
 A new editor can only be establshed if the existing editor is ok to be unestablished.
 
-NEXT: Add function to all editors isOkToLoseFocus. Make all editors webcomponents.
+NEXT: Add error display and editor state to cell editor

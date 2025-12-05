@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.7 Chrome/138.0.7204.251 Electron/37.7.1 Safari/537.36" version="28.2.7">
   <diagram name="Page-1" id="slS-i54JM-N5ZSzpBJAk">
-    <mxGraphModel dx="1396" dy="1270" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1396" dy="811" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -34,7 +34,7 @@
         <mxCell id="qxJrcSxVET2VQ3xojnO4-36" value="SYNCED" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="600" y="600" width="120" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="qxJrcSxVET2VQ3xojnO4-38" value="EMPTY_NOT_REQUIRED" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="qxJrcSxVET2VQ3xojnO4-38" value="EMPTY_OPTIONAL" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="160" y="480" width="360" height="20" as="geometry" />
         </mxCell>
         <mxCell id="qxJrcSxVET2VQ3xojnO4-39" value="EMPTY_AS_SERVER_SIDE_ERROR" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
